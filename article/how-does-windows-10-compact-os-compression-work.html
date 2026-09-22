@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Does Windows 10 CompactOS Compression Work? - windows-10</title>
+    <meta name="description" content="CompactOS is an execution-level compression mechanism introduced in Windows 10 that shrinks operating system binaries to reclaim several gigabytes of internal storage. By leveraging modern file-system algorithms directly inside the NTFS file system, it d">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-does-windows-10-compact-os-compression-work">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Does Windows 10 CompactOS Compression Work? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-does-windows-10-compact-os-compression-work" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="CompactOS is an execution-level compression mechanism introduced in Windows 10 that shrinks operating system binaries to reclaim several gigabytes of internal storage. By leveraging modern file-system algorithms directly inside the NTFS file system, it d" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-does-windows-10-compactos-compression-work">How Does Windows
+10 CompactOS Compression Work?</h1>
+<p>CompactOS is an execution-level compression mechanism introduced in
+Windows 10 that shrinks operating system binaries to reclaim several
+gigabytes of internal storage. By leveraging modern file-system
+algorithms directly inside the NTFS file system, it decompresses system
+files transparently on the fly during boot and normal execution without
+requiring a separate recovery image.</p>
+<h2 id="understanding-compactos">Understanding CompactOS</h2>
+<p>CompactOS evolved from the Windows 8.1 feature known as WIMBoot
+(Windows Image Boot). WIMBoot allowed devices with constrained storage,
+such as budget tablets and netbooks with 16 GB or 32 GB eMMC drives, to
+run Windows from a compressed <code>.wim</code> file. However, WIMBoot
+required a separate disk partition and introduced update fragmentation
+when OS patches were applied.</p>
+<p>Windows 10 replaced WIMBoot with CompactOS, removing the need for
+dedicated partitions. CompactOS applies file-level compression directly
+to the standard OS directory hierarchy (<code>C:\Windows</code>,
+<code>C:\Program Files</code>, and system dependencies). Because the
+files reside within standard directories, servicing updates and
+installing cumulative patches occurs directly in place without breaking
+the compression architecture.</p>
+<h2 id="underlying-compression-mechanisms">Underlying Compression
+Mechanisms</h2>
+<p>CompactOS utilizes native NTFS compression enhancements introduced
+alongside Windows 10. While legacy NTFS compression relies on LZNT1 (a
+variant of LZ77), CompactOS uses significantly more efficient
+algorithms:</p>
+<ul>
+<li><strong>XPRESS4K / XPRESS8K:</strong> Fast, lightweight algorithms
+optimized for low CPU overhead.</li>
+<li><strong>XPRESS16K:</strong> A middle ground offering stronger
+compression with moderate processor demand.</li>
+<li><strong>LZX:</strong> A high-ratio compression algorithm that
+achieves the smallest disk footprint at the expense of higher CPU usage
+during initial compression and decompression.</li>
+</ul>
+<p>Files compressed via CompactOS receive the
+<code>FILE_ATTRIBUTE_SPARSE_FILE</code> or a designated reparse point
+indicating that the data clusters are compressed using Windows Overlay
+Filter (WOF). When an application or kernel process requests a file,
+<code>Wof.sys</code> intercepts the I/O read, decompresses the required
+blocks in memory, and passes the raw data to the caller without
+persistent disk writes.</p>
+<h2 id="performance-and-hardware-impact">Performance and Hardware
+Impact</h2>
+<p>Decompressing data during runtime introduces a trade-off between
+processor overhead and disk read times:</p>
+<ul>
+<li><strong>I/O Bound Systems:</strong> On mechanical hard drives or
+slow eMMC flash memory, CompactOS can actually improve responsiveness.
+Reading fewer bytes from slow storage media often offsets the minor
+processing time required to decompress data in RAM.</li>
+<li><strong>Fast NVMe Storage:</strong> On modern solid-state drives
+with high read throughput, decompression can introduce a negligible CPU
+latency penalty, though modern multi-core processors process the
+decompression algorithms in microseconds.</li>
+<li><strong>Write Operations:</strong> System updates modify files in
+place. If an updated file must remain compressed, the operating system
+recompresses the newly written blocks automatically during background
+maintenance routines.</li>
+</ul>
+<h2 id="checking-and-managing-compactos-via-command-line">Checking and
+Managing CompactOS via Command Line</h2>
+<p>Administrators can evaluate or alter the system compression state
+using the built-in <code>compact.exe</code> utility inside an elevated
+Command Prompt.</p>
+<p>To query the current state:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">compact</span>.exe <span class="at">/compactos:</span>query</span></code></pre></div>
+<p>The system will report whether the OS is currently running in compact
+state and whether Windows considers the state beneficial for the
+machine's hardware configuration.</p>
+<p>To force system compression:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">compact</span>.exe <span class="at">/compactos:</span>always</span></code></pre></div>
+<p>To uncompress the operating system and revert to standard
+storage:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">compact</span>.exe <span class="at">/compactos:</span>never</span></code></pre></div>
+<p>During Windows setup, the installer automatically assesses system
+capabilities, evaluating storage size, RAM capacity, and drive
+performance. If storage constraints are detected, Windows enables
+CompactOS automatically to ensure sufficient free space remains for user
+profiles, operational paging, and future updates.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

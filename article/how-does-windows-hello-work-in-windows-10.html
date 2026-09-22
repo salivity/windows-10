@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Does Windows Hello Work in Windows 10? - windows-10</title>
+    <meta name="description" content="Windows Hello provides passwordless biometric authentication in Windows 10 by allowing users to sign in using facial recognition, fingerprint scanning, or iris identification. Instead of transmitting credentials over networks, the framework leverages spe">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-does-windows-hello-work-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Does Windows Hello Work in Windows 10? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-does-windows-hello-work-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows Hello provides passwordless biometric authentication in Windows 10 by allowing users to sign in using facial recognition, fingerprint scanning, or iris identification. Instead of transmitting credentials over networks, the framework leverages spe" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-does-windows-hello-work-in-windows-10">How Does Windows
+Hello Work in Windows 10?</h1>
+<p>Windows Hello provides passwordless biometric authentication in
+Windows 10 by allowing users to sign in using facial recognition,
+fingerprint scanning, or iris identification. Instead of transmitting
+credentials over networks, the framework leverages specialized hardware
+sensors and cryptographic hardware isolation to authenticate identity
+directly on the device, converting biometric inputs into encrypted keys
+that secure user access.</p>
+<h2 id="core-biometrics-and-sensor-architecture">Core Biometrics and
+Sensor Architecture</h2>
+<p>The authentication pipeline begins at the hardware level, where
+Windows Hello enforces strict standards to prevent spoofing and replay
+attacks:</p>
+<ul>
+<li><strong>Facial Recognition:</strong> Requires specialized
+near-infrared (IR) cameras rather than standard RGB webcams. The IR
+illumination detects facial topography, heat signatures, and depth,
+rendering standard 2D printed photographs and digital screen displays
+completely ineffective for bypass attempts.</li>
+<li><strong>Fingerprint Readers:</strong> Utilizes capacitive, optical,
+or ultrasonic sensors. These sensors map minutiae—the unique ridges,
+valleys, and bifurcations of an individual's fingerprint—rather than
+storing a visual photograph of the print.</li>
+<li><strong>Iris Scanning:</strong> Measures the distinct patterns of
+the iris using focused infrared illumination, matching structural points
+across millions of possible unique characteristics.</li>
+</ul>
+<h2 id="data-processing-and-cryptographic-isolation">Data Processing and
+Cryptographic Isolation</h2>
+<p>Windows Hello does not store raw biometric images anywhere on the
+system. When an individual enrolls a biometric credential, the operating
+system converts the raw sensor data into an encrypted numerical
+representation known as a biometric template:</p>
+<ol type="1">
+<li><strong>Extraction:</strong> Raw biometric feeds pass through
+dedicated sensor drivers where specialized algorithms extract feature
+points.</li>
+<li><strong>Template Conversion:</strong> Feature vectors are generated
+mathematically. This conversion is a one-way cryptographic operation; a
+raw face or fingerprint cannot be reverse-engineered or reconstructed
+from the resulting template.</li>
+<li><strong>Hardware Storage:</strong> The generated template is stored
+securely on the local device, isolated within protected memory or bound
+directly to the Trusted Platform Module (TPM 2.0).</li>
+</ol>
+<h2 id="the-role-of-the-tpm-and-windows-hello-for-business">The Role of
+the TPM and Windows Hello for Business</h2>
+<p>The cryptographic backbone of Windows Hello relies on public-key
+cryptography tied to hardware-level security:</p>
+<ul>
+<li><strong>Asymmetric Key Pairs:</strong> During enrollment, a
+public/private key pair is generated. The private key remains locked
+inside the device's TPM chip or hardware-backed container and never
+leaves the hardware. The corresponding public key is registered with an
+identity provider, such as Microsoft Entra ID (formerly Azure Active
+Directory), Active Directory, or a personal Microsoft Account.</li>
+<li><strong>Biometric Decryption Gate:</strong> Successful biometric
+matching acts purely as an authorization trigger. When feature points
+match the stored template, the operating system authorizes the TPM to
+release or sign with the local private key.</li>
+<li><strong>Challenge-Response Handshake:</strong> When authenticating
+against network services, the server sends a unique cryptographic
+challenge. The local device signs this challenge using the
+hardware-unlocked private key and returns the signature. The server
+verifies the signature using the pre-registered public key,
+authenticating the user without passing credentials across the
+network.</li>
+</ul>
+<h2 id="attack-mitigation-and-anti-spoofing-protections">Attack
+Mitigation and Anti-Spoofing Protections</h2>
+<p>Windows 10 integrates Enhanced Sign-in Security (ESS) alongside
+Windows Hello to defend against kernel-level tampering and physical
+spoofing:</p>
+<ul>
+<li><strong>Virtualization-Based Security (VBS):</strong> Isolates the
+biometric authentication stack, matching engines, and biometric
+templates inside an isolated memory partition running in a Hyper-V
+container, preventing malicious kernel drivers from intercepting
+authentication decisions.</li>
+<li><strong>Secure Biometric Pipelines:</strong> Ensures that the data
+path from the biometric sensor directly to the isolated environment is
+encrypted, blocking middle-man hardware taps.</li>
+<li><strong>Anti-Spoofing Heuristics:</strong> Advanced machine learning
+models continuously analyze subtle movements and reflectance properties
+to verify genuine human liveness before granting access.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

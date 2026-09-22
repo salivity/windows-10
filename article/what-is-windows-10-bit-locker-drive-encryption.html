@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is Windows 10 BitLocker Drive Encryption? - windows-10</title>
+    <meta name="description" content="BitLocker Drive Encryption is a native security feature built into professional editions of Windows 10 designed to protect entire storage volumes from unauthorized physical access and offline attacks. By encrypting system drives, fixed secondary storage,">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/what-is-windows-10-bit-locker-drive-encryption">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is Windows 10 BitLocker Drive Encryption? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/what-is-windows-10-bit-locker-drive-encryption" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="BitLocker Drive Encryption is a native security feature built into professional editions of Windows 10 designed to protect entire storage volumes from unauthorized physical access and offline attacks. By encrypting system drives, fixed secondary storage," />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-windows-10-bitlocker-drive-encryption">What Is Windows
+10 BitLocker Drive Encryption?</h1>
+<p>BitLocker Drive Encryption is a native security feature built into
+professional editions of Windows 10 designed to protect entire storage
+volumes from unauthorized physical access and offline attacks. By
+encrypting system drives, fixed secondary storage, and removable media
+using advanced cryptographic standards like AES, BitLocker renders data
+unreadable to anyone lacking the appropriate authentication keys.
+Seamlessly integrating with the system’s Trusted Platform Module (TPM),
+BitLocker ensures both data confidentiality and operating system
+integrity from pre-boot authentication through normal desktop
+operation.</p>
+<h2 id="how-bitlocker-operates-within-windows-10">How BitLocker Operates
+Within Windows 10</h2>
+<p>BitLocker functions at the block level beneath the Windows
+filesystem. When activated on a system drive, it encrypts every sector,
+including the operating system files, temporary page files, hibernation
+data, and user documents. As files are written to the disk, BitLocker
+encrypts them on the fly; as they are read, it decrypts them into memory
+for authorized use.</p>
+<p>The encryption process relies heavily on symmetric cryptography:</p>
+<ul>
+<li><strong>Encryption Algorithms:</strong> BitLocker defaults to the
+Advanced Encryption Standard (AES) with cipher block chaining (AES-CBC)
+or Galois/Counter Mode (AES-XTS), supporting key lengths of 128 or 256
+bits. AES-XTS is specifically optimized to prevent unauthorized
+manipulation of encrypted data sectors.</li>
+<li><strong>Key Hierarchy:</strong> Protection is maintained through a
+layered key model. The <strong>Full Volume Encryption Key
+(FVEK)</strong> encrypts the actual data. The FVEK is itself encrypted
+by the <strong>Volume Master Key (VMK)</strong>, which is safeguarded by
+one or more user-configured key protectors (such as a TPM, a startup
+PIN, a password, or a smart card).</li>
+</ul>
+<h2 id="hardware-integration-and-integrity-validation">Hardware
+Integration and Integrity Validation</h2>
+<p>A critical component of BitLocker's implementation in Windows 10 is
+its interaction with the machine's hardware architecture, specifically
+the <strong>Trusted Platform Module (TPM)</strong> version 1.2 or
+2.0.</p>
+<p>When paired with a TPM chip on the motherboard, BitLocker establishes
+a secure boot measurement chain:</p>
+<ul>
+<li>During system startup, the firmware, bootloader, and critical
+startup components are measured via cryptographic hashes.</li>
+<li>These measurements are stored in the TPM's Platform Configuration
+Registers (PCRs).</li>
+<li>The TPM only releases the VMK to unseal the disk if the current
+hardware state and boot environment match the expected baselines.</li>
+<li>If a physical disk is removed from the laptop and placed into
+another computer, or if unauthorized boot components are detected (such
+as a rootkit or an alternative operating system), the TPM will refuse to
+release the encryption keys.</li>
+</ul>
+<p>When a hardware mismatch or critical error occurs, the system
+defaults to BitLocker Recovery Mode, requiring a 48-digit numerical
+recovery key to restore access.</p>
+<h2 id="protection-across-different-volume-types">Protection Across
+Different Volume Types</h2>
+<p>BitLocker extends protection beyond just the primary operating system
+volume:</p>
+<ul>
+<li><strong>Operating System Drives:</strong> Protects the boot
+environment and core system files, actively blocking offline attacks,
+alternate boot media exploits, and cold boot attacks when paired with a
+startup PIN.</li>
+<li><strong>Fixed Data Drives:</strong> Encrypts internal hard drives
+and partitions housing sensitive secondary workloads. These drives can
+be configured to unlock automatically whenever the primary operating
+system volume boots successfully.</li>
+<li><strong>BitLocker To Go:</strong> Extends encryption to external
+flash drives, external hard disks, and memory cards formatted with FAT,
+exFAT, or NTFS filesystems. Removable drives require password entry or a
+smart card to decrypt on any Windows PC.</li>
+</ul>
+<h2 id="enterprise-management-and-fleet-deployment">Enterprise
+Management and Fleet Deployment</h2>
+<p>In organizational environments running Windows 10 Pro, Enterprise, or
+Education, BitLocker serves as a cornerstone of regulatory compliance
+and data loss prevention. IT administrators manage BitLocker centrally
+through:</p>
+<ul>
+<li><strong>Group Policy Objects (GPOs):</strong> Enforcing encryption
+standards, mandating PIN requirements, and defining minimum cipher
+strengths across domain-joined machines.</li>
+<li><strong>Microsoft Entra ID and Intune:</strong> Automatically
+capturing BitLocker status, monitoring compliance, and securely backing
+up recovery keys to the cloud without end-user friction.</li>
+<li><strong>Network Unlock:</strong> Allowing authorized computers
+within a trusted enterprise local area network to unlock automatically
+during a reboot without requiring manual PIN entry.</li>
+</ul>
+<p>By neutralizing the risk of data exposure caused by lost or stolen
+devices, BitLocker provides essential defense-in-depth protection for
+both enterprise infrastructure and individual Windows 10 systems.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

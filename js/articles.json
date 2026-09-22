@@ -1,0 +1,92 @@
+[
+  [
+    15,
+    "What Did Windows 10 Add to Command Prompt?",
+    "Windows 10 introduced the first significant overhaul to the legacy Command Prompt interface in decades, modernizing the utility to match modern terminal expectations. By updating the underlying Windows Console architecture, Microsoft added long-requested",
+    false
+  ],
+  [
+    14,
+    "How Does Windows 10 Snap Assist Work?",
+    "Snap Assist is a core window management feature in Windows 10 that allows users to organize open applications by snapping them into predefined screen layouts, such as side-by-side halves or four-corner quadrants. Upon anchoring a primary window to an edg",
+    false
+  ],
+  [
+    13,
+    "What Was Windows as a Service in Windows 10?",
+    "The Windows as a Service (WaaS) model was Microsoft’s strategy to shift Windows 10 from a traditional software product sold in periodic major releases to an continuously updated service. Under this framework, users no longer waited years for paid, mono",
+    false
+  ],
+  [
+    12,
+    "How Does Windows 10 CompactOS Compression Work?",
+    "CompactOS is an execution-level compression mechanism introduced in Windows 10 that shrinks operating system binaries to reclaim several gigabytes of internal storage. By leveraging modern file-system algorithms directly inside the NTFS file system, it d",
+    false
+  ],
+  [
+    11,
+    "What Is Windows 10 BitLocker Drive Encryption?",
+    "BitLocker Drive Encryption is a native security feature built into professional editions of Windows 10 designed to protect entire storage volumes from unauthorized physical access and offline attacks. By encrypting system drives, fixed secondary storage,",
+    false
+  ],
+  [
+    10,
+    "How Does Windows 10 Manage Driver Updates?",
+    "Windows 10 manages driver updates through a coordinated pipeline between local Plug and Play services, Microsoft's Windows Hardware Quality Labs, and the cloud-based Windows Update infrastructure. This article covers the end-to-end lifecycle of how devic",
+    false
+  ],
+  [
+    9,
+    "What Was the Primary Function of Cortana in Windows 10?",
+    "When Microsoft launched Windows 10 in 2015, the primary function of Cortana was to serve as a deeply integrated, voice- and text-activated personal digital assistant designed to streamline daily user tasks, manage personal data, and bridge desktop comput",
+    false
+  ],
+  [
+    8,
+    "How Does Windows Hello Work in Windows 10?",
+    "Windows Hello provides passwordless biometric authentication in Windows 10 by allowing users to sign in using facial recognition, fingerprint scanning, or iris identification. Instead of transmitting credentials over networks, the framework leverages spe",
+    false
+  ],
+  [
+    7,
+    "What Is Windows Subsystem for Linux in Windows 10?",
+    "The Windows Subsystem for Linux (WSL) is a compatibility layer developed by Microsoft that allows developers to run native Linux command-line environments and ELF64 binaries directly inside Windows 10 without the resource overhead of a traditional virtua",
+    false
+  ],
+  [
+    6,
+    "How Do Windows 10 Virtual Desktops Boost Productivity?",
+    "Windows 10 virtual desktops enhance multitasking productivity by allowing users to segment open applications into dedicated, clutter-free workspaces. Instead of overcrowding a single desktop with dozens of overlapping windows, users can isolate specific",
+    false
+  ],
+  [
+    5,
+    "Windows 10 Home vs Pro: What Are the Key Differences?",
+    "Windows 10 Home and Windows 10 Pro share the same core user interface and performance capabilities, but they target different user bases. While Windows 10 Home includes essential features suited for everyday consumers, Windows 10 Pro introduces advanced",
+    false
+  ],
+  [
+    4,
+    "How Does Task View Work in Windows 10?",
+    "Task View in Windows 10 is a built-in multitasking tool that allows users to quickly inspect, switch between, and organize all currently active applications across separate virtual workspaces. By consolidating all running programs onto an interactive des",
+    false
+  ],
+  [
+    3,
+    "What Does Windows 10 Action Center Do?",
+    "The Windows 10 Action Center serves as the primary notification hub and quick-settings console for the operating system, unifying incoming application alerts and essential device controls into a single slide-out panel. Accessible from the taskbar, it gat",
+    false
+  ],
+  [
+    2,
+    "How Did Windows 10 Restore the Desktop Start Menu?",
+    "When Microsoft introduced Windows 10, it addressed the widespread backlash against the touch-centric Start screen of Windows 8 by restoring a traditional, desktop-friendly Start menu. Instead of simply reverting to the classic Windows 7 design, Windows 1",
+    false
+  ],
+  [
+    1,
+    "What Were the Windows 10 Launch System Requirements?",
+    "When Microsoft officially launched Windows 10 in July 2015, the operating system was designed to run smoothly on hardware that was already supporting Windows 7 and Windows 8.1. To facilitate broad adoption and widespread upgrades, Microsoft maintained mo",
+    false
+  ]
+]
