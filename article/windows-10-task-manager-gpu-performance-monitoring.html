@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Task Manager GPU Performance Monitoring - windows-10</title>
+    <meta name="description" content="Windows 10 provides native GPU performance monitoring inside Task Manager, introduced in the Fall Creators Update (Version 1709). This built-in utility leverages the Windows Display Driver Model (WDDM) to track real-time graphics utilization, hardware eng">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-task-manager-gpu-performance-monitoring">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Task Manager GPU Performance Monitoring - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-task-manager-gpu-performance-monitoring" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 provides native GPU performance monitoring inside Task Manager, introduced in the Fall Creators Update (Version 1709). This built-in utility leverages the Windows Display Driver Model (WDDM) to track real-time graphics utilization, hardware eng" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-task-manager-gpu-performance-monitoring">Windows 10
+Task Manager GPU Performance Monitoring</h1>
+<p>Windows 10 provides native GPU performance monitoring inside Task
+Manager, introduced in the Fall Creators Update (Version 1709). This
+built-in utility leverages the Windows Display Driver Model (WDDM) to
+track real-time graphics utilization, hardware engine distribution,
+dedicated and shared memory usage, and per-process resource allocation
+without requiring third-party monitoring software.</p>
+<h3 id="the-underlying-architecture-wddm-integration">The Underlying
+Architecture: WDDM Integration</h3>
+<p>Task Manager does not poll the hardware directly. Instead, it relies
+on the Windows OS graphics kernel (<code>dxgkrnl.sys</code>) and the
+Windows Display Driver Model (WDDM). When a graphics card uses a WDDM
+version 2.0 or higher driver, the OS scheduler tracks GPU execution
+contexts and memory allocations directly at the kernel level. Because
+the OS kernel manages scheduling across all running applications, it
+maintains precise metrics on which processes are utilizing the GPU,
+eliminating the performance overhead typically associated with
+continuous third-party driver polling.</p>
+<h3 id="engine-level-utilization-tracking">Engine-Level Utilization
+Tracking</h3>
+<p>Traditional monitoring tools often present GPU utilization as a
+single aggregate percentage. Windows 10 breaks this down by monitoring
+distinct, independent hardware engines within the GPU core. In the
+Performance tab, Task Manager categorizes usage into graphs
+representing:</p>
+<ul>
+<li><strong>3D:</strong> Measures standard graphics rendering workloads,
+such as gaming and 3D modeling.</li>
+<li><strong>Copy:</strong> Tracks the dedicated Direct Memory Access
+(DMA) engines responsible for moving data between system RAM and
+VRAM.</li>
+<li><strong>Video Decode &amp; Video Encode:</strong> Displays
+hardware-accelerated processing used during media playback, video
+rendering, or streaming via dedicated silicon blocks (such as NVENC,
+AMF, or Intel Quick Sync).</li>
+<li><strong>Compute:</strong> Reflects non-graphical parallel computing
+tasks, including machine learning or scientific simulations.</li>
+</ul>
+<p>Users can change the monitored engines on the graph by clicking the
+engine label dropdowns, providing flexibility based on the current
+workload.</p>
+<h3 id="gpu-memory-tracking">GPU Memory Tracking</h3>
+<p>Windows 10 separates graphics memory monitoring into two distinct
+categories:</p>
+<ol type="1">
+<li><strong>Dedicated GPU Memory:</strong> Tracks the physical
+high-speed VRAM built into discrete graphics cards (or statically
+reserved for integrated processors).</li>
+<li><strong>Shared GPU Memory:</strong> Measures the portion of system
+RAM the operating system allocates as an overflow buffer when dedicated
+VRAM is exhausted.</li>
+</ol>
+<p>Task Manager displays current consumption against maximum limits for
+both types, alongside a combined "GPU Memory" metric.</p>
+<h3 id="per-process-monitoring">Per-Process Monitoring</h3>
+<p>Beyond system-wide summaries, Task Manager exposes GPU usage per
+application in the "Processes" and "Details" tabs. The "GPU" column
+displays the real-time load an individual program places on the
+hardware, while the "GPU Engine" column identifies the specific hardware
+block being used (e.g., <code>GPU 0 - 3D</code> or
+<code>GPU 1 - Video Decode</code>). In systems featuring dual graphics
+adapters—such as laptops with both integrated and discrete GPUs—Task
+Manager labels the adapters as GPU 0 and GPU 1, allowing users to see
+exactly which physical adapter each application runs on.</p>
+<h3 id="system-requirements">System Requirements</h3>
+<p>For Windows 10 to display GPU performance metrics, the following
+criteria must be met:</p>
+<ul>
+<li>The system must run Windows 10 version 1709 or later.</li>
+<li>The graphics driver must support WDDM version 2.0 or higher
+(verifiable via the DirectX Diagnostic Tool, <code>dxdiag</code>). Older
+WDDM 1.x drivers will not surface GPU metrics within the interface.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Pro Remote Desktop Hosting Explained - windows-10</title>
+    <meta name="description" content="Windows 10 Professional editions include built-in server architecture that allows a computer to act as a Remote Desktop host, enabling users to access their files, applications, and network resources from another device via the Remote Desktop Protocol (RD">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-pro-remote-desktop-hosting-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Pro Remote Desktop Hosting Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-pro-remote-desktop-hosting-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 Professional editions include built-in server architecture that allows a computer to act as a Remote Desktop host, enabling users to access their files, applications, and network resources from another device via the Remote Desktop Protocol (RD" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-pro-remote-desktop-hosting-explained">Windows 10 Pro
+Remote Desktop Hosting Explained</h1>
+<p>Windows 10 Professional editions include built-in server architecture
+that allows a computer to act as a Remote Desktop host, enabling users
+to access their files, applications, and network resources from another
+device via the Remote Desktop Protocol (RDP). Unlike Windows 10 Home,
+which can only function as an RDP client, the Professional, Enterprise,
+and Education editions contain the necessary underlying services,
+network controls, and security policies required to accept,
+authenticate, and manage incoming remote connection requests.</p>
+<h3 id="the-underlying-rdp-architecture">The Underlying RDP
+Architecture</h3>
+<p>Remote desktop hosting in Windows 10 Pro relies on the Remote Desktop
+Services architecture, primarily driven by the <code>TermService</code>
+(Remote Desktop Services) background service. When hosting is enabled,
+this service actively listens on TCP and UDP port 3389 for incoming
+connection requests. The host captures its display output, compresses
+it, and transmits it over the network to the client, while
+simultaneously processing remote mouse and keyboard inputs as native
+local commands.</p>
+<h3 id="network-level-authentication-nla">Network Level Authentication
+(NLA)</h3>
+<p>Security is handled natively at the protocol level through Network
+Level Authentication (NLA). NLA requires the connecting user to
+authenticate themselves against the host machine's local user database
+or an Active Directory domain before a full desktop session is
+established. This pre-authentication process prevents unauthorized users
+from establishing an unauthenticated display session, substantially
+reducing the risk of denial-of-service attacks and brute-force entry
+attempts.</p>
+<h3 id="system-configuration-and-firewall-integration">System
+Configuration and Firewall Integration</h3>
+<p>Enabling the host feature automatically configures system
+dependencies. When activated through the Windows Settings menu, Windows
+10 Pro automatically creates the appropriate inbound firewall exceptions
+within Windows Defender Firewall to permit incoming traffic across port
+3389. The operating system also modifies power management parameters to
+prevent the computer from entering sleep or hibernation modes while
+idle, ensuring that the host remains continuously reachable over the
+network.</p>
+<h3 id="user-authorization-and-access-management">User Authorization and
+Access Management</h3>
+<p>Windows 10 Pro facilitates access control by mapping permissions
+through user account groups. By default, all members of the local
+Administrators group have permission to connect remotely. Standard user
+accounts must be explicitly granted access by adding them to the "Remote
+Desktop Users" group. Group Policy settings also allow administrators to
+enforce specific session timeouts, configure encryption levels (using
+TLS/AES), and regulate resource redirection, such as local drives,
+printers, and clipboards between the host and client.</p>
+<h3 id="single-session-concurrency-constraint">Single-Session
+Concurrency Constraint</h3>
+<p>While Windows 10 Pro possesses the core hosting architecture of
+Windows Server, it is intentionally restricted to a single active user
+session. If a remote user connects to the machine while another user is
+logged in locally, the local console session will be locked or
+disconnected. Only one user can interact with the graphical desktop
+interface at any given time, maintaining the distinction between a
+desktop workstation OS and a multi-user server environment.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

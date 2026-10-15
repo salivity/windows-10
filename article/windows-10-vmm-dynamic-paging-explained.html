@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 VMM Dynamic Paging Explained - windows-10</title>
+    <meta name="description" content="In the Microsoft Windows 10 operating system, the Virtual Memory Manager (VMM) acts as the central orchestrator balancing physical random-access memory (RAM) and storage-based backing files. Dynamic paging is the mechanism that allows the OS to run applic">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-vmm-dynamic-paging-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 VMM Dynamic Paging Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-vmm-dynamic-paging-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In the Microsoft Windows 10 operating system, the Virtual Memory Manager (VMM) acts as the central orchestrator balancing physical random-access memory (RAM) and storage-based backing files. Dynamic paging is the mechanism that allows the OS to run applic" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-vmm-dynamic-paging-explained">Windows 10 VMM Dynamic
+Paging Explained</h1>
+<p>In the Microsoft Windows 10 operating system, the Virtual Memory
+Manager (VMM) acts as the central orchestrator balancing physical
+random-access memory (RAM) and storage-based backing files. Dynamic
+paging is the mechanism that allows the OS to run applications requiring
+more memory than physically exists, and the VMM manages this allocation,
+mapping, and movement in real time. This article breaks down the
+essential roles the VMM plays in dynamic paging, covering address
+translation, page fault resolution, working set management, memory
+compression, and pagefile sizing.</p>
+<h3 id="virtual-address-space-and-translation">Virtual Address Space and
+Translation</h3>
+<p>The VMM abstracts physical memory by assigning each user-mode process
+its own flat virtual address space—typically 128 TB in 64-bit Windows
+10. The VMM organizes this virtual space into uniform blocks called
+pages, usually 4 KB in size. Through multi-level page tables, the VMM
+dynamically maps these virtual pages either to physical memory frames in
+RAM or to offsets within the system's paging file
+(<code>pagefile.sys</code>). The hardware Memory Management Unit (MMU)
+uses these page tables to execute fast hardware-level translations,
+while the VMM manages the validity and placement of the table
+entries.</p>
+<h3 id="resolving-page-faults">Resolving Page Faults</h3>
+<p>When an active thread attempts to access a virtual page marked as
+"invalid" or "not present" in physical RAM, the CPU generates an
+interrupt known as a page fault. The VMM intercepts this exception and
+evaluates how to resolve it:</p>
+<ul>
+<li><strong>Soft Page Faults:</strong> The requested page resides in RAM
+but is not mapped to the process's working set. It may be in the
+transition list, the standby list, or shared with another process. The
+VMM quickly updates the page table entry to point to the existing
+physical frame without disk access.</li>
+<li><strong>Hard Page Faults:</strong> The requested data resides on
+secondary storage. The VMM allocates an available physical page frame,
+initiates an asynchronous I/O read request to bring the page from the
+pagefile or a memory-mapped file into RAM, updates the page tables, and
+resumes thread execution.</li>
+</ul>
+<h3 id="working-set-optimization-and-trimming">Working Set Optimization
+and Trimming</h3>
+<p>The VMM monitors the collection of physical pages allocated to each
+process, known as its working set. Windows 10 uses dynamic working set
+sizing to optimize overall system throughput:</p>
+<ol type="1">
+<li><strong>Expansion:</strong> When a process frequently experiences
+page faults, the VMM increases the process’s working set limit, granting
+it more physical RAM.</li>
+<li><strong>Trimming:</strong> When available physical memory drops
+below critical thresholds, the VMM's Balance Set Manager trims working
+sets. It identifies pages that have not been accessed recently and moves
+them out of active working sets.</li>
+</ol>
+<p>Clean pages (unmodified data) are moved directly to the Standby list,
+where they can be reused or reclaimed immediately. Dirty pages (modified
+data) are moved to the Modified list. The VMM's Modified Page Writer
+writes these pages out to <code>pagefile.sys</code> in batches, after
+which they are marked clean and moved to the Standby list.</p>
+<h3 id="in-memory-compression">In-Memory Compression</h3>
+<p>Windows 10 introduced an in-memory compression store managed directly
+by the VMM. Rather than writing trimmed pages directly to the disk-based
+pagefile—which incurs high I/O latency—the VMM compresses inactive pages
+and stores them inside the working set of the System process. If an
+application later faults on a compressed page, the VMM quickly
+uncompresses it back into the process's working set, dramatically
+reducing reliance on disk I/O and speeding up dynamic paging
+operations.</p>
+<h3 id="dynamic-pagefile-sizing">Dynamic Pagefile Sizing</h3>
+<p>The VMM dynamically controls the commit charge of the entire system.
+When Windows 10 is configured with a system-managed pagefile, the VMM
+dynamically expands or shrinks the physical size of
+<code>pagefile.sys</code> based on workload demands. If overall
+committed memory approaches the limit of RAM plus the current pagefile
+size, the VMM requests disk allocations to enlarge the pagefile,
+preventing out-of-memory crashes and ensuring sufficient swap capacity
+for ongoing dynamic paging.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

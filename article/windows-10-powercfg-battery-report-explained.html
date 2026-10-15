@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Powercfg Battery Report Explained - windows-10</title>
+    <meta name="description" content="The Microsoft Windows 10 operating system includes a built-in diagnostic tool that monitors, records, and evaluates the performance of your laptop’s rechargeable battery over time. By executing the powercfg /batteryreport command in the Windows Command Pr">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-powercfg-battery-report-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Powercfg Battery Report Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-powercfg-battery-report-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Microsoft Windows 10 operating system includes a built-in diagnostic tool that monitors, records, and evaluates the performance of your laptop’s rechargeable battery over time. By executing the powercfg /batteryreport command in the Windows Command Pr" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-powercfg-battery-report-explained">Windows 10
+Powercfg Battery Report Explained</h1>
+<p>The Microsoft Windows 10 operating system includes a built-in
+diagnostic tool that monitors, records, and evaluates the performance of
+your laptop’s rechargeable battery over time. By executing the
+<code>powercfg /batteryreport</code> command in the Windows Command
+Prompt or PowerShell, the system compiles logged hardware metrics into
+an easy-to-read HTML document. This article explains how Windows 10
+tracks battery degradation, how to generate the report, and how to
+interpret the critical health metrics it contains.</p>
+<h3 id="how-windows-10-collects-battery-data">How Windows 10 Collects
+Battery Data</h3>
+<p>Windows 10 relies on the Advanced Configuration and Power Interface
+(ACPI) specification to communicate directly with the embedded
+microcontroller inside the battery pack. Through this interface, the
+battery’s onboard monitoring circuitry regularly reports real-time data
+to the operating system, including:</p>
+<ul>
+<li>Current voltage and power draw</li>
+<li>Real-time charge level</li>
+<li>Total charge cycles completed</li>
+<li>Original factory design capacity</li>
+<li>Current maximum storage capacity</li>
+</ul>
+<p>Windows constantly logs these events during system start-ups,
+shutdowns, charging sessions, and sleep states. These background records
+are stored locally in the Windows System Event log and power management
+databases, providing the historical data needed to evaluate long-term
+battery health.</p>
+<h3 id="generating-the-battery-report">Generating the Battery
+Report</h3>
+<p>To extract and format this raw data into an understandable diagnostic
+report:</p>
+<ol type="1">
+<li>Open the Start menu, search for <strong>Command Prompt</strong> or
+<strong>PowerShell</strong>, and select <strong>Run as
+administrator</strong>.</li>
+<li>Type the following command and press Enter:
+<code>powercfg /batteryreport</code></li>
+<li>Windows will query the power management logs, generate an HTML file
+named <code>battery-report.html</code>, and save it to the current user
+path (usually <code>C:\Windows\System32\</code> or
+<code>C:\Users\[YourUsername]\</code>).</li>
+<li>To save the file to a specific destination, such as the desktop,
+run:
+<code>powercfg /batteryreport /output "C:\Users\[YourUsername]\Desktop\battery-report.html"</code></li>
+</ol>
+<h3 id="key-battery-health-metrics-in-the-report">Key Battery Health
+Metrics in the Report</h3>
+<p>When the generated HTML file is opened in a web browser, it
+categorizes the monitored power data into several core sections:</p>
+<ul>
+<li><strong>Installed Batteries:</strong> This section identifies the
+battery manufacturer, serial number, chemistry, and cycle count. Most
+importantly, it contrasts <strong>Design Capacity</strong> (the amount
+of energy the battery was engineered to hold when brand new, measured in
+milliwatt-hours or mWh) with <strong>Full Charge Capacity</strong> (the
+maximum energy the battery can hold currently). The difference between
+these two numbers reveals the physical degradation or wear level of the
+lithium-ion cells.</li>
+<li><strong>Recent Usage:</strong> Details the power states of the
+device over the previous three days, showing exact timestamps for when
+the system was active, suspended, connected to AC power, or running on
+the battery.</li>
+<li><strong>Battery Usage History:</strong> A long-term ledger that
+details how full charge capacity has trended compared to design capacity
+across weeks or months of operation.</li>
+<li><strong>Battery Life Estimates:</strong> Compares estimated battery
+runtimes based on full charge capacity against the runtimes the device
+would achieve at its original design capacity. This illustrates how
+hardware wear directly impacts actual unplugged operational time.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Calculates App Battery Usage - windows-10</title>
+    <meta name="description" content="Windows 10 tracks and displays per-app battery consumption by continuously monitoring hardware component activity, logging resource consumption through internal telemetry services, and attributing the estimated power draw to specific software processes. T">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-calculates-app-battery-usage">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Calculates App Battery Usage - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-calculates-app-battery-usage" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 tracks and displays per-app battery consumption by continuously monitoring hardware component activity, logging resource consumption through internal telemetry services, and attributing the estimated power draw to specific software processes. T" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-calculates-app-battery-usage">How Windows 10
+Calculates App Battery Usage</h1>
+<p>Windows 10 tracks and displays per-app battery consumption by
+continuously monitoring hardware component activity, logging resource
+consumption through internal telemetry services, and attributing the
+estimated power draw to specific software processes. This article
+explains the underlying mechanisms Windows 10 uses to measure energy
+expenditure, categorize foreground versus background activity, and
+present clear battery usage statistics within the operating system's
+settings.</p>
+<h3 id="the-energy-estimation-engine-e3">The Energy Estimation Engine
+(E3)</h3>
+<p>At the core of Windows 10 battery tracking is the Energy Estimation
+Engine (E3). Because typical consumer device hardware lacks dedicated
+physical power meters on individual components (like per-process power
+sensors on the CPU or network card), Windows uses a software-based
+estimation model.</p>
+<p>The E3 service relies on pre-calibrated energy profiles specific to
+the device's hardware configuration. It assigns mathematical energy
+coefficients to various hardware states, measuring power across key
+components:</p>
+<ul>
+<li><strong>CPU:</strong> Processor time, clock frequency states
+(P-states), and core execution cycles.</li>
+<li><strong>GPU:</strong> Graphics rendering, video decoding, and
+compute engine utilization.</li>
+<li><strong>Display:</strong> Screen brightness levels and display state
+changes.</li>
+<li><strong>Network:</strong> Wi-Fi and cellular modem active
+transmit/receive states versus low-power idle states.</li>
+<li><strong>Disk:</strong> Read and write input/output operations.</li>
+</ul>
+<h3 id="data-collection-via-system-resource-usage-monitor-srum">Data
+Collection via System Resource Usage Monitor (SRUM)</h3>
+<p>The actual usage data is captured by the System Resource Usage
+Monitor (SRUM). Running persistently as a background service, SRUM
+records resource metrics tied to specific Process IDs (PIDs) and
+application user accounts.</p>
+<p>Every few seconds, SRUM queries hardware performance counters and
+driver logs to measure how long each process used specific hardware
+states. This data is buffered in memory and periodically committed to an
+Extensible Storage Engine (ESE) database located on the system drive
+(<code>C:\Windows\System32\sru\SRUDB.dat</code>). By maintaining this
+database, Windows 10 preserves usage logs even across system restarts
+and sleep cycles.</p>
+<h3 id="distinguishing-foreground-vs-background-usage">Distinguishing
+Foreground vs. Background Usage</h3>
+<p>Windows 10 classifies power usage into two distinct categories:</p>
+<ol type="1">
+<li><strong>In Use (Foreground):</strong> Power drawn while the
+application window is actively focused, visible, and being interacted
+with by the user. Display and GPU consumption are primarily attributed
+to foreground applications.</li>
+<li><strong>Background:</strong> Power consumed when the application is
+minimized, running without an active user interface, or performing
+maintenance tasks via background triggers (such as push notifications,
+media playback, or syncing).</li>
+</ol>
+<p>The Desktop Window Manager (DWM) and process scheduler provide the
+context required to segment these measurements, allowing Windows to show
+the user whether an app is draining power during active use or passively
+while hidden.</p>
+<h3 id="calculating-percentage-breakdown">Calculating Percentage
+Breakdown</h3>
+<p>To display the data in <strong>Settings &gt; System &gt; Battery &gt;
+Battery usage per app</strong>, Windows aggregates the metrics over
+selected time windows (typically the last 24 hours or the last 7
+days):</p>
+<ol type="1">
+<li><strong>Sum Total Energy:</strong> The system calculates the
+estimated total milliwatt-hours (mWh) drawn by all software components
+and hardware peripherals during the measured period.</li>
+<li><strong>Per-Process Attribution:</strong> Each application's
+cumulative resource consumption is multiplied by the corresponding
+hardware power coefficients to derive its individual estimated energy
+total.</li>
+<li><strong>Proportional Scaling:</strong> The application's individual
+power draw is divided by the total software energy consumed, producing
+the final percentage shown to the user.</li>
+</ol>
+<p>Processes that register negligible activity (typically under 1% of
+the total usage) are often omitted from the display or aggregated into
+overall system metrics to keep the interface simple and actionable.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

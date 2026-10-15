@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Handles Hardware Interrupts and IRQs - windows-10</title>
+    <meta name="description" content="In Microsoft Windows 10, managing hardware interrupts is fundamental to maintaining real-time responsiveness and system stability. When a physical device requires CPU attention—such as a network card receiving a packet or a storage drive completing a data">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-handles-hardware-interrupts-and-ir-qs">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Handles Hardware Interrupts and IRQs - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-handles-hardware-interrupts-and-ir-qs" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In Microsoft Windows 10, managing hardware interrupts is fundamental to maintaining real-time responsiveness and system stability. When a physical device requires CPU attention—such as a network card receiving a packet or a storage drive completing a data" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-handles-hardware-interrupts-and-irqs">How Windows
+10 Handles Hardware Interrupts and IRQs</h1>
+<p>In Microsoft Windows 10, managing hardware interrupts is fundamental
+to maintaining real-time responsiveness and system stability. When a
+physical device requires CPU attention—such as a network card receiving
+a packet or a storage drive completing a data transfer—it triggers an
+Interrupt Request (IRQ). Windows 10 processes these hardware signals
+through a structured, multi-stage mechanism that leverages Advanced
+Programmable Interrupt Controllers (APICs), Windows Interrupt Request
+Levels (IRQLs), Interrupt Service Routines (ISRs), and Deferred
+Procedure Calls (DPCs) to handle high-priority hardware demands without
+stalling the overall operating system.</p>
+<h3 id="hardware-signaling-and-interrupt-delivery">Hardware Signaling
+and Interrupt Delivery</h3>
+<p>Modern hardware on Windows 10 primarily communicates interrupts in
+two ways: legacy pin-based IRQs or Message Signaled Interrupts
+(MSI/MSI-X).</p>
+<ul>
+<li><strong>Line-based IRQs:</strong> The peripheral device sends an
+electrical signal across a physical IRQ line connected to the I/O APIC
+(Advanced Programmable Interrupt Controller). The I/O APIC translates
+this pin signal into an interrupt vector and routes it across the system
+bus to the local APIC of an available CPU core.</li>
+<li><strong>Message Signaled Interrupts (MSI/MSI-X):</strong> Preferred
+by modern PCI Express devices, MSIs bypass physical lines by writing a
+specialized message (an address and value payload) directly to the local
+APIC via the system memory bus. MSI-X allows devices to allocate
+multiple vectors, assigning specific interrupts to dedicated CPU cores
+to optimize multicore processing.</li>
+</ul>
+<h3 id="interrupt-request-levels-irql">Interrupt Request Levels
+(IRQL)</h3>
+<p>Once an interrupt reaches the CPU, the Windows kernel intervenes
+using its internal prioritization scheme known as Interrupt Request
+Levels (IRQLs). IRQL is a software and hardware priority abstraction
+used by Windows, ranging from <code>PASSIVE_LEVEL</code> (low, standard
+user and kernel threads) up to <code>HIGH_LEVEL</code> (hardware clock
+and profiling).</p>
+<ol type="1">
+<li>When a hardware interrupt arrives, the processor immediately halts
+standard thread execution.</li>
+<li>The kernel elevates the processor's IRQL to the device's specific
+<code>DIRQL</code> (Device IRQL).</li>
+<li>By raising the IRQL to <code>DIRQL</code>, the processor
+automatically masks (blocks) any interrupts of equal or lower priority
+on that specific core, preventing re-entrancy issues while allowing
+higher-priority interrupts to preempt the task if necessary.</li>
+</ol>
+<h3 id="the-interrupt-service-routine-isr">The Interrupt Service Routine
+(ISR)</h3>
+<p>With the processor running at <code>DIRQL</code>, the Windows 10
+interrupt dispatcher maps the incoming vector to an internal Kernel
+Interrupt Object (<code>KINTERRUPT</code>), which references the
+registered device driver’s Interrupt Service Routine (ISR).</p>
+<p>Because running at <code>DIRQL</code> blocks other operations and
+interrupts, Windows drivers are designed to keep the ISR execution time
+as short as possible—usually measured in microseconds. The ISR performs
+only the most time-critical tasks:</p>
+<ul>
+<li>Acknowledges the hardware device to clear the interrupt line.</li>
+<li>Reads critical status registers or saves minimal volatile hardware
+state.</li>
+<li>Schedules a Deferred Procedure Call (DPC) to complete the remainder
+of the data processing at a lower priority.</li>
+</ul>
+<h3 id="deferred-procedure-calls-dpcs">Deferred Procedure Calls
+(DPCs)</h3>
+<p>To complete the data handling without starving the CPU of other
+hardware events, the ISR requests a DPC. The Windows kernel queues this
+request into a per-processor DPC queue.</p>
+<p>Once the ISR finishes, the kernel lowers the processor's IRQL from
+<code>DIRQL</code> to <code>DISPATCH_LEVEL</code>. At
+<code>DISPATCH_LEVEL</code>, hardware interrupts are unmasked, allowing
+new device requests to be recognized while the system processes the
+queued DPC. The DPC routine carries out the heavier workload, such as
+copying network packets into system buffers, parsing storage payloads,
+or notifying waiting threads.</p>
+<h3 id="resuming-normal-operation">Resuming Normal Operation</h3>
+<p>After the DPC queue is emptied, the Windows scheduler lowers the
+processor's IRQL back to <code>PASSIVE_LEVEL</code> or
+<code>APC_LEVEL</code>. The operating system then restores the thread
+context that was interrupted by the initial IRQ, allowing user
+applications and background services to resume execution
+transparently.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

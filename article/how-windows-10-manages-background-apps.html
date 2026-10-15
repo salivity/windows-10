@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Manages Background Apps - windows-10</title>
+    <meta name="description" content="Windows 10 employs an intelligent suite of resource management techniques designed to balance system performance with power efficiency. This article details the specific mechanisms the operating system uses to restrict and regulate background processes—su">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-manages-background-apps">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Manages Background Apps - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-manages-background-apps" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 employs an intelligent suite of resource management techniques designed to balance system performance with power efficiency. This article details the specific mechanisms the operating system uses to restrict and regulate background processes—su" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-manages-background-apps">How Windows 10 Manages
+Background Apps</h1>
+<p>Windows 10 employs an intelligent suite of resource management
+techniques designed to balance system performance with power efficiency.
+This article details the specific mechanisms the operating system uses
+to restrict and regulate background processes—such as Power Throttling,
+app suspension, the native Battery Saver mode, and user-configurable
+permissions—to ensure non-essential tasks do not needlessly drain your
+device's battery life.</p>
+<h2 id="power-throttling">Power Throttling</h2>
+<p>Windows 10 features a capability known as Power Throttling. The
+operating system utilizes modern processor features to identify work
+that is important to the user (such as the app in the active window or
+audio playback) and separates it from non-critical background tasks.</p>
+<p>When a process is identified as background activity, Windows places
+the CPU into its most energy-efficient operating states. This
+significantly cuts power consumption while continuing to let the
+background application execute, albeit at a reduced execution speed that
+minimizes thermal output and power draw.</p>
+<h2 id="process-lifecycle-and-suspension-for-uwp-apps">Process Lifecycle
+and Suspension for UWP Apps</h2>
+<p>Windows 10 treats modern Universal Windows Platform (UWP) apps
+differently from traditional Win32 desktop programs. When a UWP
+application is minimized or hidden behind another window, Windows
+automatically transitions it through a strict lifecycle:</p>
+<ol type="1">
+<li><strong>Running:</strong> The app is actively displayed and
+executing with full access to resources.</li>
+<li><strong>Suspended:</strong> If the app is minimized or out of view
+for more than a few seconds, Windows halts its execution threads and
+retains its state in RAM, requiring zero CPU cycles and no battery
+consumption.</li>
+<li><strong>Resumed:</strong> When the user switches back, the app
+immediately resumes execution from memory without a cold boot.</li>
+</ol>
+<p>If memory is needed elsewhere, suspended apps can be closed and their
+state saved to disk. Only background tasks explicitly registered for
+specific services (like VoIP, location, or audio) are granted
+intermittent execution windows.</p>
+<h2 id="battery-saver-mode">Battery Saver Mode</h2>
+<p>Battery Saver is a dedicated state that automatically engages when
+the battery level drops below a set threshold (typically 20%), or when
+toggled on manually by the user. When active, Battery Saver enforces
+strict restrictions on background apps:</p>
+<ul>
+<li>Disables universal background sync operations for email, calendars,
+and live tiles.</li>
+<li>Blocks background apps from running, sending push notifications, or
+fetching new data unless explicitly added to an "always allowed"
+exception list.</li>
+<li>Diminishes screen brightness and limits background telemetry.</li>
+</ul>
+<h2 id="modern-standby">Modern Standby</h2>
+<p>For compatible hardware, Windows 10 includes Modern Standby (an
+evolution of Connected Standby). Similar to a smartphone, Modern Standby
+allows the system to enter a low-power idle state while remaining
+connected to the network. During this state, background app activity is
+tightly regulated into short, synchronized execution periods (DRIPS -
+Deepest Runtime Idle Platform State). This prevents any single
+application from continuously waking the CPU, preserving battery life
+when the display is turned off.</p>
+<h2 id="granular-background-permissions">Granular Background
+Permissions</h2>
+<p>Windows 10 grants users manual control over which applications can
+operate in the background. Located within <strong>Settings &gt; Privacy
+&gt; Background apps</strong>, users can either toggle off background
+functionality system-wide or manage permissions on an app-by-app basis.
+Revoking permission ensures that the selected application cannot receive
+info, send notifications, or stay updated when it is not actively being
+used on the screen.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Firewall Port Exceptions via Netsh - windows-10</title>
+    <meta name="description" content="This article explains how to configure firewall port exemptions in Microsoft Windows 10 using the netsh command-line utility within Windows PowerShell. While modern PowerShell includes dedicated firewall cmdlets, the legacy netsh advfirewall firewall cont">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-firewall-port-exceptions-via-netsh">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Firewall Port Exceptions via Netsh - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-firewall-port-exceptions-via-netsh" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how to configure firewall port exemptions in Microsoft Windows 10 using the netsh command-line utility within Windows PowerShell. While modern PowerShell includes dedicated firewall cmdlets, the legacy netsh advfirewall firewall cont" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-firewall-port-exceptions-via-netsh">Windows 10
+Firewall Port Exceptions via Netsh</h1>
+<p>This article explains how to configure firewall port exemptions in
+Microsoft Windows 10 using the <code>netsh</code> command-line utility
+within Windows PowerShell. While modern PowerShell includes dedicated
+firewall cmdlets, the legacy <code>netsh advfirewall firewall</code>
+context remains a powerful, universally compatible method for adding,
+viewing, and removing inbound and outbound port rules to permit network
+traffic through Windows Defender Firewall.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>To execute firewall modifications, Windows PowerShell must be run
+with elevated privileges. Right-click the Start menu, select
+<strong>Windows PowerShell (Admin)</strong>, and confirm the User
+Account Control (UAC) prompt.</p>
+<h3 id="understanding-the-netsh-firewall-syntax">Understanding the Netsh
+Firewall Syntax</h3>
+<p>The Windows Defender Firewall is managed in <code>netsh</code> under
+the <code>advfirewall firewall</code> context. The basic syntax for
+adding a port exemption rule is:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>netsh advfirewall firewall add rule name<span class="op">=</span><span class="st">&quot;&lt;RuleName&gt;&quot;</span> <span class="fu">dir</span><span class="op">=&lt;</span><span class="kw">in</span><span class="op">|</span>out<span class="op">&gt;</span> action<span class="op">=&lt;</span>allow<span class="op">|</span>block<span class="op">&gt;</span> protocol<span class="op">=&lt;</span>TCP<span class="op">|</span>UDP<span class="op">&gt;</span> localport<span class="op">=&lt;</span>PortNumber<span class="op">&gt;</span></span></code></pre></div>
+<p>Key parameters include:</p>
+<ul>
+<li><strong>name</strong>: A unique label for the rule.</li>
+<li><strong>dir</strong>: The traffic direction, either <code>in</code>
+(inbound) or <code>out</code> (outbound).</li>
+<li><strong>action</strong>: Specifies what the firewall does with
+matching traffic (<code>allow</code> or <code>block</code>).</li>
+<li><strong>protocol</strong>: The network protocol, usually
+<code>TCP</code> or <code>UDP</code>.</li>
+<li><strong>localport</strong>: The port number or range of ports to
+open.</li>
+</ul>
+<h3 id="opening-an-inbound-tcp-port">Opening an Inbound TCP Port</h3>
+<p>To allow incoming traffic on a specific TCP port (for example, port
+8080 for a local web service), execute the following command:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>netsh advfirewall firewall add rule name<span class="op">=</span><span class="st">&quot;Allow Inbound TCP 8080&quot;</span> <span class="fu">dir</span><span class="op">=</span><span class="kw">in</span> action<span class="op">=</span>allow protocol<span class="op">=</span>TCP localport<span class="op">=</span><span class="dv">8080</span></span></code></pre></div>
+<h3 id="opening-an-inbound-udp-port">Opening an Inbound UDP Port</h3>
+<p>To permit traffic for applications using UDP (such as DNS, streaming
+services, or certain games) on port 5050, run:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>netsh advfirewall firewall add rule name<span class="op">=</span><span class="st">&quot;Allow Inbound UDP 5050&quot;</span> <span class="fu">dir</span><span class="op">=</span><span class="kw">in</span> action<span class="op">=</span>allow protocol<span class="op">=</span>UDP localport<span class="op">=</span><span class="dv">5050</span></span></code></pre></div>
+<h3 id="opening-a-port-range">Opening a Port Range</h3>
+<p>You can open a consecutive range of ports simultaneously by
+separating the range boundaries with a hyphen:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>netsh advfirewall firewall add rule name<span class="op">=</span><span class="st">&quot;Allow Inbound TCP Range 9000-9010&quot;</span> <span class="fu">dir</span><span class="op">=</span><span class="kw">in</span> action<span class="op">=</span>allow protocol<span class="op">=</span>TCP localport<span class="op">=</span><span class="dv">9000</span><span class="op">-</span><span class="dv">9010</span></span></code></pre></div>
+<h3 id="restricting-rules-by-network-profile">Restricting Rules by
+Network Profile</h3>
+<p>Windows Defender Firewall separates settings into three network
+profiles: <code>domain</code>, <code>private</code>, and
+<code>public</code>. To ensure a port is only accessible on secure,
+private networks, append the <code>profile</code> parameter:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>netsh advfirewall firewall add rule name<span class="op">=</span><span class="st">&quot;Allow Private TCP 3000&quot;</span> <span class="fu">dir</span><span class="op">=</span><span class="kw">in</span> action<span class="op">=</span>allow protocol<span class="op">=</span>TCP localport<span class="op">=</span><span class="dv">3000</span> profile<span class="op">=</span>private</span></code></pre></div>
+<h3 id="verifying-the-rule">Verifying the Rule</h3>
+<p>To confirm that the rule has been applied successfully, query the
+firewall using the rule's specific name:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>netsh advfirewall firewall show rule name<span class="op">=</span><span class="st">&quot;Allow Inbound TCP 8080&quot;</span></span></code></pre></div>
+<p>This output displays the configured parameters, including status,
+protocol, port, profiles, and associated actions.</p>
+<h3 id="deleting-a-port-exemption">Deleting a Port Exemption</h3>
+<p>To revoke a port exemption and remove the custom rule from Windows
+Defender Firewall, specify the rule name with the <code>delete</code>
+command:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>netsh advfirewall firewall delete rule name<span class="op">=</span><span class="st">&quot;Allow Inbound TCP 8080&quot;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Enterprise Wi-Fi Setup with 802.1X EAP-TLS - windows-10</title>
+    <meta name="description" content="This article provides an overview of how the Microsoft Windows 10 operating system configures and processes enterprise Wi-Fi connections utilizing IEEE 802.1X and Extensible Authentication Protocol-Transport Layer Security (EAP-TLS). It covers prerequisit">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-enterprise-wi-fi-setup-with-802-1-x-eap-tls">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Enterprise Wi-Fi Setup with 802.1X EAP-TLS - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-enterprise-wi-fi-setup-with-802-1-x-eap-tls" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of how the Microsoft Windows 10 operating system configures and processes enterprise Wi-Fi connections utilizing IEEE 802.1X and Extensible Authentication Protocol-Transport Layer Security (EAP-TLS). It covers prerequisit" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-enterprise-wi-fi-setup-with-8021x-eap-tls">Windows 10
+Enterprise Wi-Fi Setup with 802.1X EAP-TLS</h1>
+<p>This article provides an overview of how the Microsoft Windows 10
+operating system configures and processes enterprise Wi-Fi connections
+utilizing IEEE 802.1X and Extensible Authentication Protocol-Transport
+Layer Security (EAP-TLS). It covers prerequisite certificate
+infrastructure, the manual configuration steps within the Windows
+network settings, automated deployment methods for enterprise
+environments, and the underlying TLS handshake mechanism used to
+establish secure wireless access.</p>
+<h3 id="prerequisites-for-8021x-eap-tls">Prerequisites for 802.1X
+EAP-TLS</h3>
+<p>EAP-TLS relies on mutual authentication using Public Key
+Infrastructure (PKI). Before a Windows 10 device can successfully
+connect to an EAP-TLS network, specific certificates must reside in the
+Windows Certificate Store:</p>
+<ul>
+<li><strong>Trusted Root Certification Authority Certificate:</strong>
+Installed in the machine or user Trusted Root Certification Authorities
+store. Windows uses this to validate the identity of the RADIUS/Network
+Policy Server (NPS).</li>
+<li><strong>Client Certificate:</strong> Issued to the user or machine
+(depending on the authentication mode) with the Client Authentication
+Extended Key Usage (EKU) attribute. It must be stored in the Personal
+store with its associated private key intact.</li>
+</ul>
+<h3 id="manual-configuration-in-windows-10">Manual Configuration in
+Windows 10</h3>
+<p>To configure an 802.1X EAP-TLS Wi-Fi network manually:</p>
+<ol type="1">
+<li><strong>Create the Base Profile:</strong>
+<ul>
+<li>Open <strong>Control Panel</strong> &gt; <strong>Network and Sharing
+Center</strong> &gt; <strong>Set up a new connection or
+network</strong>.</li>
+<li>Select <strong>Manually connect to a wireless network</strong> and
+click <strong>Next</strong>.</li>
+<li>Enter the exact Network Name (SSID).</li>
+<li>Set <strong>Security type</strong> to
+<strong>WPA2-Enterprise</strong> or
+<strong>WPA3-Enterprise</strong>.</li>
+<li>Set <strong>Encryption type</strong> to <strong>AES</strong> and
+complete the initial prompt.</li>
+</ul></li>
+<li><strong>Configure EAP-TLS Settings:</strong>
+<ul>
+<li>Select <strong>Change connection settings</strong> on the
+confirmation window (or access the network properties via the adapter
+settings).</li>
+<li>Navigate to the <strong>Security</strong> tab.</li>
+<li>Choose <strong>Microsoft: Smart Card or other certificate</strong>
+from the network authentication method dropdown.</li>
+<li>Click <strong>Settings</strong> to open the EAP-TLS properties:
+<ul>
+<li>Check <strong>Verify the server's identity by validating the
+certificate</strong>.</li>
+<li>Check the corresponding Enterprise Root CA under <strong>Trusted
+Root Certification Authorities</strong>.</li>
+<li>(Optional) Specify the Fully Qualified Domain Name (FQDN) of the
+authentication servers under <strong>Connect to these
+servers</strong>.</li>
+<li>Ensure <strong>Don't prompt user to authorize new servers or trusted
+CAs</strong> is enabled for strict security.</li>
+</ul></li>
+<li>Click <strong>OK</strong>.</li>
+</ul></li>
+<li><strong>Specify Authentication Mode:</strong>
+<ul>
+<li>In the network profile's <strong>Security</strong> tab, click
+<strong>Advanced settings</strong>.</li>
+<li>Check <strong>Specify authentication mode</strong>.</li>
+<li>Select <strong>User authentication</strong>, <strong>Computer
+authentication</strong>, or <strong>User or computer
+authentication</strong> based on network policy.</li>
+<li>Click <strong>OK</strong> to save all configuration dialogs.</li>
+</ul></li>
+</ol>
+<h3 id="enterprise-deployment-methods">Enterprise Deployment
+Methods</h3>
+<p>In corporate environments, configuring endpoints manually is
+impractical. Windows 10 supports two primary mechanisms for automated
+provisioning:</p>
+<ul>
+<li><strong>Active Directory Group Policy (GPO):</strong> Administrators
+configure wireless network policies under <em>Computer Configuration
+&gt; Policies &gt; Windows Settings &gt; Security Settings &gt; Wireless
+Network (IEEE 802.11) Policies</em>. The policy pushes the SSID,
+authentication types, trusted root authorities, and EAP properties
+directly to domain-joined devices.</li>
+<li><strong>Mobile Device Management (MDM / Microsoft Intune):</strong>
+Wi-Fi profiles are pushed using Open Mobile Alliance Uniform Resource
+Identifier (OMA-URI) settings or pre-built Intune Wi-Fi templates. These
+profiles map directly to Windows 10 WLAN Profile XML schemas and deploy
+alongside Simple Certificate Enrollment Protocol (SCEP) or PKCS
+certificate deployment profiles.</li>
+</ul>
+<h3 id="the-authentication-handshake">The Authentication Handshake</h3>
+<p>Once configured, Windows 10 executes the connection through the
+following stages:</p>
+<ol type="1">
+<li><strong>Association:</strong> The client associates with the Access
+Point (AP) at Layer 2. The AP restricts the client to 802.1X control
+traffic.</li>
+<li><strong>Identity Request/Response:</strong> The AP sends an
+<code>EAP-Request/Identity</code>, and Windows responds with an
+<code>EAP-Response/Identity</code> containing the user or machine
+identity.</li>
+<li><strong>TLS Handshake Initiation:</strong> The RADIUS server and
+Windows 10 negotiate TLS parameters via the AP (acting as the
+authenticator).</li>
+<li><strong>Server Validation:</strong> The RADIUS server presents its
+certificate. Windows validates the server certificate against the root
+CA specified in the profile.</li>
+<li><strong>Client Validation:</strong> Windows presents its client
+certificate. The RADIUS server checks the certificate's validity,
+revocation status (CRL/OCSP), and mapping to Active Directory.</li>
+<li><strong>Key Generation and Access:</strong> Upon mutual trust
+verification, both endpoints independently derive the Pairwise Master
+Key (PMK). The RADIUS server signals an <code>EAP-Success</code> message
+to the AP along with the PMK, opening the port to standard network
+traffic and enabling encrypted 4-way handshake communications between
+Windows 10 and the AP.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

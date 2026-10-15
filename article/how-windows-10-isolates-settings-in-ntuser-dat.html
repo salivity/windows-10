@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Isolates Settings in NTUSER.DAT - windows-10</title>
+    <meta name="description" content="In Microsoft Windows 10, user profile isolation ensures that individual users on a shared machine cannot interfere with or access another user&#39;s personal configuration. This isolation is primarily managed through the NTUSER.DAT file, a database file resid">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-isolates-settings-in-ntuser-dat">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Isolates Settings in NTUSER.DAT - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-isolates-settings-in-ntuser-dat" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In Microsoft Windows 10, user profile isolation ensures that individual users on a shared machine cannot interfere with or access another user&#39;s personal configuration. This isolation is primarily managed through the NTUSER.DAT file, a database file resid" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-isolates-settings-in-ntuserdat">How Windows 10
+Isolates Settings in NTUSER.DAT</h1>
+<p>In Microsoft Windows 10, user profile isolation ensures that
+individual users on a shared machine cannot interfere with or access
+another user's personal configuration. This isolation is primarily
+managed through the <code>NTUSER.DAT</code> file, a database file
+residing in the root of each user’s directory that stores the
+user-specific portions of the Windows Registry. Windows 10 isolates
+these settings through dynamic registry hive mounting, unique Security
+Identifiers (SIDs), strict Access Control Lists (ACLs), and
+process-level redirection to maintain system stability and user
+privacy.</p>
+<h3 id="the-role-of-ntuserdat-in-the-windows-registry">The Role of
+NTUSER.DAT in the Windows Registry</h3>
+<p>The Windows Registry is not stored as a single monolithic database;
+instead, it is divided into discrete segments called hives. Global
+system settings reside in hives stored under the system directories
+(such as <code>SYSTEM</code> and <code>SOFTWARE</code>), whereas
+personalized preferences reside in
+<code>C:\Users\&lt;Username&gt;\NTUSER.DAT</code>. This hidden,
+protected file contains all configurations specific to an account,
+including desktop layouts, application preferences, network drive
+mappings, and environment variables.</p>
+<h3 id="dynamic-mounting-via-the-user-profile-service">Dynamic Mounting
+via the User Profile Service</h3>
+<p>When a user signs in to Windows 10, the User Profile Service
+(<code>ProfSvc</code>) locates the user's specific
+<code>NTUSER.DAT</code> file. The operating system then mounts this file
+into the registry hierarchy under the root key
+<code>HKEY_USERS\&lt;User-SID&gt;</code>, where
+<code>&lt;User-SID&gt;</code> is the account’s unique Security
+Identifier.</p>
+<p>To make interacting with these settings straightforward for running
+applications, Windows creates a symbolic link between
+<code>HKEY_USERS\&lt;User-SID&gt;</code> and the virtual root key
+<code>HKEY_CURRENT_USER</code> (HKCU). Because HKCU is dynamically
+mapped per user session, applications running in that user's security
+context automatically read from and write to their own isolated registry
+hive without needing to reference the user's specific SID directly.</p>
+<h3 id="security-identifiers-and-access-control-lists">Security
+Identifiers and Access Control Lists</h3>
+<p>Windows 10 enforces profile isolation using standard NTFS file
+permissions and Registry Object Security Descriptors:</p>
+<ul>
+<li><strong>File System Security:</strong> The physical
+<code>NTUSER.DAT</code> file is protected by NTFS Discretionary Access
+Control Lists (DACLs). By default, only the user associated with the
+profile and the local <code>SYSTEM</code> account are granted Full
+Control. Other standard user accounts have no read or write permissions
+to the file.</li>
+<li><strong>Registry Key Permissions:</strong> Once mounted into
+<code>HKEY_USERS</code>, the registry keys inherit access rights that
+mirror the file's DACL. A standard user executing code on the machine
+cannot read or alter keys located under another user's active SID
+tree.</li>
+</ul>
+<h3 id="registry-virtualization-and-redirection">Registry Virtualization
+and Redirection</h3>
+<p>Windows 10 also incorporates User Account Control (UAC) registry
+virtualization. If legacy, non-elevated software attempts to write to
+global configuration areas, such as
+<code>HKEY_LOCAL_MACHINE\Software</code>, Windows redirects those writes
+to an isolated subkey within the user's own <code>NTUSER.DAT</code>
+(located at <code>HKCU\Software\Classes\VirtualStore</code>). This
+prevents non-administrative processes from modifying shared system state
+while ensuring application compatibility solely within that specific
+user's isolated profile.</p>
+<h3 id="session-unmounting-and-data-integrity">Session Unmounting and
+Data Integrity</h3>
+<p>When a user logs out, the User Profile Service synchronizes any
+memory-cached registry transactions back to the physical
+<code>NTUSER.DAT</code> file alongside accompanying transaction logs
+(<code>.LOG1</code> and <code>.LOG2</code>). Once the state is written,
+Windows cleanly unmounts the hive from <code>HKEY_USERS</code>. This
+locks the file against further modification, closes active handles, and
+ensures that user-level settings remain dormant and inaccessible until
+the correct account credentials are authenticated in a subsequent
+session.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

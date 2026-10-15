@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Enforces Driver Signatures at Boot - windows-10</title>
+    <meta name="description" content="Driver Signature Enforcement (DSE) in Microsoft Windows 10 is a critical security architecture designed to prevent unsigned, tampered, or malicious code from executing within the high-privilege kernel space. This article details the sequential boot-time m">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-enforces-driver-signatures-at-boot">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Enforces Driver Signatures at Boot - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-enforces-driver-signatures-at-boot" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Driver Signature Enforcement (DSE) in Microsoft Windows 10 is a critical security architecture designed to prevent unsigned, tampered, or malicious code from executing within the high-privilege kernel space. This article details the sequential boot-time m" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-enforces-driver-signatures-at-boot">How Windows
+10 Enforces Driver Signatures at Boot</h1>
+<p>Driver Signature Enforcement (DSE) in Microsoft Windows 10 is a
+critical security architecture designed to prevent unsigned, tampered,
+or malicious code from executing within the high-privilege kernel space.
+This article details the sequential boot-time mechanisms Windows 10 uses
+to validate drivers, covering the chain of trust established from the
+UEFI firmware up through the Windows Boot Loader, Code Integrity
+subsystem, and modern hardware-isolated security layers.</p>
+<h3 id="the-hardware-chain-of-trust-uefi-secure-boot">The Hardware Chain
+of Trust: UEFI Secure Boot</h3>
+<p>The enforcement process begins before the operating system even
+starts executing. In modern systems running Windows 10, UEFI Secure Boot
+establishes a hardware-backed root of trust:</p>
+<ol type="1">
+<li><strong>Firmware Verification:</strong> The motherboard firmware
+reads its non-volatile memory (containing the Signature Database
+<code>db</code> and Forbidden Database <code>dbx</code>) to verify the
+digital signature of the Windows Boot Manager
+(<code>bootmgr.efi</code>).</li>
+<li><strong>Handoff:</strong> If the cryptographic signature is verified
+against a trusted Microsoft certificate stored in the firmware,
+execution is handed to <code>bootmgr.efi</code>. If verification fails,
+the boot process halts immediately.</li>
+</ol>
+<h3 id="boot-start-driver-validation-via-winloadefi">Boot-Start Driver
+Validation via <code>winload.efi</code></h3>
+<p>The Windows Boot Manager locates the active BCD (Boot Configuration
+Data) store and loads the Windows Operating System Loader
+(<code>winload.efi</code>). The OS Loader is responsible for loading the
+kernel and the initial set of boot-start drivers (drivers marked with a
+<code>START</code> type of <code>SERVICE_BOOT_START</code>):</p>
+<ul>
+<li><strong>Self-Integrity Check:</strong> <code>winload.efi</code>
+ensures its own binary signature is valid and unmodified.</li>
+<li><strong>Loading Boot Binaries:</strong> <code>winload.efi</code>
+reads the core Windows kernel (<code>ntoskrnl.exe</code>), the Hardware
+Abstraction Layer (<code>hal.dll</code>), and critical storage and
+system boot drivers from disk into memory.</li>
+<li><strong>Pre-Execution Signature Check:</strong> Before these files
+are executed or handed to the kernel, <code>winload.efi</code> checks
+their embedded signatures or corresponding catalog (<code>.cat</code>)
+files. The loader verifies the cryptographic hashes (typically SHA-256)
+and confirms that the signing certificate chains up to a trusted
+Microsoft Root Authority.</li>
+<li><strong>Boot Abort:</strong> If a boot-start driver lacks a valid
+signature or has been tampered with, <code>winload.efi</code> refuses to
+pass control to the operating system, triggering a blue screen or
+recovery environment with an error such as <code>0xc0000428</code>
+(Windows cannot verify the digital signature for this file).</li>
+</ul>
+<h3 id="kernel-mode-code-signing-kmcs-and-cidll">Kernel-Mode Code
+Signing (KMCS) and <code>ci.dll</code></h3>
+<p>Once <code>winload.efi</code> successfully verifies the essential
+boot files, it transfers execution to <code>ntoskrnl.exe</code>. From
+this point, the Code Integrity library (<code>ci.dll</code>) manages and
+enforces signature policies for the remainder of the operating system's
+lifecycle:</p>
+<ul>
+<li><strong>Policy Initialization:</strong> <code>ci.dll</code>
+initializes kernel-mode code signing policies based on system
+configuration and Windows version requirements (such as requiring
+drivers to be signed through the Microsoft Windows Hardware Dev Center
+dashboard).</li>
+<li><strong>Driver Entry Interception:</strong> Whenever a driver
+service attempts to load (via <code>NtLoadDriver</code> or the Plug and
+Play manager), the kernel invokes Code Integrity validation
+routines.</li>
+<li><strong>Certificate Chain Validation:</strong> The driver's
+Authenticode signature is inspected to ensure it contains an authorized
+cross-certificate or a direct Microsoft WHQL (Windows Hardware Quality
+Labs) / Attestation signature.</li>
+<li><strong>Revocation Checking:</strong> The driver's certificate is
+cross-referenced with revocation lists to ensure the signing key has not
+been revoked or compromised.</li>
+</ul>
+<h3
+id="protection-via-hypervisor-protected-code-integrity-hvci">Protection
+via Hypervisor-Protected Code Integrity (HVCI)</h3>
+<p>In legacy architectures, attackers with temporary kernel execution
+could bypass DSE by modifying the global kernel variable responsible for
+validation (such as patching <code>g_CiOptions</code> in memory to
+disable verification).</p>
+<p>Windows 10 mitigates this by utilizing Virtualization-Based Security
+(VBS) and Hypervisor-Protected Code Integrity (HVCI):</p>
+<ul>
+<li><strong>Isolated Memory:</strong> HVCI runs the Code Integrity
+module inside an isolated virtual environment (Virtual Secure Mode, or
+VSM) managed by the Hyper-V hypervisor, completely segregated from the
+standard kernel (VTL0).</li>
+<li><strong>Hardware Enforcement:</strong> The hypervisor controls
+Second Level Address Translation (SLAT) page tables. Even if an attacker
+achieves ring 0 (kernel) execution, they cannot write to executable
+memory or alter the signing policies hosted in VTL1.</li>
+<li><strong>Strict Execution Control:</strong> A driver page cannot be
+mapped as both writable and executable (W^X policy). The hypervisor only
+grants execution rights to a page after the isolated Code Integrity
+module in VTL1 has verified the driver’s cryptographic signature.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

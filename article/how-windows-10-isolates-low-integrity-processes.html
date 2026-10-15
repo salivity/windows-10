@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Isolates Low-Integrity Processes - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 secures the operating system against malicious code through Mandatory Integrity Control (MIC), an authorization mechanism that restricts the access permissions of applications running at lower trust levels. By categorizing processes a">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-isolates-low-integrity-processes">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Isolates Low-Integrity Processes - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-isolates-low-integrity-processes" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 secures the operating system against malicious code through Mandatory Integrity Control (MIC), an authorization mechanism that restricts the access permissions of applications running at lower trust levels. By categorizing processes a" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-isolates-low-integrity-processes">How Windows 10
+Isolates Low-Integrity Processes</h1>
+<p>Microsoft Windows 10 secures the operating system against malicious
+code through Mandatory Integrity Control (MIC), an authorization
+mechanism that restricts the access permissions of applications running
+at lower trust levels. By categorizing processes and securable objects
+into hierarchical Integrity Levels (ILs), Windows enforces the principle
+of least privilege, preventing untrusted or compromised software—such as
+sandboxed web browsers—from altering files, registry settings, or memory
+belonging to higher-integrity components.</p>
+<h3 id="integrity-levels-in-windows-10">Integrity Levels in Windows
+10</h3>
+<p>Windows 10 assigns an Integrity Level to every security principal
+(processes, users) and securable object (files, registry keys,
+synchronization handles). The primary levels, from lowest to highest,
+include:</p>
+<ul>
+<li><strong>Untrusted:</strong> Reserved for processes with virtually no
+rights (e.g., anonymous sessions).</li>
+<li><strong>Low:</strong> Used for sandboxed applications, restricted
+network-facing software, and isolated web browser tabs.</li>
+<li><strong>Medium:</strong> The standard level for non-elevated user
+applications.</li>
+<li><strong>High:</strong> Assigned to elevated processes running with
+full administrative rights via User Account Control (UAC).</li>
+<li><strong>System:</strong> Reserved for the operating system kernel,
+services, and core system functions.</li>
+</ul>
+<h3 id="the-no-write-up-policy">The "No-Write-Up" Policy</h3>
+<p>The core foundation of MIC process isolation is the "No-Write-Up"
+(NWU) enforcement rule. While traditional Discretionary Access Control
+Lists (DACLs) grant permissions based on user identity, MIC adds a
+mandatory layer defined in the object's System Access Control List
+(SACL) via a mandatory label.</p>
+<p>Under this policy:</p>
+<ul>
+<li>A low-integrity process can read objects at a Medium or High level
+if the DACL allows read access ("Read-Up" is generally permitted).</li>
+<li>A low-integrity process cannot obtain write, delete, or append
+access to any object with a higher integrity level, regardless of DACL
+permissions ("No-Write-Up").</li>
+</ul>
+<p>If an attacker compromises a low-integrity application, the operating
+system kernel prevents the payload from writing to system directories,
+modifying the user's startup registry keys, or tampering with files
+created by standard user processes.</p>
+<h3 id="memory-and-process-handle-isolation">Memory and Process Handle
+Isolation</h3>
+<p>To prevent process injection attacks, Windows 10 restricts how
+low-integrity processes interact with other running processes in
+memory.</p>
+<p>When a process attempts to open a handle to another process using the
+<code>OpenProcess</code> API, the kernel checks the caller's integrity
+level against the target's integrity level. A low-integrity process is
+denied access rights such as <code>PROCESS_VM_WRITE</code>,
+<code>PROCESS_VM_OPERATION</code>, and
+<code>PROCESS_CREATE_THREAD</code> against Medium, High, or System
+processes. This mitigates techniques such as DLL injection, thread
+hijacking, and code injection from sandboxed environments.</p>
+<h3 id="user-interface-privilege-isolation-uipi">User Interface
+Privilege Isolation (UIPI)</h3>
+<p>Windows 10 implements User Interface Privilege Isolation (UIPI) to
+prevent attacks through the Windows messaging subsystem. Without UIPI, a
+low-integrity process could send malicious Windows messages (such as
+<code>WM_COMMAND</code> or <code>WM_DROPFILES</code>) to
+higher-integrity windows to execute code with elevated privileges.</p>
+<p>UIPI blocks low-integrity processes from:</p>
+<ul>
+<li>Sending window messages to higher-integrity windows using
+<code>SendMessage</code> or <code>PostMessage</code>.</li>
+<li>Using thread hooks on higher-integrity processes.</li>
+<li>Querying the properties or status of higher-integrity UI
+elements.</li>
+</ul>
+<h3 id="storage-and-registry-sandboxing">Storage and Registry
+Sandboxing</h3>
+<p>Low-integrity processes are constrained to dedicated storage and
+registry locations configured specifically for low-trust operations.</p>
+<ul>
+<li><strong>File System:</strong> Low-integrity applications are
+restricted to designated low-integrity folders (such as subfolders
+within <code>AppData\Local\Packages</code> or designated temporary
+internet folders). Attempts to write outside these folders are blocked
+with an access-denied error.</li>
+<li><strong>Registry:</strong> Low-integrity processes can only write to
+specific registry hives configured with a Low Mandatory Label, primarily
+under isolated subkeys within
+<code>HKEY_CURRENT_USER\Software\AppDataLow</code>. Critical
+configurations in <code>HKEY_LOCAL_MACHINE</code> and standard
+<code>HKEY_CURRENT_USER</code> paths remain inaccessible for
+modification.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 UWP App Sandboxing Explained - windows-10</title>
+    <meta name="description" content="Universal Windows Platform (UWP) applications distributed through the Microsoft Store run inside a tightly controlled execution environment designed to protect the operating system and user data from malicious behavior. Windows 10 achieves this sandboxing">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-uwp-app-sandboxing-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 UWP App Sandboxing Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-uwp-app-sandboxing-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Universal Windows Platform (UWP) applications distributed through the Microsoft Store run inside a tightly controlled execution environment designed to protect the operating system and user data from malicious behavior. Windows 10 achieves this sandboxing" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-uwp-app-sandboxing-explained">Windows 10 UWP App
+Sandboxing Explained</h1>
+<p>Universal Windows Platform (UWP) applications distributed through the
+Microsoft Store run inside a tightly controlled execution environment
+designed to protect the operating system and user data from malicious
+behavior. Windows 10 achieves this sandboxing through a multi-layered
+security architecture anchored by the AppContainer execution
+environment, declarative permission models, file and registry
+virtualization, and brokered access to sensitive system resources.</p>
+<h3 id="the-appcontainer-security-boundary">The AppContainer Security
+Boundary</h3>
+<p>At the core of UWP sandboxing is the <strong>AppContainer</strong>, a
+specialized, low-integrity security context built into the Windows NT
+kernel. When a UWP app launches, the Windows security subsystem
+generates a unique Security Identifier (SID) for the application
+package.</p>
+<p>Unlike standard Win32 applications, which typically inherit the full
+access token and privileges of the signed-in user, an AppContainer
+operates with restricted tokens. The operating system attaches a
+mandatory integrity label set to "Low." This ensures the app cannot
+interact with or inject code into standard user-level processes (which
+run at "Medium" integrity) or administrative processes (which run at
+"High" integrity).</p>
+<h3 id="declared-capabilities-and-the-app-manifest">Declared
+Capabilities and the App Manifest</h3>
+<p>UWP applications adhere to the principle of least privilege. An
+application cannot access hardware or system resources by default;
+access must be explicitly defined in the application's package manifest
+(<code>Package.appxmanifest</code>).</p>
+<p>Windows 10 categorizes permissions into distinct tiers:</p>
+<ul>
+<li><strong>Standard Capabilities:</strong> Basic functionalities, such
+as outgoing internet access (<code>internetClient</code>), which are
+automatically granted during installation.</li>
+<li><strong>Device Capabilities:</strong> Access to peripheral hardware,
+including webcams, microphones, location sensors, and Bluetooth radios.
+Windows requires explicit user consent via runtime prompts before
+granting access to these APIs.</li>
+<li><strong>Restricted Capabilities:</strong> Advanced system functions
+(such as full file system access or background media processing) that
+require verification by Microsoft before an application can be published
+to the Store.</li>
+</ul>
+<p>If an application attempts to invoke an API for an undeclared
+capability, the Windows runtime immediately blocks the call.</p>
+<h3 id="file-system-and-registry-virtualization">File System and
+Registry Virtualization</h3>
+<p>UWP applications cannot freely browse the broader Windows file system
+or system registry. Instead, the OS confines each app to an isolated
+data compartment:</p>
+<ul>
+<li><strong>App-Specific Storage:</strong> Each app receives private
+storage partitions located under
+<code>%LOCALAPPDATA%\Packages\[PackageFamilyName]\</code>. Inside this
+space, the app can read and write to dedicated <code>LocalState</code>,
+<code>RoamingState</code>, and <code>TempState</code> directories. Other
+applications cannot access these folders.</li>
+<li><strong>Registry Isolation:</strong> UWP apps do not write to the
+global Windows Registry hives (<code>HKEY_LOCAL_MACHINE</code> or
+standard <code>HKEY_CURRENT_USER</code>). Instead, registry writes are
+redirected to private, per-package hive files (<code>User.dat</code>),
+preventing system-wide configuration tampering.</li>
+<li><strong>Read-Only App Directory:</strong> The app’s installation
+directory (under <code>C:\Program Files\WindowsApps</code>) is read-only
+and secured by Access Control Lists (ACLs) managed by the OS, preventing
+tampering with executable binaries.</li>
+</ul>
+<h3 id="brokered-access-via-runtime-broker">Brokered Access via Runtime
+Broker</h3>
+<p>When a sandboxed application needs to interact with files or services
+outside its sandbox, it must use brokered Windows Runtime (WinRT)
+APIs.</p>
+<p>Windows 10 delegates these requests to a background system process
+called <strong>RuntimeBroker.exe</strong>. For instance, if an app needs
+to open a file from the user's <code>Documents</code> folder:</p>
+<ol type="1">
+<li>The app invokes the <code>FileOpenPicker</code> API.</li>
+<li>The user sees a standard Windows file-selection dialog managed
+entirely outside the app's process space by the OS.</li>
+<li>Once the user explicitly selects a file, the OS grants the app
+temporary, targeted read or write permissions only to that specific file
+object. The app never gains access to the parent folder.</li>
+</ol>
+<h3 id="network-isolation">Network Isolation</h3>
+<p>Windows 10 enforces network-level sandboxing through Windows
+Filtering Platform (WFP) rules specifically mapped to the app's package
+SID:</p>
+<ul>
+<li><strong>Inbound Block:</strong> Inbound network connections are
+blocked by default unless explicitly declared.</li>
+<li><strong>Network Segmentation:</strong> Home/work (private) networks
+and public internet networks require distinct, independent capability
+declarations (<code>privateNetworkClientServer</code> vs.
+<code>internetClient</code>).</li>
+<li><strong>Loopback Restrictions:</strong> To prevent local
+inter-process communication attacks, UWP applications are blocked from
+sending network traffic to <code>localhost</code> (127.0.0.1) by
+default, isolating them from other locally running servers and
+services.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role of Volume Shadow Copy Service in Windows 10 - windows-10</title>
+    <meta name="description" content="The Volume Shadow Copy Service (VSS) is a critical framework within Microsoft Windows 10 that enables the creation of consistent, point-in-time snapshots of volume data, commonly known as shadow copies. This article explores how VSS functions during Windo">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/role-of-volume-shadow-copy-service-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Role of Volume Shadow Copy Service in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/role-of-volume-shadow-copy-service-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Volume Shadow Copy Service (VSS) is a critical framework within Microsoft Windows 10 that enables the creation of consistent, point-in-time snapshots of volume data, commonly known as shadow copies. This article explores how VSS functions during Windo" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="role-of-volume-shadow-copy-service-in-windows-10">Role of Volume
+Shadow Copy Service in Windows 10</h1>
+<p>The Volume Shadow Copy Service (VSS) is a critical framework within
+Microsoft Windows 10 that enables the creation of consistent,
+point-in-time snapshots of volume data, commonly known as shadow copies.
+This article explores how VSS functions during Windows 10 backup
+routines, detailing its core components, its ability to capture open or
+locked files without interrupting user activity, and its importance in
+maintaining data integrity across the operating system.</p>
+<h3 id="the-purpose-of-vss-in-backups">The Purpose of VSS in
+Backups</h3>
+<p>In a standard operating environment, backing up files that are
+actively in use presents a major challenge. When an application or
+system process writes to a file during a backup, the file can be
+partially updated, resulting in file locking errors or a corrupted,
+inconsistent backup state.</p>
+<p>VSS solves this problem by taking an instantaneous, read-only
+snapshot of the volume. The backup software can then read data directly
+from this frozen snapshot while the live system and running applications
+continue to modify the actual files on disk without interruption.</p>
+<h3 id="key-architecture-components">Key Architecture Components</h3>
+<p>The VSS architecture relies on three coordinated components to
+perform clean backups:</p>
+<ul>
+<li><strong>VSS Requestor:</strong> The software that initiates the
+backup process. This can be Windows 10's built-in tools (such as System
+Image Backup) or third-party backup solutions. The requestor instructs
+the system to begin a shadow copy.</li>
+<li><strong>VSS Writers:</strong> Software components integrated into
+Windows and compatible applications (such as Microsoft SQL Server or the
+Windows Registry) that ensure their data is in a consistent state before
+the snapshot is taken. When signaled, a writer flushes memory caches,
+finishes pending write transactions, and temporarily freezes write
+operations.</li>
+<li><strong>VSS Providers:</strong> The mechanism that actually creates
+and manages the shadow copies. Windows includes a default software
+provider that uses a copy-on-write method, though hardware-based storage
+systems can also supply their own providers.</li>
+</ul>
+<h3 id="how-vss-works-during-a-backup-routine">How VSS Works During a
+Backup Routine</h3>
+<p>A typical VSS-driven backup in Windows 10 follows a precise,
+automated sequence:</p>
+<ol type="1">
+<li><strong>Initiation:</strong> The VSS Requestor signals the service
+to prepare for a backup.</li>
+<li><strong>Notification and Preparation:</strong> VSS notifies all
+registered VSS Writers to prepare their data by completing active
+transactions and flushing memory buffers to the disk.</li>
+<li><strong>Write Freeze:</strong> The writers temporarily pause write
+operations to disk for a fraction of a second to ensure
+application-level consistency.</li>
+<li><strong>Snapshot Creation:</strong> The VSS Provider creates the
+shadow copy snapshot. Using copy-on-write technology, original data is
+mapped so that any subsequent modifications to the live volume are
+written to a separate differential area (the
+<code>System Volume Information</code> folder).</li>
+<li><strong>Thaw and Resume:</strong> The freeze is lifted immediately
+after the snapshot is indexed, allowing normal disk write operations to
+resume. The entire pause typically lasts only a few seconds.</li>
+<li><strong>Data Transfer:</strong> The Requestor reads the data from
+the shadow copy to create the final backup archive, guaranteeing that
+the backup reflects a uniform state at the exact moment the snapshot was
+taken.</li>
+</ol>
+<h3 id="practical-impact-on-windows-10-features">Practical Impact on
+Windows 10 Features</h3>
+<p>Within Windows 10, VSS directly powers several built-in recovery and
+protection tools:</p>
+<ul>
+<li><strong>System Restore:</strong> VSS creates automatic restore
+points before system updates, driver installations, or software
+modifications, allowing users to roll back changes without losing
+personal files.</li>
+<li><strong>System Image Backups:</strong> The legacy "Backup and
+Restore (Windows 7)" utility in Windows 10 uses VSS to capture complete
+drive images, ensuring critical system files remain uncorrupted even
+while the OS is running.</li>
+<li><strong>Previous Versions:</strong> VSS retains historical copies of
+files on supported volumes, enabling users to revert modified or deleted
+documents to earlier states.</li>
+</ul>
+<p>By orchestrating seamless communication between applications,
+storage, and backup tools, the Volume Shadow Copy Service ensures that
+Windows 10 backups remain reliable, consistent, and completely
+non-disruptive to active workloads.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

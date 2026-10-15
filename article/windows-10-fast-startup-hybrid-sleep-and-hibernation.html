@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Fast Startup: Hybrid Sleep and Hibernation - windows-10</title>
+    <meta name="description" content="Windows 10 Fast Startup is a default power configuration designed to drastically reduce boot times by merging traditional cold shutdown procedures with hibernation technology. This article explains how Windows 10 uses kernel-level hibernation to bridge th">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-fast-startup-hybrid-sleep-and-hibernation">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Fast Startup: Hybrid Sleep and Hibernation - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-fast-startup-hybrid-sleep-and-hibernation" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 Fast Startup is a default power configuration designed to drastically reduce boot times by merging traditional cold shutdown procedures with hibernation technology. This article explains how Windows 10 uses kernel-level hibernation to bridge th" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-fast-startup-hybrid-sleep-and-hibernation">Windows 10
+Fast Startup: Hybrid Sleep and Hibernation</h1>
+<p>Windows 10 Fast Startup is a default power configuration designed to
+drastically reduce boot times by merging traditional cold shutdown
+procedures with hibernation technology. This article explains how
+Windows 10 uses kernel-level hibernation to bridge the gap between
+complete system shutdowns and sleep states, allowing your computer to
+start up faster without continuously drawing power while turned off.</p>
+<h3 id="the-mechanics-of-traditional-shutdown-vs-hibernation">The
+Mechanics of Traditional Shutdown vs. Hibernation</h3>
+<p>To understand Fast Startup, it is necessary to differentiate how
+Windows handles standard power states:</p>
+<ul>
+<li><strong>Cold Shutdown (Full Shutdown):</strong> The operating system
+terminates all running user applications, closes active user sessions,
+unloads drivers, stops system services, and clears the kernel from the
+system's Random Access Memory (RAM) before cutting power.</li>
+<li><strong>Standard Hibernation:</strong> The system takes a complete
+snapshot of everything currently in RAM—including the core operating
+system, hardware drivers, open user applications, and unsaved files—and
+writes it to a hidden storage file called <code>hiberfil.sys</code>.
+Once saved, the computer cuts power completely. Upon resuming, Windows
+restores the entire system state back into RAM.</li>
+</ul>
+<h3 id="how-fast-startup-uses-hybrid-technology">How Fast Startup Uses
+Hybrid Technology</h3>
+<p>Fast Startup functions as a hybrid between a complete shutdown and
+standard hibernation. Instead of saving the entire state of the
+computer, it isolates the operating system from the user session.</p>
+<ol type="1">
+<li><strong>Logging Off the User:</strong> When you click "Shut down"
+with Fast Startup enabled, Windows first closes all open user
+applications and logs out the active user accounts. This mimics a
+traditional shutdown by ensuring that no lingering user programs or
+unsaved data carry over into the next session.</li>
+<li><strong>Hibernating the OS Kernel:</strong> Instead of closing down
+the operating system kernel, system services, and device drivers,
+Windows pauses them. It then writes only this low-level system state
+into the <code>hiberfil.sys</code> file on the primary drive.</li>
+<li><strong>Powering Down:</strong> Once the kernel state is committed
+to disk, Windows fully powers off the hardware. Unlike standard Sleep
+mode, this state requires zero electrical power to maintain.</li>
+</ol>
+<h3 id="the-boot-process-under-fast-startup">The Boot Process Under Fast
+Startup</h3>
+<p>When the power button is pressed, Windows detects the saved kernel
+state in <code>hiberfil.sys</code>. Instead of initiating a cold
+boot—which involves sequentially detecting hardware, loading the Windows
+kernel, initializing individual drivers, and starting services—Windows
+streams the pre-initialized kernel image directly from the storage drive
+back into RAM.</p>
+<p>Because the hardware drivers and system services are already
+initialized and configured within the image, the operating system
+bypasses significant initialization overhead and immediately presents
+the user login screen.</p>
+<h3 id="the-role-of-hybrid-sleep-technology">The Role of Hybrid Sleep
+Technology</h3>
+<p>Fast Startup relies heavily on the architectural foundation of Hybrid
+Sleep, a feature originally built for desktop computers. Hybrid Sleep
+writes memory contents to <code>hiberfil.sys</code> while keeping RAM
+powered in a low-power sleep state. If power is lost, the machine can
+fall back on the hibernation file.</p>
+<p>Fast Startup adapts this dual approach specifically for shutdowns: it
+uses the hibernation file strictly for system architecture while
+discarding the volatile user environment. Because it only records the
+kernel and driver states, the resulting hibernation file is
+significantly smaller than a standard hibernation file, allowing modern
+SSDs and fast HDDs to read the data in a fraction of the time required
+for a traditional system start.</p>
+<h3 id="key-operational-considerations">Key Operational
+Considerations</h3>
+<ul>
+<li><strong>Restart Bypasses Fast Startup:</strong> Selecting "Restart"
+instead of "Shut down" forces Windows 10 to perform a complete, cold
+reboot. This cleans the kernel memory, flushes temporary caches, and
+initializes drivers from scratch, which is why a restart is often
+required after system updates or hardware troubleshooting.</li>
+<li><strong>Dual-Booting and Drive Access:</strong> Because the kernel
+state is saved to disk, Windows marks connected NTFS partitions as
+"in-use" to prevent file corruption. Accessing these drives from an
+alternate operating system (such as Linux) in a dual-boot setup can
+cause data integrity issues if Fast Startup is active.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

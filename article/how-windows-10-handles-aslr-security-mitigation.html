@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Handles ASLR Security Mitigation - windows-10</title>
+    <meta name="description" content="Address Space Layout Randomization (ASLR) in Windows 10 is a core defense mechanism designed to prevent memory corruption attacks by randomizing key data areas within an application&#39;s address space. This article details how Windows 10 implements ASLR, inc">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-handles-aslr-security-mitigation">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Handles ASLR Security Mitigation - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-handles-aslr-security-mitigation" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Address Space Layout Randomization (ASLR) in Windows 10 is a core defense mechanism designed to prevent memory corruption attacks by randomizing key data areas within an application&#39;s address space. This article details how Windows 10 implements ASLR, inc" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-handles-aslr-security-mitigation">How Windows 10
+Handles ASLR Security Mitigation</h1>
+<p>Address Space Layout Randomization (ASLR) in Windows 10 is a core
+defense mechanism designed to prevent memory corruption attacks by
+randomizing key data areas within an application's address space. This
+article details how Windows 10 implements ASLR, including standard
+module relocation, High-Entropy ASLR for 64-bit systems, bottom-up
+randomization, and system-wide enforcement through Windows Defender
+Exploit Guard.</p>
+<h3 id="core-mechanics-of-aslr-in-windows-10">Core Mechanics of ASLR in
+Windows 10</h3>
+<p>ASLR functions by randomizing the memory locations of program
+components whenever an executable or dynamic link library (DLL) is
+loaded into memory. In traditional operating environments, program
+components load at static, predictable memory addresses, allowing
+attackers to exploit vulnerabilities (such as buffer overflows) and
+execute arbitrary code via Return-Oriented Programming (ROP) or
+jump-to-libc attacks.</p>
+<p>Windows 10 randomizes the base addresses of:</p>
+<ul>
+<li>The executable image and loaded dynamic link libraries (DLLs)</li>
+<li>The user-mode stack</li>
+<li>The application heap</li>
+<li>The Process Environment Block (PEB)</li>
+<li>The Thread Environment Block (TEB)</li>
+</ul>
+<p>By shifting these components to unpredictable memory locations on
+every reboot or process execution, an attacker cannot reliably predict
+target addresses for malicious payloads, causing attempted exploits to
+crash the process rather than execute code.</p>
+<h3 id="binary-opt-in-and-compiler-flags">Binary Opt-In and Compiler
+Flags</h3>
+<p>By default, ASLR relies on application binaries being compiled to
+support relocation. Developers opt into ASLR using specific flags in the
+Microsoft Visual C++ compiler:</p>
+<ul>
+<li><code>/DYNAMICBASE</code>: Informs the Windows operating system
+loader that the module is compatible with ASLR and includes a relocation
+table to allow rebasing at runtime.</li>
+<li><code>/HIGHENTROPYVA</code>: Tells the 64-bit OS loader that the
+binary is compatible with 64-bit address space layout randomization,
+enabling the application to use a much larger pool of randomized
+addresses.</li>
+</ul>
+<h3 id="64-bit-high-entropy-aslr-heaslr">64-Bit High-Entropy ASLR
+(HEASLR)</h3>
+<p>On 64-bit editions of Windows 10, ASLR provides substantially greater
+security through High-Entropy ASLR. While 32-bit systems are constrained
+to a 4 GB address space—limiting the available entropy to roughly 8 to
+14 bits—64-bit Windows 10 utilizes up to 24 bits of entropy or more
+across a multi-terabyte virtual address space. This exponential increase
+makes brute-force guessing statistically impractical and effectively
+neutralizes standard memory reuse attacks.</p>
+<h3 id="bottom-up-randomization">Bottom-Up Randomization</h3>
+<p>Windows 10 implements bottom-up randomization, which randomizes the
+base address from which virtual memory allocations (such as
+<code>VirtualAlloc</code> calls) grow upward. Instead of starting at a
+predictable point in memory, the memory manager selects a randomized
+base address for every process. This protects dynamically allocated
+memory buffers, heaps, and stacks from predictable indexing.</p>
+<h3 id="enforcement-via-windows-exploit-protection">Enforcement via
+Windows Exploit Protection</h3>
+<p>In older versions of Windows, uncompiled legacy applications that
+omitted the <code>/DYNAMICBASE</code> flag remained vulnerable because
+ASLR was not applied to them. Windows 10 addresses this through native
+Exploit Protection (formerly part of the Enhanced Mitigation Experience
+Toolkit, or EMET), managed directly in the Windows Security interface or
+via Group Policy.</p>
+<p>Windows 10 allows administrators to configure:</p>
+<ul>
+<li><strong>Mandatory ASLR (Force Relocation):</strong> Forces the
+Windows loader to rebase and randomize all loaded images and DLLs within
+a process, even if they were compiled without
+<code>/DYNAMICBASE</code>.</li>
+<li><strong>Bottom-Up ASLR:</strong> Enforces bottom-up randomization
+across processes system-wide or on an application-by-application
+basis.</li>
+<li><strong>High-Entropy ASLR:</strong> Globally enforces high-entropy
+randomization for all 64-bit processes.</li>
+</ul>
+<h3 id="synergy-with-other-mitigations">Synergy with Other
+Mitigations</h3>
+<p>ASLR does not fix memory vulnerabilities directly; rather, it makes
+exploiting them significantly more difficult. In Windows 10, ASLR
+operates as part of a defense-in-depth model alongside Data Execution
+Prevention (DEP), which marks memory regions as non-executable, and
+Control Flow Guard (CFG), which ensures that indirect call targets are
+valid. Together, these features make modern Windows 10 systems robust
+against arbitrary code execution.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

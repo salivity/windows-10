@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 MTU Configuration for Network Adapters - windows-10</title>
+    <meta name="description" content="The Microsoft Windows 10 operating system manages Maximum Transmission Unit (MTU) sizes by applying default protocol baselines per interface type, dynamically optimizing packet sizes through Path MTU Discovery (PMTUD), and allowing manual administrative o">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-mtu-configuration-for-network-adapters">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 MTU Configuration for Network Adapters - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-mtu-configuration-for-network-adapters" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Microsoft Windows 10 operating system manages Maximum Transmission Unit (MTU) sizes by applying default protocol baselines per interface type, dynamically optimizing packet sizes through Path MTU Discovery (PMTUD), and allowing manual administrative o" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-mtu-configuration-for-network-adapters">Windows 10
+MTU Configuration for Network Adapters</h1>
+<p>The Microsoft Windows 10 operating system manages Maximum
+Transmission Unit (MTU) sizes by applying default protocol baselines per
+interface type, dynamically optimizing packet sizes through Path MTU
+Discovery (PMTUD), and allowing manual administrative overrides. By
+default, Windows standardizes standard Ethernet traffic to 1500 bytes,
+adjusts downward for tunneling protocols, and maintains these
+configurations through its TCP/IP stack (<code>tcpip.sys</code>) and the
+Windows Registry.</p>
+<h3 id="default-mtu-assignment">Default MTU Assignment</h3>
+<p>When a network adapter is initialized in Windows 10, the operating
+system assigns a default MTU based on the underlying link-layer
+technology:</p>
+<ul>
+<li><strong>Ethernet and Wi-Fi:</strong> Standardized at <strong>1500
+bytes</strong>, which aligns with IEEE 802.3 specifications.</li>
+<li><strong>PPPoE Connections:</strong> Automatically reduced to
+<strong>1492 bytes</strong> to accommodate the 8-byte PPPoE header.</li>
+<li><strong>VPN Adapters:</strong> Dynamically lowered (often between
+<strong>1200 and 1400 bytes</strong>) depending on the encapsulation
+protocol (e.g., WireGuard, IPsec, OpenVPN) to prevent packet
+fragmentation caused by outer IP headers.</li>
+<li><strong>Loopback Interface:</strong> Configured with a large buffer
+(typically <strong>65535 bytes</strong> for IPv4 and <strong>4294967295
+bytes</strong> for IPv6) because packets never leave local system
+memory.</li>
+</ul>
+<h3 id="dynamic-adjustment-path-mtu-discovery-pmtud">Dynamic Adjustment:
+Path MTU Discovery (PMTUD)</h3>
+<p>Windows 10 implements Path MTU Discovery by default as defined by RFC
+1191 (IPv4) and RFC 8201 (IPv6). Rather than transmitting all packets at
+the static adapter MTU, the TCP/IP stack operates as follows:</p>
+<ol type="1">
+<li>Windows sets the <strong>Don't Fragment (DF)</strong> bit in the IP
+header of outgoing packets.</li>
+<li>If an intermediate router along the network path has a smaller MTU
+than the packet size, the router drops the packet and responds with an
+ICMP Type 3, Code 4 message ("Destination Unreachable, Fragmentation
+Needed and DF Set"), specifying the next-hop MTU.</li>
+<li>Windows 10 receives this ICMP packet and lowers the MTU for that
+specific route in its local cache.</li>
+<li>If network configurations block ICMP messages (creating a "Black
+Hole" router), modern Windows 10 builds feature MTU Black Hole
+Detection, which automatically lowers the MTU when connection attempts
+fail to receive acknowledgments despite repeated transmissions.</li>
+</ol>
+<h3 id="checking-the-current-mtu">Checking the Current MTU</h3>
+<p>To view the currently configured MTU across all active network
+adapters, Windows provides two native command-line methods:</p>
+<p><strong>Using Netsh via Command Prompt:</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>netsh interface ipv4 show subinterfaces</span></code></pre></div>
+<p><em>(Replace <code>ipv4</code> with <code>ipv6</code> to view IPv6
+MTU sizes).</em></p>
+<p><strong>Using PowerShell:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Get-NetIPInterface <span class="op">|</span> <span class="fu">Select-Object</span> InterfaceAlias<span class="op">,</span> AddressFamily<span class="op">,</span> NlMtuBytes</span></code></pre></div>
+<h3 id="manual-configuration">Manual Configuration</h3>
+<p>Administrators can manually override automatic MTU negotiation when
+dealing with specific ISP constraints, tunneling requirements, or jumbo
+frames.</p>
+<p><strong>Using Netsh:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>netsh interface ipv4 set subinterface <span class="st">&quot;Ethernet&quot;</span> mtu=1450 store=persistent</span></code></pre></div>
+<p>The <code>store=persistent</code> flag ensures the value remains
+after system reboots. Omitting it applies the change only until the next
+restart (<code>store=active</code>).</p>
+<p><strong>Using PowerShell:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Set-NetIPInterface <span class="op">-</span>InterfaceAlias <span class="st">&quot;Ethernet&quot;</span> <span class="op">-</span>NlMtuBytes <span class="dv">1450</span></span></code></pre></div>
+<h3 id="registry-storage">Registry Storage</h3>
+<p>When an MTU value is manually configured or permanently modified by
+network drivers, Windows stores it within the registry under the
+interface's unique Globally Unique Identifier (GUID):</p>
+<p><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{Adapter-GUID}</code></p>
+<p>A <code>DWORD (32-bit)</code> value named <code>MTU</code> defines
+the static size in bytes. If this registry entry does not exist, Windows
+10 relies on the standard dynamic defaults provided by the driver and
+the network stack.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

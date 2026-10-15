@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role of LSASS in Windows 10 Explained - windows-10</title>
+    <meta name="description" content="The Local Security Authority Subsystem Service (LSASS) is a core process in the Microsoft Windows 10 operating system responsible for enforcing security policies, managing user authentication, and creating access tokens. This article provides a concise ov">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/role-of-lsass-in-windows-10-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Role of LSASS in Windows 10 Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/role-of-lsass-in-windows-10-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Local Security Authority Subsystem Service (LSASS) is a core process in the Microsoft Windows 10 operating system responsible for enforcing security policies, managing user authentication, and creating access tokens. This article provides a concise ov" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="role-of-lsass-in-windows-10-explained">Role of LSASS in Windows
+10 Explained</h1>
+<p>The Local Security Authority Subsystem Service (LSASS) is a core
+process in the Microsoft Windows 10 operating system responsible for
+enforcing security policies, managing user authentication, and creating
+access tokens. This article provides a concise overview of what LSASS
+does, how it interacts with system components, and why its integrity is
+critical to the overall security of Windows 10.</p>
+<h3 id="user-authentication">User Authentication</h3>
+<p>LSASS runs as a protected system process named
+<code>lsass.exe</code>. When a user attempts to sign in to a Windows 10
+machine—whether locally or via a network domain—LSASS handles the
+verification of the submitted credentials. It interfaces with
+authentication packages such as NTLM (for local and legacy
+authentication) and Kerberos (for Active Directory environments).</p>
+<p>When logging in locally, LSASS queries the Security Accounts Manager
+(SAM) database to verify user credentials. If the system is joined to a
+domain, LSASS communicates with the domain controller to validate the
+user through Kerberos tickets.</p>
+<h3 id="access-token-creation">Access Token Creation</h3>
+<p>Once credentials are successfully verified, LSASS generates an access
+token for the authenticated user. This access token contains:</p>
+<ul>
+<li>The user’s Security Identifier (SID)</li>
+<li>Group SIDs representing the user’s group memberships</li>
+<li>Privileges assigned to the user account (such as the ability to shut
+down the system or take ownership of files)</li>
+</ul>
+<p>Every application, process, or thread launched by the user inherits a
+copy of this access token. The Windows kernel uses this token to grant
+or deny access to system resources, files, and registry keys.</p>
+<h3 id="security-policy-enforcement">Security Policy Enforcement</h3>
+<p>LSASS is responsible for managing and enforcing the Local Security
+Policy on Windows 10. It controls:</p>
+<ul>
+<li>Password policies (minimum length, complexity requirements, and
+expiration)</li>
+<li>Account lockout thresholds</li>
+<li>User rights assignments (e.g., "Log on as a service" or "Allow log
+on locally")</li>
+<li>System audit policies, ensuring that security-related events (such
+as failed login attempts) are written to the Windows Security Event
+Log</li>
+</ul>
+<h3 id="credential-caching-and-single-sign-on-sso">Credential Caching
+and Single Sign-On (SSO)</h3>
+<p>To provide Single Sign-On (SSO) functionality, LSASS stores active
+credentials and tickets in its process memory. This allows users to
+access network shares, printers, and internal websites without
+repeatedly entering their username and password during an active
+session.</p>
+<h3 id="security-implications-and-protection-in-windows-10">Security
+Implications and Protection in Windows 10</h3>
+<p>Because <code>lsass.exe</code> stores credentials in memory, it is a
+primary target for credential dumping tools such as Mimikatz. If an
+attacker gains administrative privileges, extracting credentials from
+LSASS memory can lead to lateral movement across a network.</p>
+<p>To mitigate this risk, Windows 10 includes advanced protective
+measures:</p>
+<ul>
+<li><strong>LSA Protection (RunAsPPL):</strong> Configures LSASS to run
+as a Protected Process Light (PPL), preventing unsigned drivers or
+non-protected processes from reading its memory space.</li>
+<li><strong>Credential Guard:</strong> Uses Virtualization-Based
+Security (VBS) to isolate credential secrets inside a secure virtual
+container (Virtual Secure Mode), completely removing the secrets from
+the standard LSASS memory accessible by the host operating system.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

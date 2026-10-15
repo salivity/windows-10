@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 File Attribute Indexing Explained - windows-10</title>
+    <meta name="description" content="This article explains how the Microsoft Windows 10 operating system processes, catalogs, and retrieves file attributes to deliver rapid results through Windows Search. It details the underlying architecture of the Windows Search service, how the Extensibl">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-file-attribute-indexing-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 File Attribute Indexing Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-file-attribute-indexing-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how the Microsoft Windows 10 operating system processes, catalogs, and retrieves file attributes to deliver rapid results through Windows Search. It details the underlying architecture of the Windows Search service, how the Extensibl" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-file-attribute-indexing-explained">Windows 10 File
+Attribute Indexing Explained</h1>
+<p>This article explains how the Microsoft Windows 10 operating system
+processes, catalogs, and retrieves file attributes to deliver rapid
+results through Windows Search. It details the underlying architecture
+of the Windows Search service, how the Extensible Storage Engine (ESE)
+database structures metadata, the role of the NTFS Change Journal in
+tracking modifications, and how property handlers extract file
+attributes for instant query resolution.</p>
+<h3 id="the-windows-search-service-architecture">The Windows Search
+Service Architecture</h3>
+<p>At the core of file indexing in Windows 10 is the Windows Search
+service (<code>WSearch</code>), a background system service that runs
+with elevated system privileges. Rather than scanning the storage drive
+sequentially every time a user types a query, Windows 10 maintains a
+persistent, pre-computed catalog of files, paths, and metadata.</p>
+<p>The service operates in low-priority I/O and CPU modes to avoid
+degrading overall system performance. It monitors user activity and
+throttles indexing tasks during intensive system usage or when a laptop
+is running on battery power.</p>
+<h3 id="the-extensible-storage-engine-windowsedb">The Extensible Storage
+Engine (Windows.edb)</h3>
+<p>All indexed file attributes and contents are stored in an Extensible
+Storage Engine (ESE) database, commonly known as Jet Blue. This database
+is located on the system drive at:</p>
+<p><code>C:\ProgramData\Microsoft\Search\Data\Applications\Windows\Windows.edb</code></p>
+<p>The ESE database functions as a high-performance, B-tree structured
+database capable of handling millions of records. Within this database,
+file attributes—such as file name, file path, size, date created, date
+modified, extension, and file flags (read-only, system, hidden)—are
+mapped as structured columns. For text-based files, the database also
+maintains an inverted index that maps specific terms to file IDs for
+fast full-text search.</p>
+<h3 id="tracking-file-changes-with-the-ntfs-usn-journal">Tracking File
+Changes with the NTFS USN Journal</h3>
+<p>To prevent continuous, resource-heavy directory scanning, Windows 10
+relies directly on the NTFS file system’s Update Sequence Number (USN)
+Change Journal.</p>
+<p>Whenever a file is created, modified, deleted, or has its attributes
+altered, the NTFS driver writes a record of this action to the USN
+Journal. The Windows Search service monitors this journal. When a change
+is detected:</p>
+<ol type="1">
+<li>The service identifies the exact file referenced by the USN
+record.</li>
+<li>It fetches the updated file system attributes.</li>
+<li>It updates the corresponding record in <code>Windows.edb</code>
+without touching the rest of the storage volume.</li>
+</ol>
+<h3 id="attribute-extraction-and-property-handlers">Attribute Extraction
+and Property Handlers</h3>
+<p>Windows Search differentiates between basic file system attributes
+and extended file properties:</p>
+<ul>
+<li><strong>Standard File System Attributes:</strong> Basic metadata
+like file size, directory path, timestamps, and attributes (e.g.,
+archive, compressed) are obtained directly from the Master File Table
+(MFT) of the file system.</li>
+<li><strong>Extended Properties:</strong> Windows uses modular
+components called Property Handlers to read internal metadata. For
+example, image files (EXIF tags such as dimensions and camera model),
+audio tracks (ID3 tags like artist and bitrate), and Office documents
+(author, word count) are parsed by their respective handlers and added
+to the indexed attribute columns.</li>
+<li><strong>Content Extraction:</strong> If content indexing is enabled
+for a given file type, an <code>IFilter</code> interface is invoked to
+strip formatting and parse raw textual data into the inverted
+index.</li>
+</ul>
+<h3 id="indexing-modes-classic-vs-enhanced">Indexing Modes: Classic vs.
+Enhanced</h3>
+<p>Windows 10 provides two operational modes for file indexing:</p>
+<ul>
+<li><strong>Classic Search:</strong> Focuses indexing strictly on common
+user profile locations (Desktop, Documents, Pictures, Music, and Videos)
+and explicit inclusions set by the user.</li>
+<li><strong>Enhanced Search:</strong> Expands the scope across all
+non-system, non-hidden partitions and directories on the PC, indexing
+metadata across the entire storage space while respecting standard
+exclusion rules (such as temporary folders and the OS system
+directory).</li>
+</ul>
+<h3 id="fast-query-resolution">Fast Query Resolution</h3>
+<p>When a user initiates a query through the taskbar or File Explorer,
+Windows Search translates the query into an indexed search against
+<code>Windows.edb</code>. Because the B-tree structure provides
+logarithmic time complexity (<span class="math inline">\(O(\log
+n)\)</span>) for lookups, the operating system can scan millions of file
+attributes in milliseconds, instantly returning matching files filtered
+by name, size, type, or date.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

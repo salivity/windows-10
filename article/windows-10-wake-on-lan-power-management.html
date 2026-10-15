@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Wake-on-LAN Power Management - windows-10</title>
+    <meta name="description" content="Wake-on-LAN (WoL) in Windows 10 enables remote power management by allowing a computer in a low-power state to be powered on or awakened via a specialized network signal called a Magic Packet. This article explains how Windows 10 interprets these incoming">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-wake-on-lan-power-management">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Wake-on-LAN Power Management - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-wake-on-lan-power-management" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Wake-on-LAN (WoL) in Windows 10 enables remote power management by allowing a computer in a low-power state to be powered on or awakened via a specialized network signal called a Magic Packet. This article explains how Windows 10 interprets these incoming" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-wake-on-lan-power-management">Windows 10 Wake-on-LAN
+Power Management</h1>
+<p>Wake-on-LAN (WoL) in Windows 10 enables remote power management by
+allowing a computer in a low-power state to be powered on or awakened
+via a specialized network signal called a Magic Packet. This article
+explains how Windows 10 interprets these incoming network frames, how
+the operating system interacts with ACPI power states, the impact of
+Windows 10’s Fast Startup feature, and the configuration steps required
+for reliable remote power management.</p>
+<h3 id="the-wake-on-lan-mechanism">The Wake-on-LAN Mechanism</h3>
+<p>Wake-on-LAN operates at the Data Link layer (OSI Layer 2) and relies
+on a "Magic Packet"—a broadcast frame containing 6 bytes of
+<code>0xFF</code> followed by 16 repetitions of the target machine’s
+48-bit MAC address. When a computer running Windows 10 is placed into a
+supported standby or shutdown state, the operating system instructs the
+Network Interface Card (NIC) to enter a low-power listening mode. The
+physical link remains active, continuously scanning incoming network
+traffic for its unique signature. Upon detecting its specific Magic
+Packet, the NIC signals the motherboard's power delivery system
+(typically via the PCIe bus or PME pin) to boot or wake the system.</p>
+<h3 id="interaction-with-acpi-power-states">Interaction with ACPI Power
+States</h3>
+<p>Windows 10 manages hardware states according to the Advanced
+Configuration and Power Interface (ACPI) specification:</p>
+<ul>
+<li><strong>Sleep (S3):</strong> Supported natively. The system retains
+state in RAM, and Windows 10 fully permits the NIC to wake the machine
+upon receiving a Magic Packet.</li>
+<li><strong>Hibernate (S4):</strong> Supported natively. Windows writes
+the system state to the disk (<code>hiberfil.sys</code>). The NIC
+remains powered to listen for Magic Packets and initiates a standard
+hibernation resume upon packet detection.</li>
+<li><strong>Soft Off (S5):</strong> Conditionally supported. In a
+traditional full shutdown, Windows 10 completely unloads drivers and
+powers down hardware. By default, Windows 10 does not support WoL from
+S5 unless explicitly supported and enabled at the hardware/firmware
+level (UEFI/BIOS) and supported by the specific NIC driver.</li>
+</ul>
+<h3 id="the-impact-of-fast-startup">The Impact of Fast Startup</h3>
+<p>Windows 10 introduces a hybrid shutdown feature known as "Fast
+Startup." During a standard shutdown via the Start menu, Windows 10 logs
+off the user, creates a hibernation file containing only the Windows
+kernel and drivers (a state often referred to as S4 hybrid), and powers
+down the machine.</p>
+<p>By default, the Windows 10 operating system does not arm the NIC for
+Wake-on-LAN during a Fast Startup shutdown to preserve battery life and
+adhere to energy standards. Consequently, if Fast Startup is enabled, a
+system shut down via normal methods cannot be awakened via WoL. To
+enable WoL from a shutdown state, users must either perform a restart
+(which enters a clean S5 state, often allowing hardware-level WoL) or
+disable Fast Startup in the Windows Power Options.</p>
+<h3 id="operating-system-configuration">Operating System
+Configuration</h3>
+<p>For Windows 10 to process WoL signals correctly, specific settings
+must be applied across the operating system:</p>
+<ol type="1">
+<li><strong>Device Manager Power Management:</strong> Within the
+properties of the network adapter, the "Power Management" tab controls
+OS-level handling:
+<ul>
+<li><strong>Allow this device to wake the computer:</strong> Enables the
+adapter to generate wake events.</li>
+<li><strong>Only allow a magic packet to wake the computer:</strong>
+Crucial to prevent accidental wakes caused by routine broadcast traffic
+or port scans.</li>
+</ul></li>
+<li><strong>Advanced Adapter Properties:</strong> Within the "Advanced"
+tab of the network adapter properties:
+<ul>
+<li><strong>Wake on Magic Packet:</strong> Must be set to
+"Enabled."</li>
+<li><strong>Energy Efficient Ethernet / Green Ethernet:</strong> Often
+needs to be disabled, as power-saving features can cause the NIC to drop
+link speed or stop listening entirely in low-power states.</li>
+</ul></li>
+<li><strong>Fast Startup Configuration:</strong> Located in the legacy
+Control Panel under <em>Power Options &gt; Choose what the power buttons
+do</em>, unchecking "Turn on fast startup" ensures that shutdowns enter
+an ACPI state capable of retaining network-triggered wake
+functionality.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

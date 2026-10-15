@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Uses Virtual Memory and Pagefile - windows-10</title>
+    <meta name="description" content="This article provides an overview of how the Microsoft Windows 10 operating system manages virtual memory and utilizes the pagefile.sys architecture. It covers the fundamentals of virtual address spaces, the life cycle of memory pages, the working set mod">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-uses-virtual-memory-and-pagefile">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Uses Virtual Memory and Pagefile - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-uses-virtual-memory-and-pagefile" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of how the Microsoft Windows 10 operating system manages virtual memory and utilizes the pagefile.sys architecture. It covers the fundamentals of virtual address spaces, the life cycle of memory pages, the working set mod" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-uses-virtual-memory-and-pagefile">How Windows 10
+Uses Virtual Memory and Pagefile</h1>
+<p>This article provides an overview of how the Microsoft Windows 10
+operating system manages virtual memory and utilizes the
+<code>pagefile.sys</code> architecture. It covers the fundamentals of
+virtual address spaces, the life cycle of memory pages, the working set
+model, and the underlying algorithms—including working set trimming,
+modified page writing, and page replacement—that govern how data moves
+between physical RAM and storage.</p>
+<h2 id="virtual-address-space-and-hardware-paging">Virtual Address Space
+and Hardware Paging</h2>
+<p>Windows 10 provides every process with its own private virtual
+address space (VAS). On 64-bit systems, this flat address space
+theoretically spans up to 128 terabytes per process. The operating
+system, in conjunction with the processor's Memory Management Unit
+(MMU), maps these virtual addresses to physical memory addresses using
+page tables.</p>
+<p>Memory is divided into fixed-size blocks called pages, which are
+typically 4 kilobytes (KB) in size on x86/x64 architectures. Each page
+can exist in one of two primary hardware states:</p>
+<ul>
+<li><strong>Valid (Resident):</strong> The virtual page maps directly to
+a physical frame in RAM.</li>
+<li><strong>Invalid (Non-resident):</strong> The page is not currently
+in physical RAM. Attempting to access an invalid page triggers a
+hardware page fault exception, handing execution over to the Windows
+Memory Manager.</li>
+</ul>
+<h2 id="the-working-set-model">The Working Set Model</h2>
+<p>To ensure fair allocation and efficient memory usage, the Windows 10
+Memory Manager implements the Working Set model. A process's "Working
+Set" is the collection of virtual pages currently resident in physical
+RAM assigned to that specific process.</p>
+<p>Windows 10 enforces dynamic working set boundaries:</p>
+<ul>
+<li><strong>Minimum Working Set:</strong> The minimum amount of physical
+memory guaranteed to the process.</li>
+<li><strong>Maximum Working Set:</strong> The threshold of physical
+memory a process can occupy before the operating system begins
+aggressively reclaiming its pages.</li>
+</ul>
+<p>When physical RAM runs low, the operating system executes
+<strong>Working Set Trimming</strong>. It inspects processes that are
+idle or exceeding their operational needs and evicts eligible pages to
+make room for active workloads.</p>
+<h2 id="page-states-and-the-page-lists">Page States and the Page
+Lists</h2>
+<p>Pages removed from a working set are not immediately written to disk.
+Instead, Windows tracks them using specialized software lists:</p>
+<ol type="1">
+<li><strong>Standby List:</strong> Contains clean pages (pages whose
+contents already match what is stored on disk or in the pagefile). These
+pages act as an in-memory cache. If the process requires the page again,
+a "soft page fault" occurs, instantly restoring the page to the working
+set without disk I/O.</li>
+<li><strong>Modified List:</strong> Contains dirty pages whose contents
+have been modified since they were read from or written to disk. These
+pages must be written to backing storage before their physical RAM
+frames can be reused.</li>
+<li><strong>Free List:</strong> Pages available for allocation that
+contain uninitialized or stale data.</li>
+<li><strong>Zeroed List:</strong> Free pages that have been filled with
+zeros by a background system thread for security and fast
+allocation.</li>
+</ol>
+<h2 id="page-replacement-algorithms">Page Replacement Algorithms</h2>
+<p>Windows 10 does not use a strict Least Recently Used (LRU) algorithm
+because true LRU requires high computational overhead to track every
+memory access. Instead, it employs an <strong>approximated LRU algorithm
+based on the Clock (FIFO with Second Chance) algorithm</strong>.</p>
+<p>During working set trimming:</p>
+<ol type="1">
+<li>The Memory Manager scans the Page Table Entries (PTEs) of a target
+process.</li>
+<li>Hardware sets an "Accessed" or "Referenced" bit in the PTE whenever
+a page is read or written.</li>
+<li>The algorithm inspects this bit:
+<ul>
+<li>If the bit is <strong>1</strong>, the page has been accessed
+recently. The manager clears the bit to <strong>0</strong> and leaves
+the page in the working set (granting it a "second chance").</li>
+<li>If the bit is <strong>0</strong>, the page has not been accessed
+since the last scan. The manager removes the page from the process
+working set and pushes it to either the Standby List or the Modified
+List.</li>
+</ul></li>
+</ol>
+<h2 id="the-role-of-pagefilesys-and-the-modified-page-writer">The Role
+of Pagefile.sys and the Modified Page Writer</h2>
+<p>The <code>pagefile.sys</code> file serves as a secondary storage
+extension of physical RAM for non-file-backed data (known as private or
+anonymous memory). Standard executable code and read-only mapped files
+are backed by their original locations on disk, but modified heap,
+stack, and dynamically allocated memory require the pagefile to persist
+when evicted from RAM.</p>
+<p>Writing to <code>pagefile.sys</code> is handled by the
+<strong>Modified Page Writer (MPW)</strong>, a set of high-priority
+kernel threads:</p>
+<ul>
+<li>When the Modified List reaches a specific capacity threshold, the
+MPW wakes up.</li>
+<li>It organizes dirty pages into contiguous physical disk sectors to
+minimize I/O fragmentation and maximize write throughput.</li>
+<li>Once the write operation completes, the pages transition from the
+Modified List to the Standby List. Their physical frames remain cached
+until another allocation overwrites them.</li>
+</ul>
+<h2 id="memory-compression-in-windows-10">Memory Compression in Windows
+10</h2>
+<p>Windows 10 introduced an intermediate layer between RAM eviction and
+pagefile writes: the <strong>Compression Store</strong>.</p>
+<p>When the system experiences memory pressure, the Memory Manager
+compresses inactive pages using an optimized LZ-based algorithm and
+stores them within a dedicated working set in the system process.
+Instead of incurring slow disk writes to <code>pagefile.sys</code>,
+pages are compressed in-memory. A subsequent request for that page
+triggers a soft decompression fault, which executes significantly faster
+than reading from a physical storage device. Only when the compressed
+store itself requires trimming are the compressed blocks serialized and
+written to the pagefile.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

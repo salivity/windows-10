@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role of SAM Client in Windows 10 Domain Operations - windows-10</title>
+    <meta name="description" content="The Security Account Manager (SAM) client in Microsoft Windows 10 acts as the vital communication bridge between local security processes and remote Active Directory Domain Services (AD DS). While the local SAM database stores and manages local accounts,">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/role-of-sam-client-in-windows-10-domain-operations">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Role of SAM Client in Windows 10 Domain Operations - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/role-of-sam-client-in-windows-10-domain-operations" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Security Account Manager (SAM) client in Microsoft Windows 10 acts as the vital communication bridge between local security processes and remote Active Directory Domain Services (AD DS). While the local SAM database stores and manages local accounts," />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="role-of-sam-client-in-windows-10-domain-operations">Role of SAM
+Client in Windows 10 Domain Operations</h1>
+<p>The Security Account Manager (SAM) client in Microsoft Windows 10
+acts as the vital communication bridge between local security processes
+and remote Active Directory Domain Services (AD DS). While the local SAM
+database stores and manages local accounts, the SAM client component
+within the Local Security Authority Subsystem Service (LSASS) routes
+account queries, resolves security identifiers (SIDs), and coordinates
+authorization data during domain member operations. This article
+explores how the SAM client operates when a Windows 10 workstation
+interacts with an Active Directory domain, focusing on account lookup,
+local group population, and communication protocols.</p>
+<h3
+id="distinguishing-local-storage-from-domain-operations">Distinguishing
+Local Storage from Domain Operations</h3>
+<p>On a standalone machine, the SAM service directly manages the local
+registry-based security database (<code>SAM</code> hive). However, when
+a Windows 10 computer joins an Active Directory domain, domain identity
+management shifts to the Domain Controllers (DCs).</p>
+<p>In this environment, the local SAM service relies on the SAM client
+interface to differentiate between local and domain requests:</p>
+<ul>
+<li><strong>Local Requests:</strong> Queries for accounts local to the
+machine (e.g., <code>COMPUTERNAME\LocalAdmin</code>) are handled
+directly by the local SAM database.</li>
+<li><strong>Domain Requests:</strong> When an application or subsystem
+queries an account within the domain (e.g., <code>DOMAIN\User</code>),
+the SAM client recognizes that the domain context is not hosted locally
+and directs the operation to the appropriate domain service or remote
+DC.</li>
+</ul>
+<h3 id="managing-local-group-nesting-with-domain-principals">Managing
+Local Group Nesting with Domain Principals</h3>
+<p>A primary operational role of the SAM client on a domain member
+workstation is managing membership in local security groups. Domain
+administrators frequently add domain users or domain global groups into
+built-in local groups, such as <code>Administrators</code>,
+<code>Remote Desktop Users</code>, or <code>Users</code>.</p>
+<p>When an administrator manages these groups via the Computer
+Management console, PowerShell, or the command line
+(<code>net localgroup</code>):</p>
+<ol type="1">
+<li>The administrative tool issues an API call to the local SAM.</li>
+<li>The local SAM client contacts a Domain Controller using the Security
+Account Manager Remote (MS-SAMR) protocol or Lightweight Directory
+Access Protocol (LDAP).</li>
+<li>The SAM client validates the domain account's existence and
+retrieves its SID.</li>
+<li>The local SAM then writes that domain SID into the membership list
+of the target local group.</li>
+</ol>
+<h3 id="resolving-names-and-security-identifiers-sids">Resolving Names
+and Security Identifiers (SIDs)</h3>
+<p>The SAM client assists the Local Security Authority (LSA) in
+translating human-readable account names into binary SIDs, and vice
+versa (LookupAccountName and LookupAccountSid operations).</p>
+<p>When a domain user attempts to access a local resource, the SAM
+client checks whether the target identifier belongs to the machine or
+the domain:</p>
+<ul>
+<li>If the SID has a domain-specific relative identifier (RID), the SAM
+client, working in tandem with the Netlogon and LSA services, sends the
+lookup request across the network to a Domain Controller.</li>
+<li>The returned account details, such as the full user principal name
+and account status, are supplied back to the local caller for access
+control evaluation.</li>
+</ul>
+<h3 id="facilitating-access-token-creation-during-logon">Facilitating
+Access Token Creation During Logon</h3>
+<p>During an interactive logon on a Windows 10 domain member,
+authentication is handled primarily by Kerberos or NTLM via the Kerberos
+Security Support Provider (SSP) or MSV1_0 SSP. However, the SAM client
+still plays an essential role in authorization and local token
+compilation:</p>
+<ol type="1">
+<li><strong>PAC Extraction:</strong> The authentication package receives
+a Kerberos ticket containing a Privilege Attribute Certificate (PAC)
+detailing the domain user's domain group memberships.</li>
+<li><strong>Local Group Membership Evaluation:</strong> The LSA invokes
+the local SAM to determine which local groups the incoming domain user
+belongs to—either directly or through nested domain groups.</li>
+<li><strong>Token Construction:</strong> The local SAM provides the list
+of local group SIDs to LSASS. LSASS combines these local SIDs with the
+domain SIDs from the PAC to create the comprehensive access token that
+governs the user's session rights and resource access.</li>
+</ol>
+<h3 id="network-protocol-implementation-ms-samr">Network Protocol
+Implementation (MS-SAMR)</h3>
+<p>The SAM client implements the client-side stubs of the
+<strong>MS-SAMR (Security Account Manager Remote)</strong> protocol over
+Remote Procedure Calls (RPC), utilizing either named pipes
+(<code>\pipe\samr</code> over SMB) or TCP/IP dynamic endpoints. Through
+MS-SAMR, the client can securely query domain-level account policies,
+password complexity requirements, and lockout statuses when requested by
+local management interfaces.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

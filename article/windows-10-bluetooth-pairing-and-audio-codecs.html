@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Bluetooth Pairing and Audio Codecs - windows-10</title>
+    <meta name="description" content="The Microsoft Windows 10 operating system manages wireless audio connections through a standardized Bluetooth software stack that handles both device pairing and audio profile configuration. When connecting to wireless headphones or speakers, Windows 10 e">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-bluetooth-pairing-and-audio-codecs">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Bluetooth Pairing and Audio Codecs - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-bluetooth-pairing-and-audio-codecs" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Microsoft Windows 10 operating system manages wireless audio connections through a standardized Bluetooth software stack that handles both device pairing and audio profile configuration. When connecting to wireless headphones or speakers, Windows 10 e" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-bluetooth-pairing-and-audio-codecs">Windows 10
+Bluetooth Pairing and Audio Codecs</h1>
+<p>The Microsoft Windows 10 operating system manages wireless audio
+connections through a standardized Bluetooth software stack that handles
+both device pairing and audio profile configuration. When connecting to
+wireless headphones or speakers, Windows 10 establishes a secure
+hardware bond using the Bluetooth core architecture, establishes
+communication via audio-specific profiles, and negotiates the optimal
+audio codec using the Audio/Video Distribution Transport Protocol
+(AVDTP) to balance latency, bandwidth, and audio fidelity.</p>
+<h3 id="the-bluetooth-pairing-process">The Bluetooth Pairing
+Process</h3>
+<p>Bluetooth pairing in Windows 10 is managed by the Windows Bluetooth
+subsystem, primarily driven by the Bluetooth Support Service
+(<code>bthserv</code>) and the system's radio drivers. The pairing
+sequence follows standard Bluetooth Core Specifications:</p>
+<ol type="1">
+<li><strong>Discovery and Inquiry:</strong> When the user opens the
+Windows 10 Bluetooth settings or uses Swift Pair, the OS instructs the
+host Bluetooth adapter to scan for advertisement packets broadcast by
+nearby devices in pairing mode.</li>
+<li><strong>Authentication and Key Exchange:</strong> Windows 10
+primarily utilizes Secure Simple Pairing (SSP) for modern Bluetooth
+Classic devices, or Secure Connections for Bluetooth Low Energy (LE).
+Depending on the device capabilities, the OS negotiates one of four
+association models:
+<ul>
+<li><strong>Just Works:</strong> Used when the audio device lacks a
+display or input interface. The authentication occurs without user
+confirmation, though encryption keys are still generated.</li>
+<li><strong>Numeric Comparison:</strong> Used if both endpoints can
+display a 6-digit code.</li>
+<li><strong>Passkey Entry:</strong> Used if one device requires a PIN
+entered on the host.</li>
+</ul></li>
+<li><strong>Link Key Generation and Bonding:</strong> Upon successful
+authentication, Windows 10 and the audio device generate a shared Link
+Key (or Long-Term Key for LE). Windows stores this key securely in the
+system registry, allowing the OS to automatically authenticate and
+reconnect to the device in subsequent sessions without user
+intervention.</li>
+</ol>
+<h3 id="audio-profiles-and-role-assignment">Audio Profiles and Role
+Assignment</h3>
+<p>Once paired, Windows 10 queries the device’s Service Discovery
+Protocol (SDP) records to identify supported profiles. For audio
+hardware, Windows initializes two distinct profiles:</p>
+<ul>
+<li><strong>Advanced Audio Distribution Profile (A2DP):</strong>
+Configures the PC as an Audio Source (SRC) and the receiving device as
+an Audio Sink (SNK). This profile is used for unidirectional,
+high-quality stereo media playback.</li>
+<li><strong>Hands-Free Profile (HFP) or Headset Profile (HSP):</strong>
+Configures bidirectional, low-bandwidth audio for voice communications
+(such as VoIP calls or teleconferencing) alongside microphone
+input.</li>
+</ul>
+<p>Windows 10 routes system sound through the A2DP profile by default
+and dynamically switches to or enables HFP when an application requests
+microphone access.</p>
+<h3 id="audio-codec-negotiation">Audio Codec Negotiation</h3>
+<p>Codec negotiation takes place within the A2DP framework via the
+Audio/Video Distribution Transport Protocol (AVDTP). The process occurs
+in sequential phases:</p>
+<ol type="1">
+<li><strong>Stream Endpoint Discovery:</strong> Windows 10 sends an
+<code>AVDTP_DISCOVER</code> request to the sink device to identify all
+available Stream Endpoints (SEPs) and their media types.</li>
+<li><strong>Capability Query:</strong> Windows queries each endpoint
+with <code>AVDTP_GET_CAPABILITIES</code>. The sink device responds with
+its supported codecs and parameters, such as sampling rates (e.g., 44.1
+kHz, 48 kHz), channel modes (Stereo, Joint Stereo), and bitpool
+ranges.</li>
+<li><strong>Codec Selection:</strong> Windows 10 evaluates the sink's
+supported codecs against its own internal priority list:
+<ul>
+<li><strong>SBC (Subband Codec):</strong> The mandatory baseline codec
+for all A2DP devices. Windows supports standard SBC configurations with
+typical bitrates up to 328 kbps.</li>
+<li><strong>Qualcomm aptX:</strong> Natively supported in Windows 10 for
+devices that include aptX licensing capabilities, providing
+fixed-bitrate, lower-latency compression.</li>
+<li><strong>AAC (Advanced Audio Coding):</strong> Added natively to
+Windows 10 in later feature updates (Build 21370 and onward, carried
+forward into 21H2), offering higher efficiency compression.</li>
+</ul></li>
+<li><strong>Configuration Lock:</strong> The OS selects the
+highest-priority codec supported by both the host adapter/software stack
+and the receiving device. Windows then transmits an
+<code>AVDTP_SET_CONFIGURATION</code> command containing the chosen
+codec, sample rate, and bitpool settings. Once acknowledged by the sink,
+the stream endpoint is opened via <code>AVDTP_OPEN</code>, and the
+Windows Audio Engine begins routing PCM audio through the selected codec
+encoder for transmission over the radio link.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

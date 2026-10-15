@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the Windows 10 iSCSI Initiator? - windows-10</title>
+    <meta name="description" content="This article provides an overview of the Microsoft Windows 10 iSCSI Initiator configuration utility, explaining its core functionality, operational purpose, and key features. By detailing how the utility bridges client operating systems and network-attach">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/what-is-the-windows-10-i-scsi-initiator">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the Windows 10 iSCSI Initiator? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/what-is-the-windows-10-i-scsi-initiator" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of the Microsoft Windows 10 iSCSI Initiator configuration utility, explaining its core functionality, operational purpose, and key features. By detailing how the utility bridges client operating systems and network-attach" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-windows-10-iscsi-initiator">What Is the Windows 10
+iSCSI Initiator?</h1>
+<p>This article provides an overview of the Microsoft Windows 10 iSCSI
+Initiator configuration utility, explaining its core functionality,
+operational purpose, and key features. By detailing how the utility
+bridges client operating systems and network-attached storage arrays,
+this guide clarifies how Windows 10 manages block-level data transfers
+over standard IP networks.</p>
+<p>The primary purpose of the Microsoft Windows 10 iSCSI (Internet Small
+Computer Systems Interface) Initiator is to connect a Windows computer
+to external, network-based storage devices. In storage networking
+terminology, the client machine requesting access is known as the
+"initiator," while the remote storage system (such as a SAN, NAS, or
+storage server) is called the "target." The built-in utility enables
+Windows 10 to establish, manage, and secure communication sessions with
+these remote targets over standard Ethernet networks.</p>
+<p>Unlike traditional file-sharing protocols such as SMB or NFS, which
+provide file-level storage, the iSCSI Initiator delivers block-level
+storage access. Once a connection is established using the utility, the
+remote storage volume appears in Windows 10 as if it were a locally
+attached physical hard drive. Users can partition, format, assign drive
+letters, and manage these drives using standard administrative tools
+like Windows Disk Management or PowerShell.</p>
+<p>The iSCSI Initiator configuration utility provides several essential
+functions:</p>
+<ul>
+<li><strong>Target Discovery:</strong> Enables the operating system to
+discover iSCSI targets automatically using IP addresses, domain names,
+or the Internet Storage Name Service (iSNS).</li>
+<li><strong>Authentication and Security:</strong> Supports
+authentication mechanisms such as Challenge Handshake Authentication
+Protocol (CHAP) and mutual CHAP to verify the identities of both the
+client and the target. It also integrates with IPsec to encrypt data in
+transit over the network.</li>
+<li><strong>Session Management and Auto-Reconnection:</strong>
+Automatically reconnects configured target volumes upon system reboot,
+ensuring uninterrupted access to persistent network storage.</li>
+<li><strong>Multipath I/O (MPIO) Integration:</strong> Works alongside
+Windows Multipath I/O to configure redundant network paths to storage
+targets, providing failover capabilities and load balancing for enhanced
+reliability and performance.</li>
+</ul>
+<p>The Windows 10 iSCSI Initiator utility allows workstations to expand
+storage capacity without requiring additional internal physical drives,
+access shared high-performance storage in enterprise environments, and
+facilitate centralized data backup and recovery workflows.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

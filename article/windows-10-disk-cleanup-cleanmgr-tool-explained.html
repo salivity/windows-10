@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Disk Cleanup cleanmgr Tool Explained - windows-10</title>
+    <meta name="description" content="The Disk Cleanup tool, known executable as cleanmgr.exe, is a built-in maintenance utility in Microsoft Windows 10 designed to reclaim storage space by safely removing unnecessary and temporary files. This guide details the core functions of the tool, the">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-disk-cleanup-cleanmgr-tool-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Disk Cleanup cleanmgr Tool Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-disk-cleanup-cleanmgr-tool-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Disk Cleanup tool, known executable as cleanmgr.exe, is a built-in maintenance utility in Microsoft Windows 10 designed to reclaim storage space by safely removing unnecessary and temporary files. This guide details the core functions of the tool, the" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-disk-cleanup-cleanmgr-tool-explained">Windows 10 Disk
+Cleanup cleanmgr Tool Explained</h1>
+<p>The Disk Cleanup tool, known executable as <code>cleanmgr.exe</code>,
+is a built-in maintenance utility in Microsoft Windows 10 designed to
+reclaim storage space by safely removing unnecessary and temporary
+files. This guide details the core functions of the tool, the specific
+types of data it targets, how it handles system-level cleanup, and its
+overall role in maintaining system performance.</p>
+<h3 id="core-function-and-purpose">Core Function and Purpose</h3>
+<p>The primary objective of the Disk Cleanup utility is to scan the
+storage drive, analyze which files are no longer required by the
+operating system or user applications, and permanently delete them.
+Running low on disk space can cause system instability, failed updates,
+and sluggish performance. <code>cleanmgr</code> automates the
+identification and removal of clutter, eliminating the risk of users
+accidentally deleting critical system files manually.</p>
+<h3 id="types-of-files-removed">Types of Files Removed</h3>
+<p>When executed, Disk Cleanup categorizes dispensable data so users can
+choose what to delete. The tool routinely targets:</p>
+<ul>
+<li><strong>Temporary Files:</strong> Remnants left behind by
+applications that were not deleted after closing.</li>
+<li><strong>Downloaded Program Files:</strong> ActiveX controls and Java
+applets automatically downloaded for web pages.</li>
+<li><strong>Temporary Internet Files:</strong> Cached webpages, images,
+and media files stored by Microsoft browsers to speed up browsing.</li>
+<li><strong>Recycle Bin:</strong> Files that were deleted by the user
+but still occupy physical disk space until purged.</li>
+<li><strong>Thumbnails:</strong> Cached previews of images, videos, and
+documents to accelerate folder rendering.</li>
+<li><strong>Delivery Optimization Files:</strong> Cached update files
+used to share Windows updates with other PCs on a local network or the
+internet.</li>
+</ul>
+<h3 id="system-file-cleanup-capabilities">System File Cleanup
+Capabilities</h3>
+<p>In addition to basic user-level cleaning, Disk Cleanup includes an
+elevated mode accessible by selecting "Clean up system files" or
+launching the executable with administrative privileges. This extended
+scan targets deeper operating system artifacts, including:</p>
+<ul>
+<li><strong>Windows Update Cleanup:</strong> Previous versions of
+updated components maintained by the Component Store (WinSxS). Deleting
+these frees up several gigabytes after major updates.</li>
+<li><strong>Previous Windows Installations:</strong> The
+<code>Windows.old</code> directory generated after feature updates or
+system upgrades.</li>
+<li><strong>Device Driver Packages:</strong> Older versions of hardware
+drivers retained after newer versions are installed.</li>
+<li><strong>Setup Log Files:</strong> Diagnostic information created
+during Windows installations or updates.</li>
+</ul>
+<h3 id="safety-and-operation">Safety and Operation</h3>
+<p>The Disk Cleanup utility is strictly programmed to recognize
+non-essential files. Unlike aggressive third-party cleaners,
+<code>cleanmgr</code> will never remove user documents, media libraries,
+or critical operating system kernels.</p>
+<p>The tool can be accessed by typing <code>cleanmgr</code> into the
+Windows Run dialog (<code>Windows Key + R</code>), searching for "Disk
+Cleanup" in the Start menu, or executing the command through PowerShell
+and Command Prompt with automated switches (such as
+<code>/sageset</code> and <code>/sagerun</code> for automated
+scripting).</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

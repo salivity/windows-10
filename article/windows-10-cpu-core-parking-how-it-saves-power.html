@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 CPU Core Parking: How It Saves Power - windows-10</title>
+    <meta name="description" content="Dynamic CPU core parking is an intelligent power-management feature built into Microsoft Windows 10 designed to scale the number of active processor cores according to system load. When computational demand decreases, the operating system consolidates exe">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-cpu-core-parking-how-it-saves-power">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 CPU Core Parking: How It Saves Power - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-cpu-core-parking-how-it-saves-power" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Dynamic CPU core parking is an intelligent power-management feature built into Microsoft Windows 10 designed to scale the number of active processor cores according to system load. When computational demand decreases, the operating system consolidates exe" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-cpu-core-parking-how-it-saves-power">Windows 10 CPU
+Core Parking: How It Saves Power</h1>
+<p>Dynamic CPU core parking is an intelligent power-management feature
+built into Microsoft Windows 10 designed to scale the number of active
+processor cores according to system load. When computational demand
+decreases, the operating system consolidates executing threads onto a
+minimal number of cores and transitions the idle cores into low-power
+sleep states, significantly reducing electrical draw and thermal output.
+As computational requirements increase, the Windows kernel
+instantaneously "unparks" these dormant cores to maintain peak
+responsiveness and performance.</p>
+<h3 id="the-role-of-the-kernel-power-manager-and-scheduler">The Role of
+the Kernel Power Manager and Scheduler</h3>
+<p>Core parking in Windows 10 is managed through cooperation between the
+Kernel Power Manager and the Windows CPU Scheduler. The Kernel Power
+Manager is responsible for evaluating system policies, power plans, and
+performance states, while the Scheduler governs thread allocation across
+available execution units.</p>
+<p>The Kernel Power Manager continuously samples system-wide processor
+utilization, interrupts, and thread queue depths across defined time
+intervals. If current utilization falls below specific pre-configured
+thresholds, the manager flags specific logical or physical cores as
+candidates for parking.</p>
+<h3 id="thread-consolidation-and-core-deactivation">Thread Consolidation
+and Core Deactivation</h3>
+<p>Once candidate cores are selected for parking, the process unfolds
+through the following steps:</p>
+<ol type="1">
+<li><strong>Affinity Mask Adjustments:</strong> The scheduler updates
+the system's active scheduling mask, effectively removing the targeted
+cores from the pool of processors eligible for standard thread
+assignment.</li>
+<li><strong>Thread Migration:</strong> Any running, non-affinitized
+threads and scheduled timers residing on the target cores are migrated
+to the remaining unparked cores.</li>
+<li><strong>Interrupt Redirection:</strong> If supported by the
+platform, device interrupts and Deferred Procedure Calls (DPCs) are
+routed away from the candidate cores toward active processors.</li>
+<li><strong>Transition to Sleep States (C-States):</strong> With no
+remaining instructions to execute, the core is placed into its deepest
+supported Advanced Configuration and Power Interface (ACPI) idle state
+(such as C6 or C7). In these deep sleep states, core clocks are halted,
+and voltages can be reduced or gated entirely, saving static and dynamic
+power.</li>
+</ol>
+<h3 id="dynamic-unparking-and-latency-management">Dynamic Unparking and
+Latency Management</h3>
+<p>When background tasks, applications, or hardware demands increase
+processor load beyond unpark thresholds, the Kernel Power Manager
+quickly initiates an unpark operation.</p>
+<p>The scheduler re-adds the parked cores to the active execution pool
+and signals the processor to transition out of deep C-states. To
+minimize performance latency, Windows 10 leverages modern hardware
+interfaces such as Collaborative Processor Performance Control (CPPC)
+and Intel Speed Shift. These hardware-guided mechanisms allow cores to
+exit deep low-power states and reach high operating frequencies within
+fractions of a millisecond.</p>
+<h3 id="asymmetric-and-multi-threaded-architectures">Asymmetric and
+Multi-Threaded Architectures</h3>
+<p>Windows 10 implements core parking with awareness of underlying CPU
+topology:</p>
+<ul>
+<li><strong>Simultaneous Multithreading (SMT/Hyper-Threading):</strong>
+On processors with virtual logical processors (threads per physical
+core), Windows prioritizes parking secondary logical processors first.
+This allows physical cores to run single threads at higher efficiency
+before taking entire physical cores offline.</li>
+<li><strong>Hybrid Core Topologies:</strong> On architectures containing
+a mix of high-performance and high-efficiency cores, the scheduler
+incorporates core parking to prefer keeping power-efficient cores awake
+for background tasks while parking power-hungry performance cores until
+high compute throughput is required.</li>
+</ul>
+<h3 id="influence-of-windows-power-profiles">Influence of Windows Power
+Profiles</h3>
+<p>The behavior of dynamic core parking is directly tied to the active
+Windows 10 Power Plan:</p>
+<ul>
+<li><strong>Balanced Plan:</strong> Core parking functions actively,
+aggressively parking cores during light desktop use, media playback, or
+web browsing to maximize battery life and minimize heat.</li>
+<li><strong>Power Saver:</strong> Lowers the utilization thresholds
+required to park cores and delays unparking, prioritizing battery
+longevity over immediate peak throughput.</li>
+<li><strong>High Performance / Ultimate Performance:</strong> Typically
+disables dynamic core parking entirely. All physical and logical cores
+remain unparked in an active state (C0/C1) to eliminate the
+micro-latencies associated with waking cores from deep sleep
+states.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

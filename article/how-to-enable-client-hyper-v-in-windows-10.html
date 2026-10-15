@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Enable Client Hyper-V in Windows 10 - windows-10</title>
+    <meta name="description" content="Client Hyper-V is an optional, native hardware virtualization technology integrated into 64-bit editions of Windows 10 that allows developers, IT professionals, and system testers to create and manage virtual machines directly on their host computers. Thi">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-to-enable-client-hyper-v-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Enable Client Hyper-V in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-to-enable-client-hyper-v-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Client Hyper-V is an optional, native hardware virtualization technology integrated into 64-bit editions of Windows 10 that allows developers, IT professionals, and system testers to create and manage virtual machines directly on their host computers. Thi" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-enable-client-hyper-v-in-windows-10">How to Enable Client
+Hyper-V in Windows 10</h1>
+<p>Client Hyper-V is an optional, native hardware virtualization
+technology integrated into 64-bit editions of Windows 10 that allows
+developers, IT professionals, and system testers to create and manage
+virtual machines directly on their host computers. This article explains
+how Windows 10 utilizes Client Hyper-V, the foundational hardware and
+system requirements needed to run it, and the exact steps to enable the
+hypervisor using native Windows configuration tools.</p>
+<h3 id="architecture-of-client-hyper-v">Architecture of Client
+Hyper-V</h3>
+<p>Client Hyper-V operates as a native Type-1 bare-metal hypervisor.
+When enabled, the Windows hypervisor layer sits directly between the
+physical hardware and the operating system. The host Windows 10 OS
+becomes the parent partition (root partition), which manages device
+drivers and virtualization requests, while guest operating systems run
+in isolated environments known as child partitions. Because the
+hypervisor runs directly on the hardware rather than on top of the host
+operating system, it provides superior performance, stability, and
+direct access to CPU execution optimizations compared to Type-2
+hypervisors.</p>
+<h3 id="prerequisites-and-hardware-requirements">Prerequisites and
+Hardware Requirements</h3>
+<p>Before enabling Hyper-V, the system must meet specific hardware and
+operating system requirements:</p>
+<ul>
+<li><strong>Operating System Edition:</strong> Windows 10 Pro,
+Enterprise, or Education (64-bit). Windows 10 Home does not include
+Client Hyper-V.</li>
+<li><strong>Processor:</strong> 64-bit processor with Second Level
+Address Translation (SLAT).</li>
+<li><strong>Virtualization Support:</strong> CPU virtualization
+extensions (Intel VT-x or AMD-V) and Hardware-Enforced Data Execution
+Prevention (DEP) must be enabled in the system BIOS/UEFI.</li>
+<li><strong>Memory:</strong> At least 4 GB of RAM (more is recommended
+depending on the number of concurrent guest virtual machines).</li>
+</ul>
+<p>To verify system compatibility, open Command Prompt or PowerShell and
+type:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>systeminfo.exe</span></code></pre></div>
+<p>At the bottom of the output, locate the <strong>Hyper-V
+Requirements</strong> section. If all four items read "Yes," the system
+is ready to host Hyper-V.</p>
+<h3 id="methods-to-enable-client-hyper-v">Methods to Enable Client
+Hyper-V</h3>
+<p>Windows 10 keeps Client Hyper-V turned off by default. It can be
+enabled using any of the following administrative methods.</p>
+<h4 id="1-enable-via-windows-features-dialog">1. Enable via Windows
+Features Dialog</h4>
+<ol type="1">
+<li>Press <code>Windows Key + R</code>, type
+<code>optionalfeatures.exe</code>, and press
+<strong>Enter</strong>.</li>
+<li>Scroll down and locate <strong>Hyper-V</strong>.</li>
+<li>Check the box next to <strong>Hyper-V</strong>, ensuring both
+<strong>Hyper-V Management Tools</strong> and <strong>Hyper-V
+Platform</strong> are selected.</li>
+<li>Click <strong>OK</strong>.</li>
+<li>Restart the computer when prompted to allow the Windows bootloader
+to initialize the hypervisor.</li>
+</ol>
+<h4 id="2-enable-via-powershell">2. Enable via PowerShell</h4>
+<ol type="1">
+<li>Right-click the <strong>Start</strong> button and select
+<strong>Windows PowerShell (Admin)</strong>.</li>
+<li>Run the following command:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Enable-WindowsOptionalFeature <span class="op">-</span>Online <span class="op">-</span>FeatureName Microsoft-Hyper-V <span class="op">-</span>All</span></code></pre></div>
+<ol start="3" type="1">
+<li>Press <code>Y</code> when prompted to restart the system to complete
+the installation.</li>
+</ol>
+<h4 id="3-enable-via-deployment-image-servicing-and-management-dism">3.
+Enable via Deployment Image Servicing and Management (DISM)</h4>
+<ol type="1">
+<li>Open <strong>Command Prompt</strong> as an administrator.</li>
+<li>Execute the following command:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>DISM <span class="at">/Online</span> <span class="at">/Enable-Feature</span> <span class="at">/All</span> <span class="at">/FeatureName:</span>Microsoft<span class="at">-Hyper-V</span></span></code></pre></div>
+<ol start="3" type="1">
+<li>Restart the system once the operation completes successfully.</li>
+</ol>
+<h3 id="launching-and-using-client-hyper-v">Launching and Using Client
+Hyper-V</h3>
+<p>After the computer restarts, search for <strong>Hyper-V
+Manager</strong> in the Windows Start menu. Through the Hyper-V Manager
+interface, you can configure the Virtual Switch Manager to link internal
+virtual adapters to your physical network interface, allocate physical
+processor cores and RAM, and attach installation ISO images to build and
+deploy virtualized guest operating systems.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

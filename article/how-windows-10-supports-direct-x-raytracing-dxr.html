@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Supports DirectX Raytracing (DXR) - windows-10</title>
+    <meta name="description" content="This article provides an overview of how the Microsoft Windows 10 operating system facilitates real-time, hardware-accelerated ray tracing through DirectX Raytracing (DXR). It covers the integration of DXR into the DirectX 12 API, the role of the Windows">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-supports-direct-x-raytracing-dxr">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Supports DirectX Raytracing (DXR) - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-supports-direct-x-raytracing-dxr" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of how the Microsoft Windows 10 operating system facilitates real-time, hardware-accelerated ray tracing through DirectX Raytracing (DXR). It covers the integration of DXR into the DirectX 12 API, the role of the Windows" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-supports-directx-raytracing-dxr">How Windows 10
+Supports DirectX Raytracing (DXR)</h1>
+<p>This article provides an overview of how the Microsoft Windows 10
+operating system facilitates real-time, hardware-accelerated ray tracing
+through DirectX Raytracing (DXR). It covers the integration of DXR into
+the DirectX 12 API, the role of the Windows Display Driver Model (WDDM),
+how the operating system handles ray tracing pipelines, and the
+coordination between Windows and dedicated graphics hardware to render
+photorealistic lighting, shadows, and reflections efficiently.</p>
+<h2 id="native-integration-via-directx-12">Native Integration via
+DirectX 12</h2>
+<p>Microsoft integrated DirectX Raytracing (DXR) as an extension to
+DirectX 12, beginning natively with Windows 10 version 1809 (the October
+2018 Update). Instead of treating ray tracing as an entirely separate
+rendering paradigm, Windows 10 embeds it into the existing Direct3D 12
+infrastructure. This design allows game engines and rendering
+applications to use traditional rasterization for the bulk of scene
+rendering while calling ray-tracing dispatches specifically for complex
+visual effects such as reflections, ambient occlusion, and global
+illumination.</p>
+<h2 id="the-role-of-wddm-windows-display-driver-model">The Role of WDDM
+(Windows Display Driver Model)</h2>
+<p>Windows 10 orchestrates hardware-level communication through the
+Windows Display Driver Model, specifically WDDM 2.5 and later releases.
+WDDM serves as the low-level framework that enables:</p>
+<ul>
+<li><strong>Workload Scheduling:</strong> Ray tracing introduces
+complex, non-linear workloads. WDDM handles the scheduling and
+prioritization of these compute tasks alongside standard rasterization
+commands, preventing GPU stalls.</li>
+<li><strong>Driver Interoperability:</strong> WDDM translates the
+high-level DXR API commands into instructions that GPU drivers from
+hardware vendors (such as NVIDIA, AMD, and Intel) can execute directly
+on dedicated silicon.</li>
+</ul>
+<h2 id="bounding-volume-hierarchy-bvh-acceleration">Bounding Volume
+Hierarchy (BVH) Acceleration</h2>
+<p>Hardware-accelerated ray tracing relies heavily on calculating
+ray-triangle intersections. Windows 10 and DXR manage this process using
+Bounding Volume Hierarchy (BVH) structures:</p>
+<ol type="1">
+<li><strong>Acceleration Structure Generation:</strong> The operating
+system allows developers to build a two-level hierarchy—Top-Level
+Acceleration Structures (TLAS) for scene instances and Bottom-Level
+Acceleration Structures (BLAS) for geometric meshes.</li>
+<li><strong>Hardware Traversal:</strong> Once built, these acceleration
+structures are passed to the hardware. Supported GPUs utilize dedicated
+hardware units (such as NVIDIA RT Cores or AMD Ray Accelerators) to
+traverse the BVH and calculate ray-primitive intersections in parallel,
+bypassing the software overhead entirely.</li>
+</ol>
+<h2
+id="specialized-ray-tracing-pipeline-state-objects-rtpsos">Specialized
+Ray-Tracing Pipeline State Objects (RTPSOs)</h2>
+<p>Windows 10 provides support for Ray-Tracing Pipeline State Objects
+(RTPSOs). Traditional rendering uses compute, vertex, and pixel shaders.
+DXR introduces a set of specialized shader types that the Windows
+graphics runtime manages:</p>
+<ul>
+<li><strong>Ray Generation Shaders:</strong> Determine which rays are
+cast into the scene.</li>
+<li><strong>Intersection Shaders:</strong> Define custom intersection
+algorithms for non-triangle primitives.</li>
+<li><strong>Any Hit / Closest Hit Shaders:</strong> Execute when a ray
+intersects geometry to evaluate surface materials and lighting.</li>
+<li><strong>Miss Shaders:</strong> Execute when a ray fails to hit any
+geometry, typically sampling an environment map or skybox.</li>
+</ul>
+<p>The Windows 10 runtime compiles these shaders into unified state
+objects, coordinating memory allocation and thread execution to ensure
+minimal latency during heavy rendering passes.</p>
+<h2 id="hardware-abstraction-and-execution">Hardware Abstraction and
+Execution</h2>
+<p>DirectX Raytracing provides a hardware-agnostic API. Windows 10
+abstracts the underlying hardware differences, meaning developers write
+ray-tracing algorithms to a single standard. The Windows 10 graphics
+kernel then routes these instructions to the vendor-specific driver. If
+the physical GPU contains dedicated ray-tracing processing units, the
+hardware executes the BVH traversals and ray intersections natively. If
+hardware acceleration is absent, older configurations can emulate the
+process via standard compute shaders, though modern implementations rely
+on physical hardware blocks to achieve interactive frame rates.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

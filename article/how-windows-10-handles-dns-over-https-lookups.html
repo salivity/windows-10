@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Handles DNS over HTTPS Lookups - windows-10</title>
+    <meta name="description" content="DNS over HTTPS (DoH) in Windows 10 allows the operating system to encrypt traditional, plaintext Domain Name System queries by wrapping them inside standard HTTPS traffic over port 443. This article outlines how Windows 10 implements DoH at the system lev">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-handles-dns-over-https-lookups">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Handles DNS over HTTPS Lookups - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-handles-dns-over-https-lookups" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="DNS over HTTPS (DoH) in Windows 10 allows the operating system to encrypt traditional, plaintext Domain Name System queries by wrapping them inside standard HTTPS traffic over port 443. This article outlines how Windows 10 implements DoH at the system lev" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-handles-dns-over-https-lookups">How Windows 10
+Handles DNS over HTTPS Lookups</h1>
+<p>DNS over HTTPS (DoH) in Windows 10 allows the operating system to
+encrypt traditional, plaintext Domain Name System queries by wrapping
+them inside standard HTTPS traffic over port 443. This article outlines
+how Windows 10 implements DoH at the system level via the native DNS
+client service, how it maps standard IP addresses to secure endpoints,
+the lookup modes available to users, and how queries are processed
+across the entire operating system.</p>
+<h2 id="the-role-of-the-native-dns-client">The Role of the Native DNS
+Client</h2>
+<p>Prior to system-level DoH implementation, DNS queries were handled
+either unencrypted by the Windows operating system over UDP/TCP port 53,
+or individually encrypted by specific applications like web browsers
+running their own custom network stacks.</p>
+<p>Windows 10 integrates DoH directly into its core DNS Client service
+(<code>Dnscache</code>). By handling encryption at the OS level, every
+outbound network request—whether originating from a background system
+service, a command-line utility, or a standard web browser—automatically
+routes through the secure, encrypted DNS pipeline without requiring
+separate, per-application configuration.</p>
+<h2 id="auto-promotion-and-the-doh-mapping-table">Auto-Promotion and the
+DoH Mapping Table</h2>
+<p>Windows 10 does not require users to manually specify full HTTPS URLs
+(DoH templates) in standard configuration interfaces. Instead, the OS
+uses an internal mapping table that correlates well-known, trusted DNS
+resolver IP addresses to their corresponding HTTPS endpoints.</p>
+<p>For example, when a user assigns known public resolvers such as
+Cloudflare (<code>1.1.1.1</code>), Google (<code>8.8.8.8</code>), or
+Quad9 (<code>9.9.9.9</code>), Windows 10 detects the matching server IP
+and automatically links it to the appropriate secure URL. Administrators
+can also add custom DoH mappings for internal or private enterprise
+resolvers using the <code>netsh dns add encryption</code> command or
+PowerShell cmdlets.</p>
+<h2 id="lookup-modes-and-encryption-enforcement">Lookup Modes and
+Encryption Enforcement</h2>
+<p>Windows 10 evaluates and executes DNS lookups based on three distinct
+policy states configured per network interface:</p>
+<ul>
+<li><strong>Encrypted Only:</strong> The system enforces strict
+security. Windows 10 will only query the specified DNS server over
+HTTPS. If the encrypted connection fails—due to network filtering,
+server unavailability, or certificate mismatches—the DNS resolution
+fails entirely. It will not fall back to unencrypted transmission,
+preventing accidental exposure of queried domains.</li>
+<li><strong>Encrypted Preferred (Opportunistic):</strong> The OS
+attempts to establish a secure DoH connection first. If the resolver
+does not respond over HTTPS, or if the initial TLS handshake fails, the
+DNS Client automatically falls back to standard, unencrypted DNS over
+port 53.</li>
+<li><strong>Unencrypted Only:</strong> The OS bypasses DoH entirely and
+issues conventional plaintext DNS requests over port 53.</li>
+</ul>
+<h2 id="the-query-lifecycle-in-windows-10">The Query Lifecycle in
+Windows 10</h2>
+<p>When an application initiates a network connection to a domain name,
+Windows 10 executes the lookup through the following sequence:</p>
+<ol type="1">
+<li><strong>Local Cache Check:</strong> The <code>Dnscache</code>
+service first verifies whether the record already exists in the local
+DNS cache. If found, the resolved IP address is returned instantly.</li>
+<li><strong>Protocol Selection:</strong> If the record must be fetched
+externally, the DNS Client checks the configuration for the active
+network adapter to determine if an encrypted resolver is
+configured.</li>
+<li><strong>Connection Establishment:</strong> If DoH is active, Windows
+establishes an HTTP/2 or HTTP/1.1 connection secured with TLS to the
+mapped DoH server over port 443.</li>
+<li><strong>Query Transmission:</strong> The DNS request payload is
+formatted as a binary DNS message (content-type:
+<code>application/dns-message</code>) inside an HTTP <code>POST</code>
+or <code>GET</code> request.</li>
+<li><strong>Payload Decryption and Response:</strong> The resolver
+processes the request and sends the encrypted response back over the
+established TLS tunnel. The Windows DNS Client decrypts the payload,
+updates the local cache, and passes the resolved IP address back to the
+requesting application.</li>
+</ol>
+<h2 id="enterprise-and-administrative-control">Enterprise and
+Administrative Control</h2>
+<p>In managed network environments, Windows 10 provides administrative
+controls to prevent or enforce DoH behavior. Network administrators can
+control DNS encryption using Group Policy or Mobile Device Management
+(MDM) policies. Through the policy path
+<code>Computer Configuration &gt; Administrative Templates &gt; Network &gt; DNS Client &gt; Configure DNS over HTTPS (DoH) name resolution</code>,
+administrators can explicitly mandate encryption, allow fallbacks, or
+disable DoH entirely to maintain compatibility with internal DNS
+inspection and filtering appliances.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

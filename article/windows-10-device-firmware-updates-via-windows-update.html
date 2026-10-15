@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Device Firmware Updates via Windows Update - windows-10</title>
+    <meta name="description" content="This article explains how Microsoft Windows 10 manages, delivers, and applies device firmware updates using the native Windows Update service. By integrating UEFI Capsule Updates, driver packages, and the EFI System Resource Table (ESRT), Windows 10 autom">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-device-firmware-updates-via-windows-update">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Device Firmware Updates via Windows Update - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-device-firmware-updates-via-windows-update" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how Microsoft Windows 10 manages, delivers, and applies device firmware updates using the native Windows Update service. By integrating UEFI Capsule Updates, driver packages, and the EFI System Resource Table (ESRT), Windows 10 autom" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-device-firmware-updates-via-windows-update">Windows
+10 Device Firmware Updates via Windows Update</h1>
+<p>This article explains how Microsoft Windows 10 manages, delivers, and
+applies device firmware updates using the native Windows Update service.
+By integrating UEFI Capsule Updates, driver packages, and the EFI System
+Resource Table (ESRT), Windows 10 automates the installation of critical
+hardware and motherboard firmware, streamlining security patches and
+system stability improvements without requiring proprietary manufacturer
+utilities.</p>
+<h3 id="firmware-packaged-as-driver-packages">Firmware Packaged as
+Driver Packages</h3>
+<p>Device manufacturers distribute firmware updates through Windows
+Update by bundling the firmware binary into a standard driver package.
+This package typically consists of:</p>
+<ul>
+<li>An <strong>INF file</strong> containing metadata, device
+identification, and installation directives.</li>
+<li>A <strong>firmware payload binary</strong> (such as a
+<code>.bin</code> or <code>.cap</code> file).</li>
+<li>A <strong>security catalog (.cat) file</strong> signed by Microsoft
+to ensure payload integrity and authenticity.</li>
+</ul>
+<p>Because Windows treats the firmware payload like a device driver, it
+can be inventoried, deployed, scheduled, and managed using the existing
+Windows Update infrastructure, Windows Server Update Services (WSUS), or
+Microsoft Intune.</p>
+<h3 id="discovery-via-the-efi-system-resource-table-esrt">Discovery via
+the EFI System Resource Table (ESRT)</h3>
+<p>To determine if a firmware update is needed, Windows 10 queries the
+system's UEFI during startup. The UEFI firmware exposes the EFI System
+Resource Table (ESRT), which reports:</p>
+<ul>
+<li>Unique GUIDs for each updatable firmware component (such as system
+BIOS, embedded controllers, or device peripherals).</li>
+<li>The currently installed firmware version.</li>
+<li>The lowest version to which the firmware can be rolled back.</li>
+<li>The status of the last attempted update.</li>
+</ul>
+<p>Windows reads these GUIDs and creates corresponding device nodes in
+Device Manager under the <strong>Firmware</strong> category. When
+Windows Update checks for new updates, it matches these hardware IDs
+against the Microsoft Update catalog.</p>
+<h3 id="staging-the-payload">Staging the Payload</h3>
+<p>When a matching firmware update is found, Windows Update downloads
+the driver package. The Windows installation engine runs the INF file,
+which uses the <code>UpdateFirmware</code> directive. Instead of writing
+directly to the hardware flash memory—which could corrupt the system if
+interrupted—Windows copies the firmware binary into the EFI System
+Partition (ESP) and calls the UEFI runtime service
+<code>UpdateCapsule</code>. This operation stages the firmware binary
+into system memory and flags the UEFI environment that an update is
+pending upon the next reboot.</p>
+<h3 id="execution-via-uefi-capsule-updates">Execution via UEFI Capsule
+Updates</h3>
+<p>Firmware cannot be fully flashed while Windows 10 is running. When
+the user restarts the computer:</p>
+<ol type="1">
+<li>Windows initiates a standard reboot and passes control to the UEFI
+firmware.</li>
+<li>The UEFI boot manager detects the pending capsule update staged in
+the EFI partition or memory.</li>
+<li>The platform firmware verifies the cryptographic signature of the
+capsule to ensure it has not been tampered with.</li>
+<li>If the signature is valid, the UEFI flashing engine applies the new
+code to the flash ROM. A manufacturer logo and progress bar are
+typically displayed to the user during this phase.</li>
+</ol>
+<h3 id="validation-and-reporting">Validation and Reporting</h3>
+<p>Once the flashing process completes, the system restarts again.
+During the subsequent boot, the UEFI firmware updates the ESRT with the
+new version number and reports an execution status code (success,
+invalid signature, insufficient power, etc.).</p>
+<p>When Windows 10 loads, the OS reads the updated ESRT. If the update
+succeeded, Device Manager reflects the new firmware version. If the
+update failed, Windows logs an event in the Windows Event Viewer and
+updates the device status accordingly.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

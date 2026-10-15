@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Connected Standby Power States Explained - windows-10</title>
+    <meta name="description" content="In Microsoft Windows 10, Connected Standby—evolved and formally referred to as Modern Standby or the ACPI S0 Low Power Idle model—replaces the legacy ACPI S3 power state to deliver an instant-on, always-connected experience. This article details how Windo">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-connected-standby-power-states-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Connected Standby Power States Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-connected-standby-power-states-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In Microsoft Windows 10, Connected Standby—evolved and formally referred to as Modern Standby or the ACPI S0 Low Power Idle model—replaces the legacy ACPI S3 power state to deliver an instant-on, always-connected experience. This article details how Windo" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-connected-standby-power-states-explained">Windows 10
+Connected Standby Power States Explained</h1>
+<p>In Microsoft Windows 10, Connected Standby—evolved and formally
+referred to as Modern Standby or the ACPI S0 Low Power Idle
+model—replaces the legacy ACPI S3 power state to deliver an instant-on,
+always-connected experience. This article details how Windows 10
+configures these power states, coordinates software execution through
+system brokers, manages hardware transitions into ultra-low-power idle
+states via the Power Engine Plugin, and balances energy conservation
+with background connectivity.</p>
+<h3 id="the-shift-from-acpi-s3-to-s0-low-power-idle">The Shift from ACPI
+S3 to S0 Low Power Idle</h3>
+<p>Traditional PC architectures rely on the ACPI S3 state (Suspend to
+RAM), where the central processing unit (CPU) is completely powered
+down, execution halts entirely, and system context is preserved solely
+through self-refreshing RAM. Waking from S3 requires re-initializing the
+processor, chipset, and peripheral buses, which introduces noticeable
+latency.</p>
+<p>Windows 10 configures Modern Standby by keeping the system in the
+ACPI S0 working state rather than transitioning to an S3 or S4 sleep
+state. While the system appears "asleep" with the display turned off,
+Windows 10 actively manages hardware components and software threads,
+allowing the platform to drop into an ultra-low-power state while
+remaining capable of immediate resumption and selective background
+tasks.</p>
+<h3 id="the-phases-of-the-modern-standby-state-machine">The Phases of
+the Modern Standby State Machine</h3>
+<p>Windows 10 controls power states through a multi-stage software and
+hardware transition sequence:</p>
+<ol type="1">
+<li><strong>Screen Off and Preparation:</strong> When triggered by a
+timeout, power button press, or lid closure, the OS turns off the
+display and initiates the power transition. User-mode inputs are
+suppressed, and the system begins preparing background workloads.</li>
+<li><strong>Software Quiescing:</strong> The OS systematically throttles
+and pauses software activity to prevent unnecessary CPU wakeups. This is
+governed by two core components:
+<ul>
+<li><strong>Desktop Activity Moderator (DAM):</strong> Suspends
+execution of traditional Win32 desktop applications, placing them into a
+quiescent state similar to an app suspension model.</li>
+<li><strong>Background Infrastructure (BI):</strong> Manages Universal
+Windows Platform (UWP) apps and system services, allowing brokered,
+short-duration tasks (such as incoming VoIP calls, alarms, or email
+synchronization) through strictly metered execution windows.</li>
+</ul></li>
+<li><strong>Entering Low-Power Idle:</strong> Once background tasks
+complete their execution phase, Windows 10 instructs device drivers to
+put their respective hardware blocks into low-power device states
+(D-states, such as D3hot or D3cold).</li>
+<li><strong>Achieving DRIPS (Deepest Runtime Idle Power State):</strong>
+Once all integrated sub-systems, buses, and peripheral controllers
+achieve their appropriate low-power states, the entire System on Chip
+(SoC) enters DRIPS. In this state, clock generators are stopped, power
+rails are lowered or completely gated, and memory remains in
+self-refresh, minimizing energy draw to levels comparable to legacy S3
+sleep.</li>
+</ol>
+<h3 id="hardware-arbitration-via-the-power-engine-plugin-pep">Hardware
+Arbitration via the Power Engine Plugin (PEP)</h3>
+<p>To coordinate the complex low-power states of modern microprocessors
+and SoCs, Windows 10 relies on the Power Engine Plugin (PEP). The PEP
+acts as the abstraction layer between the Windows Power Manager and the
+platform-specific hardware logic (provided by chip vendors such as
+Intel, AMD, or Qualcomm).</p>
+<p>When software constraints are met, the Windows Power Manager notifies
+the PEP that the OS is idle. The PEP evaluates hardware dependency
+constraints—verifying that all peripheral devices, interconnects, and
+functional units are quiescent—and triggers the hardware-level platform
+power management unit to place the SoC into its deepest low-power sleep
+state. If an event occurs (such as a timer expiration, a network packet
+with wake-on-LAN signatures, or a peripheral input interrupt), the PEP
+coordinates the ramp-up of power rails and system clocks before handing
+execution control back to the operating system.</p>
+<h3 id="connected-vs-disconnected-operation">Connected vs. Disconnected
+Operation</h3>
+<p>Windows 10 allows Modern Standby to be configured in either a
+"Connected" or "Disconnected" mode:</p>
+<ul>
+<li><strong>Connected Modern Standby:</strong> The networking subsystem
+(Wi-Fi or cellular modem) maintains an active low-power link layer
+connection with the access point or cellular network. The OS offloads
+network keep-alive packets and pattern-matching filters to the network
+interface card (NIC). The NIC only alerts the host processor when a
+relevant packet (such as a push notification or remote wake frame) is
+detected, maintaining real-time connectivity without continuously waking
+the CPU.</li>
+<li><strong>Disconnected Modern Standby:</strong> Network interfaces are
+completely powered down during sleep, terminating internet access while
+the screen is off. The system still benefits from instant-on
+responsiveness and local background tasks (like alarms), while
+conserving maximum battery life.</li>
+</ul>
+<p>Users and system administrators can configure these behaviors via
+Windows Settings, Group Policy, or power scheme settings using the
+<code>powercfg /setdcvalueindex</code> and
+<code>powercfg /setacvalueindex</code> command-line interfaces. System
+administrators can also evaluate state transitions, identify blocking
+drivers, and verify DRIPS residency percentages through diagnostic
+reports generated using the Windows SleepStudy tool
+(<code>powercfg /sleepstudy</code>).</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

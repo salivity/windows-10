@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Telemetry Levels: Security to Full - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 uses built-in diagnostic telemetry to monitor device health, remediate security vulnerabilities, and improve operating system performance. This article explains how Windows 10 processes telemetry data across its four primary tiers—Sec">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-telemetry-levels-security-to-full">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Telemetry Levels: Security to Full - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-telemetry-levels-security-to-full" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 uses built-in diagnostic telemetry to monitor device health, remediate security vulnerabilities, and improve operating system performance. This article explains how Windows 10 processes telemetry data across its four primary tiers—Sec" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-telemetry-levels-security-to-full">Windows 10
+Telemetry Levels: Security to Full</h1>
+<p>Microsoft Windows 10 uses built-in diagnostic telemetry to monitor
+device health, remediate security vulnerabilities, and improve operating
+system performance. This article explains how Windows 10 processes
+telemetry data across its four primary tiers—Security, Basic, Enhanced,
+and Full. You will learn what specific system information each level
+collects, how user privacy is managed, and which Windows 10 editions
+support specific settings.</p>
+<h3 id="what-is-windows-10-telemetry">What is Windows 10 Telemetry?</h3>
+<p>Windows 10 telemetry refers to the automated transmission of
+technical and system diagnostic data from user devices to Microsoft.
+Transmitted via the Connected User Experiences and Diagnostic Data
+Service, this data helps Microsoft detect bugs, monitor software
+stability, and issue timely patches. Windows 10 manages this data
+through four distinct levels, ordered from least to most data shared:
+Security, Basic, Enhanced, and Full.</p>
+<hr />
+<h3 id="level-0-security">Level 0: Security</h3>
+<p>The Security level gathers the absolute minimum telemetry required to
+keep the Windows operating system and its active defenses updated and
+functional.</p>
+<ul>
+<li><strong>Target Availability:</strong> Restricted strictly to Windows
+10 Enterprise, Windows 10 Education, Windows 10 IoT, and Windows Server
+editions. It is not available on Windows 10 Home or Pro.</li>
+<li><strong>Data Collected:</strong> Information restricted to the
+Malicious Software Removal Tool (MSRT), Microsoft Defender Antivirus
+status and definitions, and basic telemetry component infrastructure
+logs.</li>
+<li><strong>Data Excluded:</strong> No personal user data, application
+usage statistics, crash dumps, or hardware configuration metrics are
+collected.</li>
+</ul>
+<hr />
+<h3 id="level-1-basic">Level 1: Basic</h3>
+<p>The Basic level is the baseline tier for standard consumer editions
+of Windows 10. It is designed to gather essential diagnostic details to
+identify hardware issues and compatibility problems.</p>
+<ul>
+<li><strong>Target Availability:</strong> Default minimum setting on
+Windows 10 Home and Pro editions; configurable across all editions.</li>
+<li><strong>Data Collected:</strong>
+<ul>
+<li>Basic device specifications (CPU architecture, memory size, storage
+capacity).</li>
+<li>Operating system build versions, update installation status, and
+error codes.</li>
+<li>Application compatibility details and driver inventory.</li>
+<li>Quality metrics including system crash events and startup failure
+logs.</li>
+</ul></li>
+<li><strong>Data Excluded:</strong> User activity logs, software
+browsing behavior, and in-depth memory dumps.</li>
+</ul>
+<hr />
+<h3 id="level-2-enhanced">Level 2: Enhanced</h3>
+<p>The Enhanced level expands on the Basic tier by gathering information
+on how the operating system and installed applications are used, helping
+Microsoft analyze broader user-experience patterns.</p>
+<ul>
+<li><strong>Target Availability:</strong> Enterprise, Education, and Pro
+editions (though streamlined into the "Optional" diagnostic category in
+later Windows 10 versions).</li>
+<li><strong>Data Collected:</strong>
+<ul>
+<li>System event traces and feature interaction logs.</li>
+<li>Operating system and application usage duration and frequency.</li>
+<li>Partial memory dumps generated when an application or the OS
+encounters a critical fault.</li>
+</ul></li>
+<li><strong>Data Excluded:</strong> Detailed user files, document
+contents, and deep-level crash dumps containing personal
+identifiers.</li>
+</ul>
+<hr />
+<h3 id="level-3-full">Level 3: Full</h3>
+<p>The Full telemetry level is the most comprehensive diagnostic setting
+available. It gathers all data provided by the Security, Basic, and
+Enhanced tiers, along with advanced debugging details to diagnose rare
+or complex system crashes.</p>
+<ul>
+<li><strong>Target Availability:</strong> Default configuration for
+Windows 10 Insider Preview builds; optional across all regular
+editions.</li>
+<li><strong>Data Collected:</strong>
+<ul>
+<li>Complete memory dumps, which may inadvertently capture user memory
+states at the moment of an operating system crash.</li>
+<li>Diagnostic logs, system file snapshots, and detailed device health
+traces.</li>
+<li>Registry settings and active network state information during
+catastrophic errors.</li>
+</ul></li>
+<li><strong>Privacy Protections:</strong> Microsoft implements automated
+scrubbing tools to identify and remove personally identifiable
+information (PII) before telemetry data reaches internal engineering
+teams.</li>
+</ul>
+<hr />
+<h3 id="managing-telemetry-configuration">Managing Telemetry
+Configuration</h3>
+<p>Administrators can enforce telemetry restrictions across managed
+devices using the Local Group Policy Editor or Mobile Device Management
+(MDM) profiles.</p>
+<p>In Group Policy, navigate to:
+<code>Computer Configuration &gt; Administrative Templates &gt; Windows Components &gt; Data Collection and Preview Builds &gt; Allow Telemetry</code></p>
+<p>From this policy, administrators can explicitly set the desired level
+between 0 (Security) and 3 (Full). If configured on an edition that does
+not support the selected tier (such as selecting Level 0 on Windows 10
+Pro), Windows automatically defaults to Level 1 (Basic).</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

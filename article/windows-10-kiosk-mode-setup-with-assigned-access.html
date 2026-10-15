@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Kiosk Mode Setup with Assigned Access - windows-10</title>
+    <meta name="description" content="Assigned Access is a built-in feature in the Windows 10 operating system that allows system administrators to restrict a designated user account to run only a single application or a strictly controlled set of applications. This article explains how Assig">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-kiosk-mode-setup-with-assigned-access">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Kiosk Mode Setup with Assigned Access - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-kiosk-mode-setup-with-assigned-access" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Assigned Access is a built-in feature in the Windows 10 operating system that allows system administrators to restrict a designated user account to run only a single application or a strictly controlled set of applications. This article explains how Assig" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-kiosk-mode-setup-with-assigned-access">Windows 10
+Kiosk Mode Setup with Assigned Access</h1>
+<p>Assigned Access is a built-in feature in the Windows 10 operating
+system that allows system administrators to restrict a designated user
+account to run only a single application or a strictly controlled set of
+applications. This article explains how Assigned Access functions, the
+mechanisms it uses to lock down the operating system environment, the
+supported kiosk architectures, and the primary methods available to
+configure it.</p>
+<h2 id="understanding-assigned-access">Understanding Assigned
+Access</h2>
+<p>Assigned Access operates by replacing the standard Windows desktop
+shell (<code>explorer.exe</code>) with a dedicated execution layer for a
+specific, non-administrator user account. When the assigned kiosk user
+signs in, the operating system bypasses the traditional desktop
+interface, taskbar, Start menu, and File Explorer, immediately launching
+the designated application in full-screen mode.</p>
+<p>The feature protects the underlying operating system by blocking
+standard exit vectors and system shortcuts, such as
+<code>Ctrl + Alt + Delete</code>, <code>Alt + Tab</code>, and the
+Windows key. If the kiosk application crashes or is closed by a user,
+Assigned Access automatically relaunches it to ensure uninterrupted
+service.</p>
+<h2 id="kiosk-configurations-single-app-vs-multi-app">Kiosk
+Configurations: Single-App vs. Multi-App</h2>
+<p>Assigned Access supports two primary operational models depending on
+the Windows 10 edition and deployment requirements:</p>
+<ul>
+<li><strong>Single-App Kiosks:</strong> The kiosk account runs one
+Universal Windows Platform (UWP) app or Microsoft Edge full-screen above
+the lock screen. The user has no access to the desktop, file system, or
+any other application. This is ideal for digital signage, public
+browsing terminals, or ticketing systems.</li>
+<li><strong>Multi-App Kiosks:</strong> Available in Windows 10
+Enterprise and Education editions, this configuration allows
+administrators to present a restricted Start menu that exposes only a
+predefined list of approved Win32 and UWP applications. Administrators
+define the allowed layout using a custom XML configuration file,
+blocking access to unauthorized binaries and settings.</li>
+</ul>
+<h2 id="core-mechanisms-of-system-lockdown">Core Mechanisms of System
+Lockdown</h2>
+<p>Assigned Access enforces kiosk environments through several
+integrated Windows subsystems:</p>
+<ol type="1">
+<li><strong>Shell Launcher:</strong> It replaces the default Windows
+shell for the designated account, preventing access to the system
+desktop and taskbar.</li>
+<li><strong>Keyboard Filtering:</strong> System-level keyboard hooks
+intercept and disable hardware shortcut combinations that could allow
+users to open Task Manager, switch tasks, or access the desktop.</li>
+<li><strong>Account Isolation:</strong> Assigned Access runs under a
+dedicated standard user account. It prevents the account from modifying
+system files, accessing the registry, or altering administrative
+settings.</li>
+<li><strong>Automatic Process Recovery:</strong> A background watchdog
+service continuously monitors the designated application's process ID.
+If the process terminates unexpectedly, the service restarts it
+immediately.</li>
+</ol>
+<h2 id="methods-for-configuring-assigned-access">Methods for Configuring
+Assigned Access</h2>
+<p>Administrators can deploy Assigned Access through several
+administrative interfaces:</p>
+<h3 id="1-windows-settings-local-gui">1. Windows Settings (Local
+GUI)</h3>
+<p>For single-device deployments, the native Windows 10 Settings
+interface provides a straightforward setup:</p>
+<ul>
+<li>Navigate to <strong>Settings &gt; Accounts &gt; Family &amp; other
+users</strong>.</li>
+<li>Select <strong>Set up a kiosk</strong> (Assigned access).</li>
+<li>Create or select a local standard user account.</li>
+<li>Select the target UWP application or Microsoft Edge instance to run
+in the kiosk context.</li>
+</ul>
+<h3 id="2-windows-powershell">2. Windows PowerShell</h3>
+<p>Administrators can script single-app configurations locally or
+remotely using native cmdlets:</p>
+<ul>
+<li><code>Set-AssignedAccess -UserName &lt;AccountName&gt; -AppName &lt;AppUserModelId&gt;</code>
+binds a local standard account to an installed application package.</li>
+<li><code>Clear-AssignedAccess</code> removes the kiosk lockdown from an
+account.</li>
+</ul>
+<h3 id="3-mobile-device-management-mdm-and-intune">3. Mobile Device
+Management (MDM) and Intune</h3>
+<p>Enterprise environments utilize the <code>AssignedAccess</code>
+Configuration Service Provider (CSP) through Microsoft Intune or
+third-party MDM solutions. Administrators upload an XML configuration
+file defining:</p>
+<ul>
+<li>The target user account (local, Active Directory, or Microsoft Entra
+ID).</li>
+<li>Allowed application package family names (PFNs) or file paths.</li>
+<li>Start layout definitions and allowed browser URLs.</li>
+</ul>
+<h3 id="4-windows-configuration-designer-provisioning-packages">4.
+Windows Configuration Designer (Provisioning Packages)</h3>
+<p>Administrators can generate a <code>.ppkg</code> file containing the
+kiosk configuration settings. Applying this package via USB drive or
+network deployment automates kiosk creation during or after system setup
+without requiring full MDM enrollment.</p>
+<h2 id="prerequisites-and-editions">Prerequisites and Editions</h2>
+<ul>
+<li><strong>Windows 10 Pro:</strong> Supports single-app kiosk mode with
+UWP apps and Microsoft Edge.</li>
+<li><strong>Windows 10 Enterprise and Education:</strong> Support both
+single-app and multi-app kiosk configurations with Win32 and UWP
+applications.</li>
+<li><strong>Account Requirement:</strong> The kiosk account must be a
+standard user account; administrative accounts cannot be bound to
+Assigned Access.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

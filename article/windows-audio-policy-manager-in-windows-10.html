@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Audio Policy Manager in Windows 10 - windows-10</title>
+    <meta name="description" content="The Windows Audio Policy Manager in Windows 10 is an internal architectural component responsible for governing how sound streams interact, route, and balance across the operating system. This article examines its core responsibilities, including per-appl">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-audio-policy-manager-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows Audio Policy Manager in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-audio-policy-manager-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Windows Audio Policy Manager in Windows 10 is an internal architectural component responsible for governing how sound streams interact, route, and balance across the operating system. This article examines its core responsibilities, including per-appl" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-audio-policy-manager-in-windows-10">Windows Audio Policy
+Manager in Windows 10</h1>
+<p>The Windows Audio Policy Manager in Windows 10 is an internal
+architectural component responsible for governing how sound streams
+interact, route, and balance across the operating system. This article
+examines its core responsibilities, including per-application audio
+routing, audio session management, volume attenuation through audio
+ducking, and how it interfaces between user preferences and the
+low-level Windows audio engine.</p>
+<h3 id="audio-session-management">Audio Session Management</h3>
+<p>In Windows 10, audio is not handled purely as a global output;
+instead, it is organized into discrete "audio sessions." The Audio
+Policy Manager tracks and manages these sessions via the Core Audio APIs
+(specifically WASAPI). Each application that plays audio creates one or
+more audio streams that belong to an audio session.</p>
+<p>The Policy Manager maintains the state of each session, enabling the
+operating system to:</p>
+<ul>
+<li>Track active sound-producing applications independently.</li>
+<li>Apply individualized volume levels and mute states through the
+Volume Mixer.</li>
+<li>Group multiple streams from a single application under a unified set
+of controls.</li>
+</ul>
+<h3 id="endpoint-routing-and-device-selection">Endpoint Routing and
+Device Selection</h3>
+<p>The Audio Policy Manager determines which audio endpoint (such as
+speakers, USB headsets, or external monitors via HDMI/DisplayPort)
+receives sound from a given audio session. In Windows 10, Microsoft
+introduced advanced sound settings allowing users to assign specific
+output and input devices to individual applications.</p>
+<p>The Audio Policy Manager enforces these rules dynamically:</p>
+<ul>
+<li>It maps designated applications to assigned physical or virtual
+devices.</li>
+<li>It handles automatic failover and stream redirection when default
+devices change (e.g., when a user unplugs a headset, redirecting active
+playback to internal speakers without crashing the audio stream).</li>
+</ul>
+<h3 id="audio-ducking-and-stream-prioritization">Audio Ducking and
+Stream Prioritization</h3>
+<p>The Audio Policy Manager is responsible for communication ducking—an
+automated behavior that lowers the volume of non-essential audio streams
+when a communication stream is detected. When a Voice over IP (VoIP)
+application like Microsoft Teams opens a communication-type audio
+session:</p>
+<ol type="1">
+<li>The Audio Policy Manager identifies the session classification.</li>
+<li>It evaluates system-configured rules set in the Sound Control Panel
+under the "Communications" tab.</li>
+<li>It temporarily attenuates (ducks) background music and media
+playback or mutes non-communication streams entirely.</li>
+<li>Once the call concludes and the communication session closes, the
+Policy Manager restores background audio to its original volume.</li>
+</ol>
+<h3 id="system-integration-and-enforcement">System Integration and
+Enforcement</h3>
+<p>Architecturally, the Audio Policy Manager resides within the
+user-mode audio framework, working directly with the Windows Audio
+Service (<code>Audiosrv</code>) and communicating down to the audio
+engine (<code>audiodg.exe</code>). When applications query or attempt to
+modify audio properties, the Audio Policy Manager ensures that changes
+conform to user policies, security permissions, and hardware
+capabilities before instructions reach the hardware driver layer.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

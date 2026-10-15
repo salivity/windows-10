@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Enforces Memory Safety With CFG - windows-10</title>
+    <meta name="description" content="Control Flow Guard (CFG) is a highly optimized platform security feature in Windows 10 designed to prevent memory corruption vulnerabilities, such as use-after-free and buffer overflows, from escalating into arbitrary code execution. By validating the tar">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-enforces-memory-safety-with-cfg">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Enforces Memory Safety With CFG - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-enforces-memory-safety-with-cfg" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Control Flow Guard (CFG) is a highly optimized platform security feature in Windows 10 designed to prevent memory corruption vulnerabilities, such as use-after-free and buffer overflows, from escalating into arbitrary code execution. By validating the tar" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-enforces-memory-safety-with-cfg">How Windows 10
+Enforces Memory Safety With CFG</h1>
+<p>Control Flow Guard (CFG) is a highly optimized platform security
+feature in Windows 10 designed to prevent memory corruption
+vulnerabilities, such as use-after-free and buffer overflows, from
+escalating into arbitrary code execution. By validating the target
+addresses of indirect calls before execution, CFG restricts an
+attacker's ability to hijack control flow. This article explains the
+technical mechanics of CFG, covering its compile-time instrumentation,
+operating system loader support, runtime bitmap checks, and process
+termination upon violation.</p>
+<h3 id="the-problem-cfg-solves">The Problem CFG Solves</h3>
+<p>Software vulnerabilities frequently allow malicious actors to corrupt
+memory, particularly pointers stored on the heap or stack. In a
+traditional exploit, an attacker overwrites a function pointer or a C++
+virtual method table (vtable) pointer. When the application later makes
+an indirect call via that compromised pointer, execution is redirected
+to attacker-controlled shellcode or to existing code sequences used in
+Return-Oriented Programming (ROP) or Jump-Oriented Programming (JOP)
+attacks. CFG is specifically built to mitigate indirect call and jump
+exploitation.</p>
+<h3 id="compile-time-analysis-and-instrumentation">Compile-Time Analysis
+and Instrumentation</h3>
+<p>CFG operates as a cooperative mitigation between the Microsoft Visual
+C++ compiler and the Windows 10 operating system.</p>
+<ol type="1">
+<li><strong>Target Identification:</strong> When code is compiled with
+the <code>/guard:cf</code> flag, the compiler analyzes the codebase to
+identify every indirect call instruction and catalog every valid
+function that can legally serve as an indirect target.</li>
+<li><strong>Metadata Generation:</strong> The compiler places the
+addresses of these valid targets into a specialized table within the
+resulting Portable Executable (PE) file, known as the Guard CF Function
+Table.</li>
+<li><strong>Guard Checks:</strong> Before every indirect call
+instruction, the compiler inserts a call to a guard verification
+routine, typically mediated by the function pointer
+<code>__guard_check_icall_fptr</code>.</li>
+</ol>
+<h3 id="os-loading-and-the-cfg-bitmap">OS Loading and the CFG
+Bitmap</h3>
+<p>When Windows 10 launches an application enabled with CFG:</p>
+<ol type="1">
+<li><strong>Bitmap Allocation:</strong> The Windows NT kernel memory
+manager creates a process-wide CFG bitmap. This bitmap maps the
+process's entire 32-bit or 64-bit virtual address space.</li>
+<li><strong>State Representation:</strong> Each pair of bits in the
+bitmap represents an aligned allocation block (typically 8 or 16 bytes)
+in virtual memory. The bits indicate whether the corresponding address
+is a valid function entry point.</li>
+<li><strong>Populating the Map:</strong> The Windows PE loader parses
+the binary's Guard CF Function Table and updates the kernel-maintained
+bitmap, marking genuine targets as valid. The bitmap itself is marked
+read-only within user space to prevent tampering.</li>
+</ol>
+<h3 id="runtime-verification-mechanics">Runtime Verification
+Mechanics</h3>
+<p>During execution, whenever an indirect call is about to take place,
+the application must execute the compiler-inserted verification
+logic:</p>
+<ol type="1">
+<li><strong>Address Inspection:</strong> The target address of the
+indirect call is passed to the verification routine.</li>
+<li><strong>Bit Lookup:</strong> The verification logic extracts the
+bits corresponding to the target address from the CFG bitmap.</li>
+<li><strong>Validation:</strong> If the target is marked as a valid
+entry point, the check succeeds, and normal execution resumes.</li>
+<li><strong>Fast Fail on Violation:</strong> If the target address is
+not marked as valid in the bitmap—indicating memory corruption or an
+active exploit attempt—the operating system triggers a fast fail
+exception (<code>STATUS_STACK_BUFFER_OVERRUN</code> or
+<code>FAST_FAIL_CONTROL_FLOW_GUARD_CHECK_FAILURE</code>). This
+immediately terminates the process without invoking standard exception
+handlers that might themselves be hijacked.</li>
+</ol>
+<h3 id="limitations-and-complementary-protections">Limitations and
+Complementary Protections</h3>
+<p>While CFG effectively secures forward-edge control flow (indirect
+calls and jumps), it does not protect backward-edge control flow
+(function return addresses on the stack). Attackers targeting return
+addresses must be countered by complementary mechanisms in Windows 10,
+such as Data Execution Prevention (DEP), Address Space Layout
+Randomization (ASLR), and hardware-enforced technologies like Intel
+Control-flow Enforcement Technology (CET) Shadow Stacks. Additionally,
+Windows 10 includes advanced CFG features such as Export Suppression to
+dynamically manage the validity of exported DLL functions, further
+narrowing the attack surface.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

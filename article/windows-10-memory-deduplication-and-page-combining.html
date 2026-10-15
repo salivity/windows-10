@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Memory Deduplication and Page Combining - windows-10</title>
+    <meta name="description" content="Memory deduplication in Windows 10, technically referred to as page combining, is an architectural feature within the Windows Memory Manager designed to optimize physical RAM usage. By identifying multiple memory pages containing identical contents across">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-memory-deduplication-and-page-combining">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Memory Deduplication and Page Combining - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-memory-deduplication-and-page-combining" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Memory deduplication in Windows 10, technically referred to as page combining, is an architectural feature within the Windows Memory Manager designed to optimize physical RAM usage. By identifying multiple memory pages containing identical contents across" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-memory-deduplication-and-page-combining">Windows 10
+Memory Deduplication and Page Combining</h1>
+<p>Memory deduplication in Windows 10, technically referred to as page
+combining, is an architectural feature within the Windows Memory Manager
+designed to optimize physical RAM usage. By identifying multiple memory
+pages containing identical contents across different processes, the
+operating system consolidates them into a single, shared physical page
+and marks it as read-only. This article explains how Windows 10 detects
+identical memory blocks, the role of Copy-on-Write (COW) in safely
+managing modifications, and the operational balance between CPU
+utilization and memory conservation.</p>
+<h3 id="the-concept-of-page-combining">The Concept of Page
+Combining</h3>
+<p>Physical memory frequently contains duplicate information, such as
+identical runtime libraries, replicated data buffers, or common
+user-interface assets loaded by multiple running applications. In
+traditional memory models, each process maintains its own independent
+copy of these identical pages in physical RAM. Windows 10 implements
+page combining to systematically reclaim this redundant memory by
+pointing multiple virtual address mappings to a single physical page
+frame.</p>
+<h3 id="the-scanning-and-hashing-mechanism">The Scanning and Hashing
+Mechanism</h3>
+<p>Page combining operates as an asynchronous, low-priority background
+process managed by the Windows kernel. The process follows several
+distinct steps:</p>
+<ol type="1">
+<li><strong>Candidate Selection</strong>: The Memory Manager scans
+candidate 4 KB physical pages allocated across the system. It primarily
+targets pages that are clean, private, and not locked for hardware
+Direct Memory Access (DMA) operations.</li>
+<li><strong>Hash Generation</strong>: To avoid expensive byte-by-byte
+comparisons across millions of pages, the system computes a
+cryptographic or mathematical checksum (hash) of the candidate page's
+contents.</li>
+<li><strong>Hash Table Lookup</strong>: Windows maintains an internal
+hash table of memory pages. The newly computed hash is compared against
+this table to determine if an identical candidate page already exists in
+the system.</li>
+<li><strong>Byte-Level Verification</strong>: If a hash collision
+occurs, the Memory Manager performs a complete byte-for-byte comparison
+between the candidate page and the target page to ensure total parity
+and prevent data corruption.</li>
+</ol>
+<h3 id="merging-pages-and-updating-page-table-entries">Merging Pages and
+Updating Page Table Entries</h3>
+<p>Once two or more pages are confirmed to be strictly identical, the
+Memory Manager executes the deduplication step:</p>
+<ul>
+<li><strong>Remapping</strong>: The Page Table Entries (PTEs) belonging
+to the secondary processes are updated. Their virtual addresses are
+redirected to point to the primary physical page frame number
+(PFN).</li>
+<li><strong>Freeing Redundant RAM</strong>: The now-redundant physical
+memory page is deallocated and returned to the system's free or standby
+page lists, instantly increasing the pool of available physical
+RAM.</li>
+<li><strong>Access Flagging</strong>: The shared physical page is marked
+with read-only permissions across all participating processes.</li>
+</ul>
+<h3 id="managing-modifications-via-copy-on-write-cow">Managing
+Modifications via Copy-on-Write (COW)</h3>
+<p>To maintain process isolation and memory integrity, Windows 10
+utilizes the Copy-on-Write (COW) mechanism:</p>
+<p>When any process attempts to write to a deduplicated, read-only page,
+the CPU's Memory Management Unit (MMU) intercepts the operation and
+triggers a page fault exception
+(<code>STATUS_GUARD_PAGE_VIOLATION</code> or access violation handled by
+the kernel). The Windows kernel catches this fault, allocates a new
+physical 4 KB page, copies the original data into it, applies the
+intended write operation, and updates that specific process's PTE to
+point to the newly allocated private page with read-write permissions.
+Other processes pointing to the shared page remain completely
+unaffected.</p>
+<h3 id="performance-considerations-and-cpu-impact">Performance
+Considerations and CPU Impact</h3>
+<p>Because scanning, hashing, and page-fault handling consume CPU
+cycles, the Windows 10 Memory Manager throttles page combining
+activities. The combining algorithm typically runs during periods of low
+system activity (idle states) or when the operating system begins to
+experience memory pressure. By running at a background priority, page
+combining delivers significant RAM savings—particularly in virtualized
+desktop infrastructure (VDI) environments and systems running multiple
+instances of the same application—without degrading interactive desktop
+performance.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Isolates VMs Using VBS - windows-10</title>
+    <meta name="description" content="Virtualization-Based Security (VBS) in Windows 10 uses hardware virtualization features to create a secure memory enclave isolated from the primary operating system. This article explains the underlying architecture of VBS, how it leverages the Hyper-V hy">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-isolates-v-ms-using-vbs">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Isolates VMs Using VBS - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-isolates-v-ms-using-vbs" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Virtualization-Based Security (VBS) in Windows 10 uses hardware virtualization features to create a secure memory enclave isolated from the primary operating system. This article explains the underlying architecture of VBS, how it leverages the Hyper-V hy" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-isolates-vms-using-vbs">How Windows 10 Isolates
+VMs Using VBS</h1>
+<p>Virtualization-Based Security (VBS) in Windows 10 uses hardware
+virtualization features to create a secure memory enclave isolated from
+the primary operating system. This article explains the underlying
+architecture of VBS, how it leverages the Hyper-V hypervisor to create
+Virtual Trust Levels (VTLs), and the specific mechanisms used to isolate
+security-critical operations, system processes, and micro-virtual
+machines from the standard Windows environment.</p>
+<h3 id="the-hyper-v-foundation">The Hyper-V Foundation</h3>
+<p>At the core of VBS is the Microsoft Hyper-V hypervisor. When VBS is
+enabled, Windows 10 does not run directly on the physical hardware.
+Instead, the hypervisor sits directly above the hardware layer,
+leveraging CPU-level virtualization extensions (Intel VT-x or AMD-V).
+The hypervisor partitions system resources and governs access between
+the underlying hardware and the software running on top of it.</p>
+<h3 id="virtual-trust-levels-vtls">Virtual Trust Levels (VTLs)</h3>
+<p>VBS uses the hypervisor to divide the operating system environment
+into two distinct execution domains known as Virtual Trust Levels:</p>
+<ul>
+<li><strong>VTL 0 (Normal World):</strong> Runs the standard Windows 10
+operating system, including the typical Windows NT kernel, system
+drivers, user applications, and standard virtual machines.</li>
+<li><strong>VTL 1 (Secure World):</strong> An isolated execution
+environment running a stripped-down, hardened "Secure Kernel." VTL 1
+operates with higher privileges than VTL 0.</li>
+</ul>
+<p>Isolation is strictly one-directional: code executing in VTL 1 can
+inspect and modify resources in VTL 0, but software running in VTL
+0—even code with full kernel-level (Ring 0) administrator
+privileges—cannot read, modify, or execute code inside VTL 1.</p>
+<h3 id="memory-protection-via-slat">Memory Protection via SLAT</h3>
+<p>To enforce memory isolation between these levels, the hypervisor
+utilizes Second-Level Address Translation (SLAT), implemented as
+Extended Page Tables (EPT) on Intel processors or Nested Page Tables
+(NPT) on AMD processors.</p>
+<p>The hypervisor manages physical memory mapping independently of the
+VTL 0 OS kernel. Even if malware completely compromises the standard
+Windows kernel, it cannot modify the hypervisor-controlled page tables.
+Any attempt by VTL 0 to access memory ranges allocated to VTL 1 or
+protected micro-VMs generates an intercept fault, causing the CPU to
+trap execution into the hypervisor, which blocks the unauthorized
+access.</p>
+<h3 id="hypervisor-protected-code-integrity-hvci">Hypervisor-Protected
+Code Integrity (HVCI)</h3>
+<p>VBS protects the boundaries of virtualized spaces using
+Hypervisor-Protected Code Integrity (HVCI). HVCI runs inside VTL 1 and
+validates all kernel-mode drivers and system files before they are
+allowed to execute in VTL 0. HVCI enforces the W^X (Write XOR Execute)
+rule on memory pages: a page can be writable or executable, but never
+both simultaneously. This prevents malicious actors from injecting
+unsigned, arbitrary code into executable system memory.</p>
+<h3 id="isolating-micro-vms-and-sandboxes">Isolating Micro-VMs and
+Sandboxes</h3>
+<p>The architecture that powers VBS also enables application-level
+isolation features, such as Windows Sandbox and Microsoft Defender
+Application Guard (WDAG). Instead of running inside the standard user
+space, these features deploy lightweight "micro-VMs" (Utility VMs).</p>
+<p>These micro-VMs operate as separate guest partitions managed directly
+by the hypervisor:</p>
+<ul>
+<li><strong>Dedicated Virtual Memory:</strong> Micro-VMs receive
+separate address spaces governed by the hypervisor, preventing data
+leakage back to the host system.</li>
+<li><strong>Stripped Hardware Access:</strong> The micro-VM communicates
+with the host OS only through strict, secured virtualization channels
+(VMBus), limiting potential attack vectors.</li>
+<li><strong>Ephemeral Lifecycle:</strong> Once closed, the micro-VM and
+its memory state are discarded entirely, ensuring no residual code
+persists into the host or other running instances.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Kernel-Mode Driver Code Signing - windows-10</title>
+    <meta name="description" content="This article examines how the Microsoft Windows 10 operating system enforces code signing on kernel-mode drivers to protect the core operating system from unauthorized or malicious execution. It outlines the core architecture of Driver Signature Enforceme">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-kernel-mode-driver-code-signing">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Kernel-Mode Driver Code Signing - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-kernel-mode-driver-code-signing" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines how the Microsoft Windows 10 operating system enforces code signing on kernel-mode drivers to protect the core operating system from unauthorized or malicious execution. It outlines the core architecture of Driver Signature Enforceme" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-kernel-mode-driver-code-signing">Windows 10
+Kernel-Mode Driver Code Signing</h1>
+<p>This article examines how the Microsoft Windows 10 operating system
+enforces code signing on kernel-mode drivers to protect the core
+operating system from unauthorized or malicious execution. It outlines
+the core architecture of Driver Signature Enforcement (DSE), the
+mandatory requirement for Microsoft-attested signatures via the Hardware
+Dev Center, and the hardware-backed security features like Secure Boot
+and Hypervisor-Protected Code Integrity (HVCI) that prevent these
+security checks from being bypassed.</p>
+<h3 id="the-purpose-of-kernel-mode-code-signing">The Purpose of
+Kernel-Mode Code Signing</h3>
+<p>Kernel mode operates at Ring 0, the highest privilege level in the
+processor architecture. Any code executing in kernel mode has direct
+access to system memory, hardware components, and critical OS
+structures. A flaw or malicious payload at this level can bypass
+standard user-mode security boundaries, install stealth rootkits, or
+cause catastrophic system crashes (Blue Screens of Death).</p>
+<p>To mitigate these risks, Windows 10 strictly enforces Kernel-Mode
+Code Signing (KMCS) to guarantee two critical properties before a driver
+runs: identity (authenticity of the developer) and integrity (ensuring
+the code has not been altered since it was signed).</p>
+<h3 id="driver-signature-enforcement-dse">Driver Signature Enforcement
+(DSE)</h3>
+<p>The primary enforcement engine within Windows 10 is Driver Signature
+Enforcement (DSE), integrated directly into the NT kernel
+(<code>ntoskrnl.exe</code>) and the Code Integrity module
+(<code>ci.dll</code>).</p>
+<p>When a driver loading request is initiated (such as via the
+<code>ZwLoadDriver</code> system call), the kernel suspends the load
+process to perform cryptographic verification:</p>
+<ol type="1">
+<li><strong>Header Inspection:</strong> The system reads the driver's
+Portable Executable (PE) headers to locate the embedded Authenticode
+signature or checks the driver against a signed security catalog
+(<code>.cat</code>) file.</li>
+<li><strong>Hash Validation:</strong> The system calculates the
+cryptographic hash (SHA-256) of the driver image and compares it to the
+hash signed inside the certificate. Any discrepancy halts the load
+immediately.</li>
+<li><strong>Chain of Trust:</strong> The driver's signing certificate is
+traced up to a trusted root authority stored in the operating system's
+protected certificate store.</li>
+</ol>
+<p>If a driver lacks a valid signature, has an expired certificate,
+contains an untrusted root, or fails hash verification, Windows 10
+refuses to load the binary into memory and logs a
+<code>CodeIntegrity</code> event in the Event Viewer (Event ID
+3004).</p>
+<h3 id="the-microsoft-portal-signing-mandate">The Microsoft Portal
+Signing Mandate</h3>
+<p>Starting with Windows 10, version 1607, Microsoft significantly
+tightened kernel signing policies. Traditional third-party
+cross-signing—where developers used standard Authenticode certificates
+issued by public Certificate Authorities (CAs) to self-sign drivers—was
+deprecated.</p>
+<p>For Windows 10:</p>
+<ul>
+<li><strong>Hardware Dev Center Dashboard:</strong> All new kernel-mode
+drivers must be submitted to the Microsoft Partner Center.</li>
+<li><strong>Extended Validation (EV) Requirement:</strong> Developers
+must use an Extended Validation (EV) code signing certificate to
+establish a developer account and submit packages.</li>
+<li><strong>Microsoft Signature:</strong> After automated testing via
+the Windows Hardware Lab Kit (HLK) or attestation signing, Microsoft
+signs the final driver package with the official Microsoft Windows
+Hardware Compatibility Program (WHQL) signature.</li>
+</ul>
+<p>Drivers lacking this specific Microsoft-signed counter-signature will
+not load on fresh installations of Windows 10 with Secure Boot
+enabled.</p>
+<h3 id="secure-boot-and-the-boot-process">Secure Boot and the Boot
+Process</h3>
+<p>Code signing enforcement begins before Windows 10 even finishes
+booting. The Unified Extensible Firmware Interface (UEFI) Secure Boot
+protocol establishes a hardware-based root of trust:</p>
+<ol type="1">
+<li>The platform firmware verifies the digital signature of the Windows
+Boot Manager (<code>bootmgfw.efi</code>).</li>
+<li>The Boot Manager verifies the Windows OS Loader
+(<code>winload.efi</code>).</li>
+<li><code>winload.efi</code> verifies the kernel
+(<code>ntoskrnl.exe</code>), the Code Integrity library, and Boot-Start
+drivers, including Early Launch Anti-Malware (ELAM) drivers.</li>
+<li>Once the kernel initializes, it inherits this chain of trust and
+maintains DSE for all subsequent on-demand driver loads.</li>
+</ol>
+<p>If Secure Boot is enabled, system policies strictly disallow
+test-signed drivers and disable the legacy debugging modes that would
+otherwise bypass DSE.</p>
+<h3 id="virtualization-based-security-vbs-and-hvci">Virtualization-Based
+Security (VBS) and HVCI</h3>
+<p>To defend against advanced threats that attempt to disable DSE in
+memory (such as exploiting write-what-where vulnerabilities to flip the
+<code>g_CiOptions</code> kernel variable to disable verification),
+Windows 10 uses Virtualization-Based Security (VBS) and
+Hypervisor-Protected Code Integrity (HVCI).</p>
+<p>HVCI shifts the enforcement of code integrity from the standard
+kernel to a secure, isolated environment powered by the Windows
+Hypervisor:</p>
+<ul>
+<li>The system is split into Virtual Trust Levels: VTL 0 (normal OS and
+kernel) and VTL 1 (isolated, secure environment).</li>
+<li>In this configuration, Code Integrity checks run inside VTL 1.</li>
+<li>The hypervisor enforces Second Level Address Translation (SLAT)
+permissions, designating memory pages as either Writable or Executable,
+but never both simultaneously (W^X).</li>
+<li>Before a page in kernel memory can become executable, VTL 1
+validates its digital signature.</li>
+</ul>
+<p>Because the code integrity state is isolated inside VTL 1, a
+compromised VTL 0 kernel cannot manipulate kernel memory to bypass
+driver signing checks.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

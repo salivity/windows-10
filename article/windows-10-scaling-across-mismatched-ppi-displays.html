@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Scaling Across Mismatched PPI Displays - windows-10</title>
+    <meta name="description" content="Managing multiple monitors with differing pixels per inch (PPI) presents a distinct visual challenge: windows can appear disproportionately large or small when moved between screens. The Microsoft Windows 10 operating system resolves this through a combin">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-scaling-across-mismatched-ppi-displays">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Scaling Across Mismatched PPI Displays - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-scaling-across-mismatched-ppi-displays" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing multiple monitors with differing pixels per inch (PPI) presents a distinct visual challenge: windows can appear disproportionately large or small when moved between screens. The Microsoft Windows 10 operating system resolves this through a combin" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-scaling-across-mismatched-ppi-displays">Windows 10
+Scaling Across Mismatched PPI Displays</h1>
+<p>Managing multiple monitors with differing pixels per inch (PPI)
+presents a distinct visual challenge: windows can appear
+disproportionately large or small when moved between screens. The
+Microsoft Windows 10 operating system resolves this through a
+combination of per-monitor dynamic DPI scaling, Desktop Window Manager
+(DWM) composition, and application-level DPI awareness modes. This
+article explains how Windows 10 detects display density differences,
+scales user interface elements during transitions, and mitigates visual
+artifacts like blurriness and sudden size jumps.</p>
+<h3 id="per-monitor-dpi-awareness-architecture">Per-Monitor DPI
+Awareness Architecture</h3>
+<p>Windows 10 relies on an application's declared DPI awareness level to
+decide whether the operating system or the application itself handles
+rendering adjustments across different screens:</p>
+<ul>
+<li><strong>DPI Unaware:</strong> The application renders strictly at 96
+DPI (100% scale). Windows 10 treats the app as a legacy asset, forcing
+the Desktop Window Manager (DWM) to bitmap-stretch the window on
+higher-PPI screens. This prevents the window from appearing tiny on a
+high-density display, but it results in noticeable blurriness.</li>
+<li><strong>System DPI Aware:</strong> The application detects the DPI
+of the primary display at the time the user logs in and renders crisply
+for that specific screen. If moved to a secondary display with a
+different PPI, the application does not re-render. Instead, the OS
+bitmap-scales the rendered frame, leading to scaling artifacts or
+blurriness on the secondary screen.</li>
+<li><strong>Per-Monitor (v1 and v2) Aware:</strong> The application
+actively queries the DPI of the specific monitor it occupies. Under
+Per-Monitor v2 (introduced in Windows 10 version 1703), the OS
+automatically scales non-client areas (title bars, scrollbars, menus,
+and system dialogs), while notifying the application via the
+<code>WM_DPICHANGED</code> message to re-render its internal client area
+to match the new scale factor.</li>
+</ul>
+<h3 id="the-display-transition-process">The Display Transition
+Process</h3>
+<p>When a user drags a window across the boundary between two monitors
+with mismatched PPI values, Windows 10 executes a multi-step
+transition:</p>
+<ol type="1">
+<li><strong>Dominance Detection:</strong> While the window spans two
+displays, the OS determines the window's "primary" monitor based on the
+screen containing the largest percentage of the window's bounding box
+(or the position of the mouse cursor during an active drag).</li>
+<li><strong>Dynamic DWM Filtering:</strong> As long as the window is
+actively straddling the display edge or being dragged, the DWM uses
+real-time bilinear or bicubic filtering to visually stretch or shrink
+the window buffer. This ensures the window does not abruptly snap or
+break while moving across the physical seam between monitors.</li>
+<li><strong>Threshold Crossing and Message Dispatch:</strong> Once the
+majority of the window crosses the boundary, Windows updates the
+window's target DPI. For Per-Monitor aware applications, the OS sends
+the <code>WM_DPICHANGED</code> message. This message contains:
+<ul>
+<li>The new DPI value (e.g., 144 DPI for 150% scale vs. 96 DPI for 100%
+scale).</li>
+<li>A suggested <code>RECT</code> structure providing the new window
+coordinates and dimensions to preserve the relative desktop position and
+visual proportions.</li>
+</ul></li>
+<li><strong>Re-rendering:</strong> Fully aware applications consume the
+new dimensions, swap out icon and font assets for higher- or
+lower-resolution variants, and redraw their UI vector paths. Once
+re-rendered, the DWM drops the temporary bitmap scaling, restoring
+native sharpness at the new PPI.</li>
+</ol>
+<h3 id="mitigation-of-legacy-pitfalls">Mitigation of Legacy
+Pitfalls</h3>
+<p>To address blurriness in legacy applications that do not support
+Per-Monitor awareness, Windows 10 includes an advanced scaling mechanism
+called <strong>GDI DPI Scaling</strong>. When enabled, the OS
+automatically converts select GDI-based text rendering and primitive
+drawing calls into high-DPI equivalents on a per-monitor basis. This
+allows certain older desktop programs to scale cleanly across mismatched
+PPI setups without requiring code changes from original software
+developers.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

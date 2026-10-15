@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Device Encryption on Consumer Hardware - windows-10</title>
+    <meta name="description" content="Windows 10 protects consumer data by offering automatic Device Encryption on qualifying systems, a streamlined feature built on Microsoft&#39;s enterprise BitLocker technology. When installed on compatible hardware, the operating system transparently encrypts">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-device-encryption-on-consumer-hardware">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Device Encryption on Consumer Hardware - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-device-encryption-on-consumer-hardware" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 protects consumer data by offering automatic Device Encryption on qualifying systems, a streamlined feature built on Microsoft&#39;s enterprise BitLocker technology. When installed on compatible hardware, the operating system transparently encrypts" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-device-encryption-on-consumer-hardware">Windows 10
+Device Encryption on Consumer Hardware</h1>
+<p>Windows 10 protects consumer data by offering automatic Device
+Encryption on qualifying systems, a streamlined feature built on
+Microsoft's enterprise BitLocker technology. When installed on
+compatible hardware, the operating system transparently encrypts the
+system drive to prevent unauthorized offline access to user files. This
+feature operates automatically in the background, relying on specific
+hardware security standards, Unified Extensible Firmware Interface
+(UEFI) features, and cloud-based key management via a Microsoft account
+to deliver full-disk encryption without requiring user
+configuration.</p>
+<h3 id="hardware-prerequisites">Hardware Prerequisites</h3>
+<p>For Windows 10 to enable Device Encryption automatically on consumer
+hardware, the system must meet strict hardware specifications:</p>
+<ul>
+<li><strong>Trusted Platform Module (TPM):</strong> The device must
+feature a TPM 2.0 chip, either discrete or firmware-based (such as Intel
+PTT or AMD fTPM), enabled in the firmware.</li>
+<li><strong>Modern Standby Support:</strong> The system must support
+Modern Standby (formerly Connected Standby), a low-power state that
+maintains network connectivity while sleeping.</li>
+<li><strong>UEFI and Secure Boot:</strong> The system must boot using
+UEFI firmware with Secure Boot enabled to ensure that the boot path
+remains uncompromised by rootkits.</li>
+<li><strong>Hardware Security Test Interface (HSTI):</strong> The device
+must pass platform security requirements ensuring Direct Memory Access
+(DMA) protections are active to mitigate unauthorized physical memory
+dumping.</li>
+</ul>
+<h3 id="the-provisioning-and-activation-process">The Provisioning and
+Activation Process</h3>
+<p>Windows 10 prepares Device Encryption during the initial installation
+or the Out-of-Box Experience (OOBE).</p>
+<ol type="1">
+<li><strong>Pre-provisioning:</strong> While the device is being set up,
+Windows 10 formats the system volume and applies encryption in a
+clear-key state. The data on the drive is encrypted, but the key used to
+unlock it is stored unprotected on the disk, allowing the computer to
+boot without interruption during setup.</li>
+<li><strong>Activation via Microsoft Account:</strong> Device Encryption
+officially activates when the first administrator signs in using a
+Microsoft Account (MSA). During this sign-in, the system generates a
+48-digit numerical recovery key, securely uploads it to the user's
+Microsoft cloud account (OneDrive), and removes the clear key from the
+disk. At this point, the drive is fully locked and protected.</li>
+</ol>
+<h3 id="daily-operation-and-key-management">Daily Operation and Key
+Management</h3>
+<p>Once active, Device Encryption operates transparently to the
+user:</p>
+<ul>
+<li><strong>Seamless Unlocking:</strong> When the system powers on, the
+TPM validates that the bootloader, firmware, and core system components
+are untampered with. If the validation succeeds, the TPM automatically
+releases the cryptographic keys to unlock the system drive, presenting
+the user with the standard Windows login prompt.</li>
+<li><strong>Recovery Mechanism:</strong> If the system detects
+unexpected hardware modifications, a corrupted boot sequence, or an
+attempt to move the drive to a different computer, the TPM refuses to
+release the key. The user must then retrieve the 48-digit recovery key
+from their Microsoft account online and enter it at the recovery screen
+to regain access to their data.</li>
+</ul>
+<h3 id="difference-from-full-bitlocker">Difference from Full
+BitLocker</h3>
+<p>While built on identical cryptographic foundations (XTS-AES 128-bit
+by default), Device Encryption is designed specifically for consumer
+ease. Unlike standard BitLocker available on Windows 10 Pro and
+Enterprise, consumer Device Encryption lacks a management GUI, does not
+support pre-boot PINs or startup keys via USB, and cannot be managed via
+Group Policy. It provides automatic, baseline protection designed to
+safeguard lost or stolen consumer devices without complicating daily
+operation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

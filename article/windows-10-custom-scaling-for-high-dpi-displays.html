@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Custom Scaling for High-DPI Displays - windows-10</title>
+    <meta name="description" content="This article examines how the Microsoft Windows 10 operating system handles custom scaling percentages on high-resolution (high-DPI) monitors. As display resolutions like 4K and 8K become standard on smaller physical screens, default scaling often leads t">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-custom-scaling-for-high-dpi-displays">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Custom Scaling for High-DPI Displays - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-custom-scaling-for-high-dpi-displays" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines how the Microsoft Windows 10 operating system handles custom scaling percentages on high-resolution (high-DPI) monitors. As display resolutions like 4K and 8K become standard on smaller physical screens, default scaling often leads t" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-custom-scaling-for-high-dpi-displays">Windows 10
+Custom Scaling for High-DPI Displays</h1>
+<p>This article examines how the Microsoft Windows 10 operating system
+handles custom scaling percentages on high-resolution (high-DPI)
+monitors. As display resolutions like 4K and 8K become standard on
+smaller physical screens, default scaling often leads to UI elements
+that are either too small to read or awkwardly sized. Windows 10
+addresses this by pairing an internal Desktop Window Manager (DWM)
+scaling architecture with user-definable custom scaling factors,
+allowing users to fine-tune desktop sizing between 100% and 500%.</p>
+<h3 id="how-windows-10-implements-custom-scaling">How Windows 10
+Implements Custom Scaling</h3>
+<p>Windows 10 manages display sizing by calculating the logical dots per
+inch (DPI) relative to the baseline standard of 96 DPI (which
+corresponds to 100% scale). On high-resolution displays, hardware pixel
+density is significantly higher, requiring the OS to scale user
+interface (UI) elements, text, and icons proportionally to maintain
+legibility and usable click targets.</p>
+<p>While standard Windows display settings offer predefined increments
+(such as 125%, 150%, 175%, and 200%), custom scaling allows users to
+input any integer value from 100% to 500%. When a custom value is
+applied, the operating system adjusts its global DPI metric. The Desktop
+Window Manager then uses this metric to tell applications how large to
+render UI components, fonts, and controls.</p>
+<h3 id="per-monitor-vs-custom-scaling-behavior">Per-Monitor vs. Custom
+Scaling Behavior</h3>
+<p>A critical architectural distinction in Windows 10 is the difference
+between standard scaling presets and custom scaling:</p>
+<ul>
+<li><strong>Preset Scaling:</strong> Windows 10 supports "Per-Monitor
+DPI Awareness" (DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2). This allows
+multi-monitor setups with different resolutions to run different scale
+factors independently without requiring a user sign-out.</li>
+<li><strong>Custom Scaling:</strong> Entering a manual custom scaling
+percentage forces Windows 10 into a system-wide legacy DPI mode. Unlike
+the presets, a custom scale factor applies globally across all connected
+monitors, disabling individual monitor scale settings until custom
+scaling is turned off.</li>
+</ul>
+<h3 id="application-compatibility-and-scaling-modes">Application
+Compatibility and Scaling Modes</h3>
+<p>Not all Windows applications interpret custom scaling the same way.
+Windows 10 provides built-in compatibility layers to ensure software
+behaves predictably across three primary DPI scenarios:</p>
+<ol type="1">
+<li><strong>Per-Monitor Aware Applications:</strong> Modern Universal
+Windows Platform (UWP) apps and updated Win32 applications natively
+query the custom scaling value and render their assets, vector graphics,
+and fonts sharply at the exact specified percentage.</li>
+<li><strong>System DPI-Aware Applications:</strong> These applications
+render natively at the primary monitor's custom scale factor when the
+user logs in. If moved to a secondary monitor with a different native
+density, the OS relies on bitmap stretching, which can cause slight
+blurring.</li>
+<li><strong>DPI-Unaware Applications:</strong> Legacy programs designed
+strictly for 96 DPI are automatically scaled up by the Desktop Window
+Manager using bitmap stretching to prevent them from appearing
+microscopic on high-resolution panels.</li>
+</ol>
+<p>For legacy software that appears blurry under a custom scaling
+percentage, Windows 10 includes granular compatibility overrides. By
+accessing an application's executable properties, users can navigate to
+the "High DPI scaling override" options to force scaling via the
+Application, the System, or System (Enhanced)—the latter of which uses
+GDI scaling to render text crisply even if the application does not
+natively support high-DPI displays.</p>
+<h3 id="applying-custom-scaling-in-windows-10">Applying Custom Scaling
+in Windows 10</h3>
+<p>To configure a custom scaling percentage:</p>
+<ol type="1">
+<li>Open <strong>Settings</strong> and select <strong>System &gt;
+Display</strong>.</li>
+<li>Under "Scale and layout," click <strong>Advanced scaling
+settings</strong>.</li>
+<li>In the "Custom scaling" field, enter a value between 100 and
+500.</li>
+<li>Select <strong>Apply</strong>, then sign out of Windows 10 and sign
+back in to reload system fonts, icon caches, and rendering
+coordinates.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

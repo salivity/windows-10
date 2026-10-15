@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role of PatchGuard in Windows 10 64-Bit Kernel - windows-10</title>
+    <meta name="description" content="Kernel Patch Protection (KPP), informally known as PatchGuard, is a fundamental security mechanism designed to prevent unauthorized modifications to the core kernel of 64-bit (x64) editions of Microsoft Windows 10. By continuously validating the integrity">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/role-of-patch-guard-in-windows-10-64-bit-kernel">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Role of PatchGuard in Windows 10 64-Bit Kernel - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/role-of-patch-guard-in-windows-10-64-bit-kernel" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Kernel Patch Protection (KPP), informally known as PatchGuard, is a fundamental security mechanism designed to prevent unauthorized modifications to the core kernel of 64-bit (x64) editions of Microsoft Windows 10. By continuously validating the integrity" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="role-of-patchguard-in-windows-10-64-bit-kernel">Role of
+PatchGuard in Windows 10 64-Bit Kernel</h1>
+<p>Kernel Patch Protection (KPP), informally known as PatchGuard, is a
+fundamental security mechanism designed to prevent unauthorized
+modifications to the core kernel of 64-bit (x64) editions of Microsoft
+Windows 10. By continuously validating the integrity of critical system
+structures, code, and registers, PatchGuard prevents both malicious
+software, such as rootkits, and poorly written third-party drivers from
+destabilizing the operating system. This article explores the primary
+functions, operational behavior, and architectural importance of
+PatchGuard within Windows 10.</p>
+<h3 id="preventing-kernel-hooking-and-tampering">Preventing Kernel
+Hooking and Tampering</h3>
+<p>In older 32-bit architectures, third-party software—including
+legitimate antivirus suites and malicious rootkits—routinely patched
+kernel code and modified system tables to monitor or intercept operating
+system behavior. While this allowed deep system monitoring, it
+frequently caused system instability, blue screens, and critical
+security vulnerabilities.</p>
+<p>PatchGuard completely changes this paradigm on 64-bit Windows 10 by
+strictly forbidding modifications to:</p>
+<ul>
+<li><strong>System Service Descriptor Tables (SSDT):</strong> Preventing
+interception of native system calls.</li>
+<li><strong>Interrupt Descriptor Table (IDT) and Global Descriptor Table
+(GDT):</strong> Blocking unauthorized redirecting of hardware and
+software interrupts.</li>
+<li><strong>Kernel Code and Core Drivers:</strong> Preventing runtime
+patching of <code>ntoskrnl.exe</code> and foundational drivers.</li>
+<li><strong>Model-Specific Registers (MSRs):</strong> Protecting
+low-level system call dispatchers (such as <code>syscall</code>
+instructions).</li>
+<li><strong>Internal Kernel Stacks and Control Registers:</strong>
+Preventing stack tampering and illegal execution flow redirection.</li>
+</ul>
+<h3 id="how-patchguard-operates">How PatchGuard Operates</h3>
+<p>PatchGuard is embedded directly into the kernel image and initializes
+early in the boot sequence. Rather than monitoring kernel structures
+through continuous inline hooks, it functions via randomized,
+asynchronous integrity checks:</p>
+<ol type="1">
+<li><strong>Obfuscation:</strong> PatchGuard routines and their data
+contexts are heavily obfuscated and distributed dynamically across
+memory to prevent attackers from finding and neutralizing the
+checks.</li>
+<li><strong>Periodic Verification:</strong> At unpredictable intervals,
+PatchGuard routines execute using kernel timers or deferred procedure
+calls (DPCs) to compute cryptographic checksums of protected kernel
+memory segments.</li>
+<li><strong>Immediate Termination:</strong> If an unauthorized change is
+detected, PatchGuard immediately halts the operating system via a Bug
+Check (Blue Screen of Death), typically
+<code>CRITICAL_STRUCTURE_CORRUPTION</code> (Bug Check 0x109) or
+<code>KERNEL_SECURITY_CHECK_FAILURE</code> (Bug Check 0x139). This
+drastic response prevents compromised code from executing in the highest
+privilege level (Ring 0).</li>
+</ol>
+<h3
+id="promoting-system-reliability-and-standardized-interfaces">Promoting
+System Reliability and Standardized Interfaces</h3>
+<p>Beyond blocking malware, PatchGuard enforces architectural hygiene
+across the Windows driver ecosystem. Because developers can no longer
+rely on undocumented kernel modifications or dynamic patching, Microsoft
+provides supported kernel-mode APIs and filter driver frameworks (such
+as the File System Minifilter and Windows Filtering Platform). This
+enforcement ensures that legitimate software interacts with the
+operating system reliably, dramatically reducing system crashes and
+ensuring seamless compatibility across cumulative Windows 10
+updates.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

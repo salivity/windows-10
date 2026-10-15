@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Network Adapter Priority and Metrics - windows-10</title>
+    <meta name="description" content="When a Windows 10 device connects to multiple networks simultaneously—such as Ethernet, Wi-Fi, and a cellular or VPN connection—the operating system must determine which path outbound internet traffic should take. Windows 10 manages this network hierarchy">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-network-adapter-priority-and-metrics">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Network Adapter Priority and Metrics - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-network-adapter-priority-and-metrics" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When a Windows 10 device connects to multiple networks simultaneously—such as Ethernet, Wi-Fi, and a cellular or VPN connection—the operating system must determine which path outbound internet traffic should take. Windows 10 manages this network hierarchy" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-network-adapter-priority-and-metrics">Windows 10
+Network Adapter Priority and Metrics</h1>
+<p>When a Windows 10 device connects to multiple networks
+simultaneously—such as Ethernet, Wi-Fi, and a cellular or VPN
+connection—the operating system must determine which path outbound
+internet traffic should take. Windows 10 manages this network hierarchy
+using a routing cost mechanism known as a metric, calculated via an
+automated process called the Automatic Metric feature. This article
+outlines how Windows calculates these interface metrics, how route
+selection occurs, and how administrators can manually configure priority
+order when needed.</p>
+<h2 id="the-concept-of-network-metrics">The Concept of Network
+Metrics</h2>
+<p>In TCP/IP routing, a metric is an integer assigned to a specific IP
+route or interface. It represents the cost of using that network path.
+Windows assigns metrics to network interfaces based on their overall
+performance characteristics.</p>
+<p>The core rule of IP routing in Windows is simple: <strong>the lower
+the metric value, the higher the priority</strong>. If two active
+adapters have default routes to the internet, Windows sends outbound
+traffic through the adapter with the lowest combined interface and
+gateway metric.</p>
+<h2 id="the-automatic-metric-feature">The Automatic Metric Feature</h2>
+<p>By default, Windows 10 enables the Automatic Metric feature on all
+network interfaces. This feature dynamically configures the metric based
+on the reported link speed of the adapter.</p>
+<p>When an interface connects, Windows measures its current link speed
+and assigns a predefined metric:</p>
+<ul>
+<li><strong>Link speeds greater than 200 Mbps</strong> (e.g., Gigabit
+Ethernet): Metric <strong>10</strong></li>
+<li><strong>Link speeds between 80 Mbps and 200 Mbps</strong>: Metric
+<strong>20</strong></li>
+<li><strong>Link speeds between 20 Mbps and 80 Mbps</strong>: Metric
+<strong>25</strong></li>
+<li><strong>Link speeds between 4 Mbps and 20 Mbps</strong>: Metric
+<strong>30</strong></li>
+<li><strong>Link speeds between 500 Kbps and 4 Mbps</strong>: Metric
+<strong>40</strong></li>
+<li><strong>Link speeds under 500 Kbps</strong>: Metric
+<strong>50</strong></li>
+</ul>
+<p>Because wired Ethernet connections usually provide higher link speeds
+than Wi-Fi, Windows automatically assigns Ethernet a lower metric,
+making it the preferred default gateway without requiring user
+intervention. If an Ethernet cable is disconnected, the routing table
+updates immediately, and traffic reroutes to the next lowest metric
+interface, such as Wi-Fi.</p>
+<h2 id="how-the-routing-table-determines-priority">How the Routing Table
+Determines Priority</h2>
+<p>Windows 10 determines the path for packets by consulting its internal
+routing table. Each default route (<code>0.0.0.0/0</code>) in the table
+has an associated cost composed of:</p>
+<ol type="1">
+<li><strong>The Gateway Metric:</strong> Typically assigned by DHCP or
+set to <code>0</code> or <code>1</code>.</li>
+<li><strong>The Interface Metric:</strong> Determined by the link speed
+(or set manually).</li>
+</ol>
+<p>The effective metric is the sum of these two values. When an
+application initiates a network request to an external IP, the TCP/IP
+stack selects the route with the lowest overall metric. If two adapters
+have identical total metrics, Windows may use round-robin load
+distribution or choose the first binding adapter.</p>
+<h2 id="manually-configuring-adapter-priority">Manually Configuring
+Adapter Priority</h2>
+<p>There are scenarios where the default behavior is undesirable, such
+as when a slower wired connection must take precedence over high-speed
+Wi-Fi, or when a specific VPN interface needs priority. Administrators
+can override the Automatic Metric using either the graphical interface
+or PowerShell.</p>
+<h3 id="method-1-using-the-graphical-interface">Method 1: Using the
+Graphical Interface</h3>
+<ol type="1">
+<li>Press <code>Win + R</code>, type <code>ncpa.cpl</code>, and press
+<strong>Enter</strong> to open Network Connections.</li>
+<li>Right-click the preferred adapter and select
+<strong>Properties</strong>.</li>
+<li>Select <strong>Internet Protocol Version 4 (TCP/IPv4)</strong> and
+click <strong>Properties</strong>.</li>
+<li>Click the <strong>Advanced</strong> button in the lower-right
+corner.</li>
+<li>In the <strong>IP Settings</strong> tab, uncheck the
+<strong>Automatic metric</strong> box.</li>
+<li>In the <strong>Interface metric</strong> field, enter a low number
+(e.g., <code>5</code> to force high priority, or <code>100</code> to
+force low priority).</li>
+<li>Click <strong>OK</strong> on all open windows to apply the
+changes.</li>
+</ol>
+<h3 id="method-2-using-powershell">Method 2: Using PowerShell</h3>
+<p>Windows PowerShell allows network metrics to be viewed and changed
+directly via the <code>NetTCPIP</code> module.</p>
+<p>To view current metrics:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Get-NetIPInterface <span class="op">|</span> <span class="fu">Select-Object</span> IfIndex<span class="op">,</span> InterfaceAlias<span class="op">,</span> InterfaceMetric<span class="op">,</span> AutomaticMetric</span></code></pre></div>
+<p>To assign a manual metric, identify the interface index
+(<code>IfIndex</code>) or name and run:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Set-NetIPInterface <span class="op">-</span>InterfaceIndex <span class="op">&lt;</span>IndexNumber<span class="op">&gt;</span> <span class="op">-</span>AutomaticMetric Disabled <span class="op">-</span>InterfaceMetric <span class="dv">5</span></span></code></pre></div>
+<p>Setting a low value ensures that Windows 10 consistently routes
+traffic through that designated interface whenever it is connected,
+bypassing the dynamic link-speed evaluation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/windows-10'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
