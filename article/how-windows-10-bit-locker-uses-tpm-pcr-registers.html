@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 BitLocker Uses TPM PCR Registers - windows-10</title>
+    <meta name="description" content="This article provides an overview of how the Microsoft Windows 10 operating system secures disk encryption keys using a Trusted Platform Module (TPM). It explains the role of Platform Configuration Registers (PCRs), details the step-by-step cryptographic">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-bit-locker-uses-tpm-pcr-registers">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 BitLocker Uses TPM PCR Registers - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-bit-locker-uses-tpm-pcr-registers" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of how the Microsoft Windows 10 operating system secures disk encryption keys using a Trusted Platform Module (TPM). It explains the role of Platform Configuration Registers (PCRs), details the step-by-step cryptographic" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-bitlocker-uses-tpm-pcr-registers">How Windows 10
+BitLocker Uses TPM PCR Registers</h1>
+<p>This article provides an overview of how the Microsoft Windows 10
+operating system secures disk encryption keys using a Trusted Platform
+Module (TPM). It explains the role of Platform Configuration Registers
+(PCRs), details the step-by-step cryptographic measurement process
+during the boot sequence, and describes how BitLocker "seals" and
+"unseals" keys to ensure data is accessible only when the system boots
+into a trusted, unaltered state.</p>
+<h3 id="the-role-of-the-tpm-and-pcr-registers">The Role of the TPM and
+PCR Registers</h3>
+<p>Windows 10 implements full-volume disk encryption through BitLocker,
+which relies on a hardware TPM chip to store and protect encryption
+keys. The TPM contains Platform Configuration Registers
+(PCRs)—specialized, volatile memory registers designed to hold
+cryptographic hashes representing the integrity of the system's
+firmware, hardware configuration, and boot components.</p>
+<p>PCRs cannot be directly overwritten with arbitrary data. Instead,
+they are updated through an operation known as "extending." When a
+component is measured, the TPM calculates a new hash by combining the
+existing register value with the hash of the new component:</p>
+<p><span class="math display">\[\text{PCR}_{\text{new}} =
+\text{Hash}(\text{PCR}_{\text{current}} \parallel
+\text{Measurement})\]</span></p>
+<p>Because each measurement depends on all previous measurements, the
+final PCR value reflects the exact boot history of the device.</p>
+<h3 id="the-measurement-sequence">The Measurement Sequence</h3>
+<p>During startup, the system establishes a Static Root of Trust for
+Measurement (SRTM). Each component cryptographically measures the
+subsequent component before executing it:</p>
+<ol type="1">
+<li><strong>Firmware Initialization:</strong> The Core Root of Trust for
+Measurement (CRTM) executes and measures the UEFI/BIOS code, storing the
+result in <strong>PCR 0</strong>.</li>
+<li><strong>Platform Configuration:</strong> Extended firmware
+configuration and motherboard settings are measured into <strong>PCR
+1</strong>.</li>
+<li><strong>Option ROMs and Drivers:</strong> Third-party drivers and
+Option ROMs are measured into <strong>PCR 2</strong> and <strong>PCR
+3</strong>.</li>
+<li><strong>Boot Loader:</strong> The Master Boot Record (MBR) or UEFI
+boot manager is measured into <strong>PCR 4</strong>.</li>
+<li><strong>GPT Partition Table:</strong> Disk partitioning information
+is measured into <strong>PCR 5</strong>.</li>
+<li><strong>Secure Boot and State:</strong> Windows 10 heavily relies on
+<strong>PCR 7</strong> to validate that Secure Boot is enabled and that
+certificates match the authorized database (db/dbx).</li>
+<li><strong>Windows Boot Manager and Kernel:</strong> The Windows Boot
+Manager (bootmgr) measures the Windows OS loader (winload.efi) and core
+boot drivers into <strong>PCR 11</strong>.</li>
+</ol>
+<h3 id="sealing-the-volume-master-key">Sealing the Volume Master
+Key</h3>
+<p>BitLocker encrypts the volume using a Full Volume Encryption Key
+(FVEK), which is encrypted by a Volume Master Key (VMK). To enforce
+system integrity, the VMK is "sealed" to the TPM.</p>
+<p>Sealing is a TPM operation where data is encrypted using the TPM's
+internal Storage Root Key (SRK) alongside an authorization policy tied
+to specific expected PCR values. By default on modern UEFI systems
+running Windows 10, BitLocker seals the VMK to <strong>PCR 7</strong>
+(Secure Boot state) or a combination such as <strong>PCR 0, 2, 4, and
+11</strong> on legacy configurations.</p>
+<h3 id="key-enforcement-and-the-unsealing-process">Key Enforcement and
+the Unsealing Process</h3>
+<p>When Windows 10 boots, the enforcement mechanism executes
+automatically:</p>
+<ol type="1">
+<li><strong>Unseal Request:</strong> The Windows Boot Manager requests
+the TPM to decrypt (unseal) the VMK.</li>
+<li><strong>Integrity Validation:</strong> The TPM compares the runtime
+values currently stored in the designated PCRs with the values recorded
+when the key was sealed.</li>
+<li><strong>Execution Decision:</strong>
+<ul>
+<li><strong>Values Match:</strong> If the current PCR hashes match the
+sealed policy, the TPM decrypts the VMK in secure memory and passes it
+to the boot loader. The drive is decrypted seamlessly, and Windows boots
+normally.</li>
+<li><strong>Values Mismatch:</strong> If any boot component has
+changed—such as an altered boot loader, an unauthorized rootkit,
+modified firmware, or a disabled Secure Boot configuration—the PCR
+values will not match the sealed condition. The TPM refuses to release
+the VMK.</li>
+</ul></li>
+</ol>
+<p>When the TPM rejects the unseal request, Windows 10 halts the
+standard boot sequence and prompts the user for the 48-digit BitLocker
+Recovery Key, preventing unauthorized access to the encrypted data.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-bit-locker-uses-tpm-pcr-registers';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Offline Servicing Using DISM Packages - windows-10</title>
+    <meta name="description" content="This article explains how the Microsoft Windows 10 operating system processes and manages offline updates through Deployment Image Servicing and Management (DISM). Offline servicing allows administrators to modify Windows image files—such as Windows Imagi">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-offline-servicing-using-dism-packages">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Offline Servicing Using DISM Packages - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-offline-servicing-using-dism-packages" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how the Microsoft Windows 10 operating system processes and manages offline updates through Deployment Image Servicing and Management (DISM). Offline servicing allows administrators to modify Windows image files—such as Windows Imagi" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-offline-servicing-using-dism-packages">Windows 10
+Offline Servicing Using DISM Packages</h1>
+<p>This article explains how the Microsoft Windows 10 operating system
+processes and manages offline updates through Deployment Image Servicing
+and Management (DISM). Offline servicing allows administrators to modify
+Windows image files—such as Windows Imaging (<code>.wim</code>) or
+virtual hard disk (<code>.vhd</code>/<code>.vhdx</code>) formats—without
+booting the operating system. By analyzing the servicing architecture,
+package management commands, and the role of the Component-Based
+Servicing (CBS) stack, this guide provides a direct technical breakdown
+of how offline update integration operates.</p>
+<h3 id="the-component-based-servicing-cbs-architecture">The
+Component-Based Servicing (CBS) Architecture</h3>
+<p>At the core of Windows 10 servicing is the Component-Based Servicing
+(CBS) engine. CBS manages the installation, removal, and maintenance of
+optional components, language packs, and cumulative updates. In an
+online environment, CBS communicates with the running Windows kernel and
+Windows Update services. During offline servicing, DISM acts as the
+client interface to CBS, running from the host environment to manipulate
+the offline operating system's file system and registry directly.</p>
+<p>The offline update process relies heavily on the <code>WinSxS</code>
+(Windows Side-by-Side) component store within the target image. Rather
+than simply overwriting system files, DISM stages new component versions
+into the offline store and updates the system registry hives to
+reference these new binaries upon subsequent boot.</p>
+<h3 id="mounting-the-offline-image">Mounting the Offline Image</h3>
+<p>Before any update can be injected, DISM must mount the offline image
+to a local directory. This is executed using the
+<code>/Mount-Image</code> command:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dism <span class="at">/Mount-Image</span> <span class="at">/ImageFile:</span>C:\images\install.wim <span class="at">/Index:</span>1 <span class="at">/MountDir:</span>C:\offline</span></code></pre></div>
+<p>During this phase, the DISM kernel-mode filter driver
+(<code>wimmount.sys</code>) exposes the internal contents of the
+<code>.wim</code> file as a standard directory structure. DISM maps the
+offline registry hives located at
+<code>C:\offline\Windows\System32\config\</code> (such as
+<code>SOFTWARE</code> and <code>SYSTEM</code>) into temporary mounts in
+the host system's registry to read and stage system state data.</p>
+<h3 id="adding-update-packages">Adding Update Packages</h3>
+<p>Updates for Windows 10 are delivered primarily as Microsoft Update
+Standalone (<code>.msu</code>) or Cabinet (<code>.cab</code>) files.
+Administrators inject these updates into the mounted image using the
+<code>/Add-Package</code> parameter:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dism <span class="at">/Image:</span>C:\offline <span class="at">/Add-Package</span> <span class="at">/PackagePath:</span>C:\updates\package.msu</span></code></pre></div>
+<p>When this command runs, DISM executes several automated steps:</p>
+<ol type="1">
+<li><strong>Extraction and Validation:</strong> If a <code>.msu</code>
+file is supplied, DISM extracts the underlying <code>.cab</code> payload
+and package metadata files (<code>update.mum</code> and package
+manifests). It checks cryptographic signatures to verify file integrity
+and authenticity.</li>
+<li><strong>Prerequisite and Architecture Verification:</strong> DISM
+queries the offline image's current build number, architecture (x86,
+x64, ARM64), and installed updates. It verifies whether mandatory
+prerequisites—such as a Servicing Stack Update (SSU)—are present. If the
+SSU is missing, the update operation fails to prevent image
+corruption.</li>
+<li><strong>Payload Staging:</strong> Binaries are transferred directly
+into <code>C:\offline\Windows\WinSxS</code>. The Component-Based
+Servicing engine generates pending transaction records indicating which
+files must replace active system binaries when the image eventually
+boots.</li>
+<li><strong>Registry Manipulation:</strong> DISM writes configuration
+changes, component state transitions (e.g., from "Staged" to
+"Installed"), and metadata into the offline <code>SOFTWARE</code> and
+<code>COMPONENTS</code> registry hives.</li>
+</ol>
+<h3 id="supersedence-and-package-cleanup">Supersedence and Package
+Cleanup</h3>
+<p>Cumulative updates routinely supersede earlier patches. When multiple
+packages are integrated, DISM resolves component versions and flags
+obsolete components within the offline store. Administrators can run the
+<code>/Cleanup-Image</code> command with the
+<code>/StartComponentCleanup</code> switch on the offline directory:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dism <span class="at">/Image:</span>C:\offline <span class="at">/Cleanup-Image</span> <span class="at">/StartComponentCleanup</span></span></code></pre></div>
+<p>This instructs the offline CBS engine to delete superseded versions
+of files immediately, keeping the base image size optimized prior to
+deployment.</p>
+<h3 id="committing-changes-and-unmounting">Committing Changes and
+Unmounting</h3>
+<p>Once package processing is complete, changes must be written back to
+the base image:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dism <span class="at">/Unmount-Image</span> <span class="at">/MountDir:</span>C:\offline <span class="at">/Commit</span></span></code></pre></div>
+<p>The <code>/Commit</code> command causes DISM to flush all pending
+file operations, unload the offline registry hives, unhook the file
+system filter driver, and append or rebuild the altered metadata within
+the <code>.wim</code> container. When an endpoint is subsequently imaged
+with this updated <code>.wim</code>, it boots with all security fixes
+and feature packages pre-applied, bypassing the initial update cycle
+entirely.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-offline-servicing-using-dism-packages';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

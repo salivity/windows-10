@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Sync Center Handles Offline Files - windows-10</title>
+    <meta name="description" content="Windows 10 manages offline file synchronization through a built-in feature called Sync Center paired with the Offline Files subsystem. This system allows users to access network share files even when disconnected from the corporate network or the internet">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-sync-center-handles-offline-files">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Sync Center Handles Offline Files - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-sync-center-handles-offline-files" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 manages offline file synchronization through a built-in feature called Sync Center paired with the Offline Files subsystem. This system allows users to access network share files even when disconnected from the corporate network or the internet" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-sync-center-handles-offline-files">How Windows 10
+Sync Center Handles Offline Files</h1>
+<p>Windows 10 manages offline file synchronization through a built-in
+feature called Sync Center paired with the Offline Files subsystem. This
+system allows users to access network share files even when disconnected
+from the corporate network or the internet. When the computer goes
+offline, Windows serves cached local copies of these files, tracks any
+modifications made locally, and automatically reconciles differences
+with the network share once the connection is restored.</p>
+<h3 id="client-side-caching-csc-architecture">Client-Side Caching (CSC)
+Architecture</h3>
+<p>At the technical core of Offline Files is Client-Side Caching (CSC).
+When a user designates a network folder to be "Always available
+offline," Windows initializes a hidden, protected local cache on the
+system drive.</p>
+<p>When connected to the network, read and write operations interact
+transparently between the local cache and the remote Server Message
+Block (SMB) share. If the network connection drops or latency exceeds
+acceptable thresholds, the operating system seamlessly switches into an
+offline mode without interrupting file availability, serving requests
+directly from the CSC directory.</p>
+<h3 id="the-role-of-sync-center">The Role of Sync Center</h3>
+<p>Sync Center serves as the administrative interface and execution
+engine for managing these cached files. Its primary responsibilities
+include:</p>
+<ul>
+<li><strong>Connection State Detection:</strong> Sync Center
+continuously monitors network interfaces. When a network connection is
+detected, it evaluates whether the target server hosting the files is
+reachable.</li>
+<li><strong>Background Synchronization:</strong> Windows 10 performs
+automated background synchronization based on system triggers, such as
+user logon, logoff, idle states, or scheduled intervals. It scans for
+differences between the timestamps and content of local files and their
+network counterparts.</li>
+<li><strong>Manual Synchronization:</strong> Users can trigger immediate
+synchronizations on demand via the Windows File Explorer context menu or
+directly from the Sync Center interface.</li>
+</ul>
+<h3 id="conflict-resolution-handling">Conflict Resolution Handling</h3>
+<p>When a file is modified locally while offline, and another user
+modifies the same file on the network server during the same period, a
+synchronization conflict occurs. Windows 10 does not automatically
+overwrite either version to prevent data loss.</p>
+<p>Instead, Sync Center flags the collision under its "View sync
+conflicts" panel. The system prompts the user to select a resolution
+method:</p>
+<ol type="1">
+<li><strong>Keep the local version:</strong> Overwrites the network file
+with the locally edited copy.</li>
+<li><strong>Keep the network version:</strong> Discards local offline
+changes and downloads the server's version.</li>
+<li><strong>Keep both versions:</strong> Preserves the server version
+and renames the local version before uploading it, allowing manual
+reconciliation.</li>
+</ol>
+<h3 id="enterprise-control-and-optimization">Enterprise Control and
+Optimization</h3>
+<p>Windows 10 integrates Offline Files with Group Policy Objects (GPO),
+allowing network administrators to manage synchronization behavior
+across domain-joined machines. Administrators can configure:</p>
+<ul>
+<li><strong>Background Sync Limits:</strong> Regulate bandwidth usage
+and synchronization frequency over metered or high-latency
+connections.</li>
+<li><strong>Encryption:</strong> Enable BitLocker or CSC-specific
+encryption to protect offline cached files on stolen or compromised
+laptops.</li>
+<li><strong>Transparent Caching:</strong> Automatically cache frequently
+read files locally to reduce bandwidth usage, even if the user has not
+explicitly marked the entire share as available offline.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-sync-center-handles-offline-files';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

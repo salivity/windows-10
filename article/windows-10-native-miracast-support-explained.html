@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Native Miracast Support Explained - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 includes built-in support for Miracast, a peer-to-peer wireless screencasting standard that allows laptops to project their screens to compatible external displays without physical cables or third-party software. By integrating this s">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-native-miracast-support-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Native Miracast Support Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-native-miracast-support-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 includes built-in support for Miracast, a peer-to-peer wireless screencasting standard that allows laptops to project their screens to compatible external displays without physical cables or third-party software. By integrating this s" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-native-miracast-support-explained">Windows 10 Native
+Miracast Support Explained</h1>
+<p>Microsoft Windows 10 includes built-in support for Miracast, a
+peer-to-peer wireless screencasting standard that allows laptops to
+project their screens to compatible external displays without physical
+cables or third-party software. By integrating this standard directly
+into the operating system's display and networking architectures,
+Windows 10 enables users to duplicate or extend their desktop onto
+televisions, monitors, or projectors seamlessly. This article outlines
+the technical framework, system requirements, and built-in interfaces
+that make native Miracast streaming possible on Windows 10 laptops.</p>
+<h3 id="underlying-architecture-and-protocols">Underlying Architecture
+and Protocols</h3>
+<p>Windows 10 handles Miracast at the operating system level by
+combining Wi-Fi Direct and graphics pipeline technologies:</p>
+<ul>
+<li><strong>Wi-Fi Direct (P2P):</strong> Windows 10 bypasses local
+wireless routers and external networks by creating a direct, encrypted
+peer-to-peer Wi-Fi connection between the laptop and the target display.
+This minimizes latency and ensures that screencasting works even when an
+internet connection is unavailable.</li>
+<li><strong>Video Encoding and Transport:</strong> The laptop's graphics
+hardware encodes the display feed in real time using the H.264 video
+codec. The audio and video streams are multiplexed and packaged using
+the MPEG-2 Transport Stream (MPEG-2 TS) format, then delivered securely
+over the Wi-Fi Direct link via standard TCP/IP and UDP protocols.</li>
+<li><strong>HDCP Support:</strong> Windows 10 incorporates
+High-bandwidth Digital Content Protection (HDCP) within the Miracast
+stack. This allows copy-protected media, such as movies and streaming
+services, to beam securely to the target screen without being blocked or
+downgraded.</li>
+</ul>
+<h3 id="hardware-and-driver-requirements">Hardware and Driver
+Requirements</h3>
+<p>For Windows 10 to enable native Miracast projection, a laptop's
+internal hardware and device drivers must meet specific baseline
+standards:</p>
+<ol type="1">
+<li><strong>Graphics Drivers:</strong> The display adapter driver must
+support the Windows Display Driver Model (WDDM) 1.3 or higher. Most
+modern Intel, AMD, and NVIDIA mobile graphics solutions meet this
+standard, providing the hardware-accelerated video encoding necessary
+for low-latency transmission.</li>
+<li><strong>Network Adapters:</strong> The wireless network interface
+card (Wi-Fi NIC) must support Network Driver Interface Specification
+(NDIS) 6.30 or higher and natively support Wi-Fi Direct.</li>
+</ol>
+<p>If both the display driver and Wi-Fi adapter meet these requirements,
+Windows 10 automatically unlocks the Miracast functionality without
+requiring additional configuration.</p>
+<h3 id="how-users-initiate-native-screen-projection">How Users Initiate
+Native Screen Projection</h3>
+<p>Windows 10 makes the projection process accessible through the
+graphical interface via native shortcuts:</p>
+<ul>
+<li><strong>Action Center &amp; Project Menu:</strong> Users can press
+the <strong>Windows Key + K</strong> shortcut to open the "Connect"
+flyout, which initiates an immediate scan for nearby Miracast-compatible
+receivers. Alternatively, pressing <strong>Windows Key + P</strong>
+opens the "Project" menu.</li>
+<li><strong>Handshake and Pairing:</strong> Selecting a detected
+receiver prompts Windows 10 to establish a Wi-Fi Direct handshake (often
+protected by a PIN or permission prompt displayed on the receiving
+device).</li>
+<li><strong>Display Modes:</strong> Once paired, Windows 10 treats the
+wireless monitor identically to a physically connected cable. Users can
+choose to <strong>Duplicate</strong> the laptop screen,
+<strong>Extend</strong> the desktop for extra workspace, or use the
+<strong>Second screen only</strong> mode to conserve laptop battery
+life.</li>
+</ul>
+<h3 id="bidirectional-support-projecting-to-a-laptop">Bidirectional
+Support: Projecting to a Laptop</h3>
+<p>In addition to sending video streams, Windows 10 includes native
+functionality that allows a laptop to act as a Miracast receiver through
+the optional "Wireless Display" feature. Managed via the "Projecting to
+this PC" settings, this allows one Windows laptop to serve as an
+extended monitor for another laptop or mobile device over the exact same
+Miracast protocol stack.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-native-miracast-support-explained';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

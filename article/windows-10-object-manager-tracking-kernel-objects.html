@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Object Manager: Tracking Kernel Objects - windows-10</title>
+    <meta name="description" content="The Windows 10 Object Manager is a foundational component of the Windows NT executive subsystem responsible for creating, maintaining, securing, and destroying kernel-level objects. By serving as a unified resource manager, it abstracts physical and logic">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-object-manager-tracking-kernel-objects">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Object Manager: Tracking Kernel Objects - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-object-manager-tracking-kernel-objects" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Windows 10 Object Manager is a foundational component of the Windows NT executive subsystem responsible for creating, maintaining, securing, and destroying kernel-level objects. By serving as a unified resource manager, it abstracts physical and logic" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-object-manager-tracking-kernel-objects">Windows 10
+Object Manager: Tracking Kernel Objects</h1>
+<p>The Windows 10 Object Manager is a foundational component of the
+Windows NT executive subsystem responsible for creating, maintaining,
+securing, and destroying kernel-level objects. By serving as a unified
+resource manager, it abstracts physical and logical system entities—such
+as processes, threads, files, and synchronization primitives—into
+standardized structures. This article examines the architectural role of
+the Object Manager in tracking these kernel objects, detailing how it
+maintains object lifecycles, manages system namespaces, enforces access
+control, and uses reference counting to guarantee operating system
+integrity and stability.</p>
+<h3 id="centralized-object-creation-and-standardization">Centralized
+Object Creation and Standardization</h3>
+<p>In Windows 10, kernel-level resources are represented as structured
+objects rather than raw blocks of memory. The Object Manager
+(<code>Ob</code>) standardizes these entities by splitting each object
+into two parts: a standard object header and an object-specific
+body.</p>
+<p>The object header, managed exclusively by the Object Manager,
+contains system-wide metadata such as the object’s name, security
+descriptor, quota charges, and type information. The object body is
+defined and manipulated by the specific executive component that owns
+the object (for example, the Process Manager for process objects or the
+Memory Manager for section objects). By standardizing the header, the
+Object Manager tracks all kernel components using a uniform interface,
+eliminating the need for individual subsystems to implement proprietary
+tracking logic.</p>
+<h3 id="reference-counting-and-lifetime-management">Reference Counting
+and Lifetime Management</h3>
+<p>One of the most critical roles of the Object Manager is tracking the
+lifecycle of kernel objects to prevent memory leaks and dangling
+pointers. It accomplishes this using a dual-counter mechanism stored in
+the object header:</p>
+<ul>
+<li><strong>Pointer Count:</strong> Tracks the number of active
+kernel-mode references to the object. Every time an internal driver or
+kernel subsystem retains a pointer to an object, the pointer count
+increments.</li>
+<li><strong>Handle Count:</strong> Tracks the number of user-mode or
+kernel-mode handles open to the object. When a process opens an object
+via an API call, a handle is generated in that process's handle table,
+incrementing the handle count (and, by extension, the pointer
+count).</li>
+</ul>
+<p>The Object Manager ensures that an object remains in memory as long
+as its pointer count is greater than zero. When all handles are closed,
+the handle count drops to zero, allowing the system to perform
+pre-deletion cleanup, such as removing the object’s name from the
+namespace. Once all kernel-mode pointer references are released and the
+pointer count reaches zero, the Object Manager permanently deallocates
+the object's memory from the non-paged or paged pool.</p>
+<h3 id="unified-namespace-management">Unified Namespace Management</h3>
+<p>The Object Manager maintains a hierarchical, directory-based
+namespace—similar to a file system—that organizes named kernel objects.
+This internal structure is distinct from the physical file system and
+can be inspected using diagnostic tools like WinObj.</p>
+<p>By categorizing objects under directories such as
+<code>\Device</code>, <code>\Driver</code>, <code>\KernelObjects</code>,
+and <code>\BaseNamedObjects</code>, the Object Manager enables
+inter-process communication and object sharing. When a process requests
+access to a named object, the Object Manager traverses this namespace,
+parses the path, and resolves symbolic links to locate or create the
+requested resource.</p>
+<h3 id="security-integration-and-access-control">Security Integration
+and Access Control</h3>
+<p>Tracking kernel objects also requires governing which entities can
+interact with them. The Object Manager integrates directly with the
+Security Reference Monitor (SRM) to enforce access validation.</p>
+<p>When an application attempts to access an object, the Object Manager
+intercepts the request and evaluates the caller’s access token against
+the discretionary access control list (DACL) stored in the object's
+header. If the request is permitted, the Object Manager creates an entry
+in the calling process's handle table and grants a specific access mask
+(such as read, write, or execute). Subsequent operations using that
+handle avoid repeated, costly security checks because the granted rights
+are bound directly to the handle tracked by the Object Manager.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-object-manager-tracking-kernel-objects';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Supports High-Resolution Audio - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 provides robust native support for high-resolution audio formats and high sample rates through updated driver architectures, native codec support, and dedicated audio streaming modes. This article examines how the operating system han">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-supports-high-resolution-audio">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Supports High-Resolution Audio - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-supports-high-resolution-audio" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 provides robust native support for high-resolution audio formats and high sample rates through updated driver architectures, native codec support, and dedicated audio streaming modes. This article examines how the operating system han" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-supports-high-resolution-audio">How Windows 10
+Supports High-Resolution Audio</h1>
+<p>Microsoft Windows 10 provides robust native support for
+high-resolution audio formats and high sample rates through updated
+driver architectures, native codec support, and dedicated audio
+streaming modes. This article examines how the operating system handles
+high-definition sound, covering native USB Audio Class 2.0 integration,
+built-in file format decoders, the role of the Windows Audio Session API
+(WASAPI), and methods for achieving bit-perfect audio playback.</p>
+<h2 id="native-usb-audio-class-20-drivers">Native USB Audio Class 2.0
+Drivers</h2>
+<p>Prior to Windows 10, connecting an external digital-to-analog
+converter (DAC) that supported sample rates above 96 kHz or bit depths
+greater than 24-bit typically required third-party drivers. Windows 10
+introduced native support for USB Audio Class 2.0 (UAC2). This driver
+stack enables plug-and-play functionality for modern DACs, supporting
+sample rates up to 384 kHz and higher, as well as 32-bit audio streams,
+directly out of the box without requiring proprietary manufacturer
+software.</p>
+<h2 id="native-high-resolution-codec-support">Native High-Resolution
+Codec Support</h2>
+<p>Windows 10 includes native decoding support for widely used lossless
+and uncompressed audio formats. The operating system natively parses and
+plays back:</p>
+<ul>
+<li><strong>FLAC (Free Lossless Audio Codec):</strong> Supported
+natively across the shell, Windows Media Player, and modern universal
+apps.</li>
+<li><strong>ALAC (Apple Lossless Audio Codec):</strong> Decoded natively
+without external filters.</li>
+<li><strong>WAV and AIFF:</strong> Full native support for high-bitrate
+linear PCM containers.</li>
+</ul>
+<p>This native file format support extends to file metadata parsing
+within File Explorer, thumbnail generation, and background media
+processing.</p>
+<h2 id="windows-audio-engine-and-shared-mode">Windows Audio Engine and
+Shared Mode</h2>
+<p>Audio in Windows 10 is managed primarily by the Windows Audio Engine.
+By default, applications interact with the system in <strong>Shared
+Mode</strong>:</p>
+<ol type="1">
+<li>Multiple applications output audio simultaneously.</li>
+<li>The audio engine resamples all incoming streams to match the global
+sample rate and bit depth selected in the Windows Sound Control Panel
+(often referred to as the Default Format).</li>
+<li>The mixer combines these streams and sends them to the audio
+hardware.</li>
+</ol>
+<p>Users can manually configure the system mixer to output
+high-resolution audio by navigating to the Sound Control Panel,
+selecting the playback device, opening its Properties, and selecting a
+higher bit depth and sample rate (such as 24-bit/192000 Hz) under the
+Advanced tab.</p>
+<h2 id="bit-perfect-output-wasapi-exclusive-and-asio">Bit-Perfect
+Output: WASAPI Exclusive and ASIO</h2>
+<p>While Shared Mode provides universal compatibility and simultaneous
+sound output, it subjects audio to the Windows software mixer and
+resampler. For true audiophile-grade high-resolution playback, Windows
+10 supports direct access to the audio hardware via two main
+protocols:</p>
+<ul>
+<li><strong>WASAPI Exclusive Mode:</strong> Provided natively by
+Microsoft, WASAPI Exclusive allows a media player (such as Foobar2000,
+Tidal, or Audirvana) to lock the sound card exclusively. In this mode,
+the application bypasses the Windows Audio Engine entirely. The hardware
+automatically changes its internal clock to match the native sample rate
+and bit depth of the source file, eliminating digital resampling and
+system alert mixing.</li>
+<li><strong>ASIO (Audio Stream Input/Output):</strong> A third-party
+protocol standard developed by Steinberg, often bundled with
+professional interfaces and dedicated DACs. Windows 10 interfaces
+seamlessly with ASIO drivers, providing low latency and bit-perfect
+transport directly from playback software to hardware.</li>
+</ul>
+<h2 id="support-for-direct-stream-digital-dsd">Support for Direct Stream
+Digital (DSD)</h2>
+<p>While Windows 10 does not natively decode DSD files through its
+built-in media players, the underlying operating system supports DSD
+playback through compatible third-party applications and DACs. This is
+accomplished either via Direct DSD using dedicated ASIO drivers or via
+DoP (DSD over PCM), where DSD frames are encapsulated within standard
+PCM-formatted data packets and transmitted through standard Windows
+audio endpoints to an external decoder.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-supports-high-resolution-audio';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

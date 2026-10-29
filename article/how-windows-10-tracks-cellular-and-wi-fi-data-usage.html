@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Tracks Cellular and Wi-Fi Data Usage - windows-10</title>
+    <meta name="description" content="Windows 10 features a built-in monitoring framework that actively logs network traffic across every active network adapter, including Wi-Fi, cellular, and Ethernet connections. This system operates at the kernel and service levels, attributing network pac">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-tracks-cellular-and-wi-fi-data-usage">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Tracks Cellular and Wi-Fi Data Usage - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-tracks-cellular-and-wi-fi-data-usage" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 features a built-in monitoring framework that actively logs network traffic across every active network adapter, including Wi-Fi, cellular, and Ethernet connections. This system operates at the kernel and service levels, attributing network pac" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-tracks-cellular-and-wi-fi-data-usage">How Windows
+10 Tracks Cellular and Wi-Fi Data Usage</h1>
+<p>Windows 10 features a built-in monitoring framework that actively
+logs network traffic across every active network adapter, including
+Wi-Fi, cellular, and Ethernet connections. This system operates at the
+kernel and service levels, attributing network packets to individual
+applications over a rolling 30-day window. This article explains the
+underlying mechanisms Windows 10 uses to track data, differentiate
+between network types, and enforce data management policies.</p>
+<h2 id="the-system-resource-usage-monitor-srum">The System Resource
+Usage Monitor (SRUM)</h2>
+<p>The primary component responsible for logging network consumption in
+Windows 10 is the System Resource Usage Monitor (SRUM). Operating under
+the service name <code>srumsvc</code>, this background service
+constantly collects metrics on system resource utilization, including
+CPU cycles, disk activity, and network bytes sent and received.</p>
+<p>The data gathered by SRUM is written to an Extensible Storage Engine
+(ESE) database file located at:</p>
+<p><code>C:\Windows\System32\sru\SRUDB.dat</code></p>
+<p>The operating system flushes memory-cached data to this database
+roughly every 60 minutes or immediately during a system shutdown. This
+persistent database allows Windows 10 to maintain accurate historical
+usage records even across system reboots.</p>
+<h2
+id="network-driver-interface-specification-ndis-and-kernel-level-tracking">Network
+Driver Interface Specification (NDIS) and Kernel-Level Tracking</h2>
+<p>To accurately measure raw byte counts, Windows 10 relies on the
+Network Driver Interface Specification (NDIS) and the Windows Filtering
+Platform (WFP).</p>
+<ol type="1">
+<li><strong>Packet Interception:</strong> Network drivers interact with
+the NDIS layer whenever data packets enter or leave the physical or
+virtual network interface cards (NICs).</li>
+<li><strong>Process Attribution:</strong> Using the Windows Filtering
+Platform, the kernel identifies the unique Process ID (PID) associated
+with each packet. This binds every inbound and outbound byte to a
+specific application or Windows background service.</li>
+<li><strong>Interface Tagging:</strong> Each packet is tagged with the
+unique identifier of the network adapter handling the traffic. This step
+ensures that data transmitted through a cellular modem (such as an
+embedded LTE module or USB dongle) is measured separately from traffic
+moving through a local Wi-Fi or Ethernet adapter.</li>
+</ol>
+<h2
+id="differentiating-network-types-and-metered-connections">Differentiating
+Network Types and Metered Connections</h2>
+<p>Windows 10 manages adapters through the Network Location Awareness
+(NLA) service, which identifies the connection medium and assigns the
+network profile:</p>
+<ul>
+<li><strong>Adapter Identification:</strong> Windows recognizes physical
+interfaces as distinct media types (e.g., <code>IF_TYPE_IEEE80211</code>
+for Wi-Fi and <code>IF_TYPE_WWANPP</code> or
+<code>IF_TYPE_WWANPP2</code> for cellular).</li>
+<li><strong>Metered Connection Designation:</strong> Cellular networks
+are designated as "Metered" by default to prevent unexpected overages,
+whereas Wi-Fi networks are unmetered by default. Users can manually
+toggle the metered status on any Wi-Fi network. When marked as metered,
+Windows uses the underlying tracking architecture to throttle background
+OS updates and restrict discretionary app data syncs.</li>
+</ul>
+<h2 id="user-facing-controls-and-enforcement">User-Facing Controls and
+Enforcement</h2>
+<p>All metrics collected by SRUM and the kernel drivers are aggregated
+and displayed in the Settings app under <strong>Network &amp; Internet
+&gt; Data usage</strong>.</p>
+<p>From this interface, users can:</p>
+<ul>
+<li><strong>View Per-App Consumption:</strong> Inspect the total data
+consumed by specific executables over the previous 30 days, broken down
+by adapter type.</li>
+<li><strong>Establish Data Limits:</strong> Configure monthly, one-time,
+or unlimited data thresholds for specific connections (especially
+cellular), which allows Windows to issue notifications when consumption
+approaches the preset limit.</li>
+<li><strong>Restrict Background Traffic:</strong> Direct the OS to block
+background data transfers across all or specific connections, using the
+Windows Filtering Platform to drop non-essential outbound packets
+generated by background tasks.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-tracks-cellular-and-wi-fi-data-usage';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

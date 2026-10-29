@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purpose of Windows 10 Remote Desktop Gateway - windows-10</title>
+    <meta name="description" content="This article explains the purpose and functionality of the Remote Desktop Gateway configuration on Microsoft Windows 10 systems. The Remote Desktop Gateway (RD Gateway) configuration enables users to establish secure, encrypted remote desktop connections">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/purpose-of-windows-10-remote-desktop-gateway">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Purpose of Windows 10 Remote Desktop Gateway - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/purpose-of-windows-10-remote-desktop-gateway" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains the purpose and functionality of the Remote Desktop Gateway configuration on Microsoft Windows 10 systems. The Remote Desktop Gateway (RD Gateway) configuration enables users to establish secure, encrypted remote desktop connections" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="purpose-of-windows-10-remote-desktop-gateway">Purpose of Windows
+10 Remote Desktop Gateway</h1>
+<p>This article explains the purpose and functionality of the Remote
+Desktop Gateway configuration on Microsoft Windows 10 systems. The
+Remote Desktop Gateway (RD Gateway) configuration enables users to
+establish secure, encrypted remote desktop connections to internal
+network resources and workstations from outside a local network without
+requiring a full Virtual Private Network (VPN). Understanding this
+configuration helps administrators and remote users deploy secure access
+controls, minimize attack surfaces, and streamline remote administration
+tasks.</p>
+<h3 id="encapsulating-rdp-inside-https">Encapsulating RDP Inside
+HTTPS</h3>
+<p>Standard Remote Desktop Protocol (RDP) traffic travels over TCP/UDP
+port 3389. Exposing port 3389 directly to the public internet creates
+significant security risks, leaving devices vulnerable to port scanning,
+brute-force attacks, and credential stuffing. The primary purpose of an
+RD Gateway configuration in Windows 10 is to route RDP traffic through
+an encrypted HTTPS tunnel using Secure Sockets Layer/Transport Layer
+Security (SSL/TLS) over port 443. This hides the native RDP packets
+inside standard encrypted web traffic.</p>
+<h3 id="firewall-and-nat-traversal">Firewall and NAT Traversal</h3>
+<p>Because public networks, hotel Wi-Fi, and corporate firewalls
+routinely block non-standard outbound ports like 3389, direct RDP
+connections frequently fail when connecting remotely. Port 443 is almost
+universally open across corporate and consumer firewalls for secure web
+browsing. By configuring the RD Gateway settings within the Windows 10
+Remote Desktop Connection client, users can seamlessly establish remote
+sessions through restricted networks without modifying local router
+configurations or opening inbound ports on client firewalls.</p>
+<h3 id="targeted-network-isolation-vs-full-vpns">Targeted Network
+Isolation vs. Full VPNs</h3>
+<p>While a traditional VPN connects an entire remote device directly to
+the private network subnet, an RD Gateway provides granular,
+session-based access. Configuring a Windows 10 client to connect via an
+RD Gateway ensures that the remote computer only communicates with the
+designated desktop or internal server. This prevents an infected or
+untrusted remote client machine from gaining broad visibility or lateral
+movement capabilities within the internal network.</p>
+<h3 id="centralized-authentication-and-access-policy">Centralized
+Authentication and Access Policy</h3>
+<p>When a Windows 10 endpoint connects through an RD Gateway, the
+gateway intercepts the connection before it reaches the target
+workstation. This architecture enables organizations to enforce
+centralized authentication policies, such as Multi-Factor Authentication
+(MFA), smart card verification, and Remote Desktop Connection
+Authorization Policies (RD CAPs). It ensures that unauthorized users are
+stopped at the network perimeter before any direct communication with
+the Windows 10 host occurs.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/purpose-of-windows-10-remote-desktop-gateway';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

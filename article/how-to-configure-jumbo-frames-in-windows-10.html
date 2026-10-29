@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Configure Jumbo Frames in Windows 10 - windows-10</title>
+    <meta name="description" content="Jumbo frames allow a network adapter to transmit data packets significantly larger than the standard Ethernet limit of 1,500 bytes, typically up to 9,000 bytes. In Windows 10, the operating system manages jumbo frames on a per-adapter basis through the Ne">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-to-configure-jumbo-frames-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Configure Jumbo Frames in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-to-configure-jumbo-frames-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Jumbo frames allow a network adapter to transmit data packets significantly larger than the standard Ethernet limit of 1,500 bytes, typically up to 9,000 bytes. In Windows 10, the operating system manages jumbo frames on a per-adapter basis through the Ne" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-configure-jumbo-frames-in-windows-10">How to Configure
+Jumbo Frames in Windows 10</h1>
+<p>Jumbo frames allow a network adapter to transmit data packets
+significantly larger than the standard Ethernet limit of 1,500 bytes,
+typically up to 9,000 bytes. In Windows 10, the operating system manages
+jumbo frames on a per-adapter basis through the Network Driver Interface
+Specification (NDIS) and hardware-specific device drivers. This article
+explains how Windows 10 handles these large payloads, how to enable them
+using the graphical interface or PowerShell, and the network
+requirements necessary for them to function properly.</p>
+<h3 id="how-windows-10-handles-jumbo-frames">How Windows 10 Handles
+Jumbo Frames</h3>
+<p>Standard Ethernet networks enforce a Maximum Transmission Unit (MTU)
+of 1,500 bytes. Jumbo frames increase this payload limit to 4,000–9,000
+bytes or more. By packaging more data into fewer frames, the system
+reduces the number of packet headers and interrupts that the CPU must
+process, which increases throughput on high-bandwidth local connections
+like Gigabit and 10-Gigabit Ethernet.</p>
+<p>Windows 10 does not provide a universal, operating-system-wide toggle
+for jumbo frames. Instead, management is delegated directly to the
+physical Network Interface Card (NIC) driver. If the manufacturer's
+driver supports jumbo frames, Windows exposes the setting through the
+adapter's advanced properties and network configuration APIs.</p>
+<h3 id="configuring-jumbo-frames-via-device-manager">Configuring Jumbo
+Frames via Device Manager</h3>
+<p>The primary graphical method for managing jumbo frames in Windows 10
+is through the Device Manager:</p>
+<ol type="1">
+<li>Right-click the <strong>Start</strong> button and select
+<strong>Device Manager</strong>.</li>
+<li>Expand the <strong>Network adapters</strong> section.</li>
+<li>Right-click your Ethernet adapter and select
+<strong>Properties</strong>.</li>
+<li>Navigate to the <strong>Advanced</strong> tab.</li>
+<li>In the <strong>Property</strong> list, look for <strong>Jumbo
+Frame</strong>, <strong>Jumbo Packet</strong>, or <strong>Large
+MTU</strong> (the exact wording depends on the hardware vendor, such as
+Intel or Realtek).</li>
+<li>In the <strong>Value</strong> drop-down menu on the right, select
+the desired frame size (commonly 4KB MTU, 9KB MTU, or specific values
+like 9014 Bytes).</li>
+<li>Click <strong>OK</strong> to apply the changes. The network adapter
+will briefly reset to reinitialize the driver.</li>
+</ol>
+<p>If the property is missing from the list, the network adapter or its
+current driver does not support jumbo frames.</p>
+<h3 id="configuring-jumbo-frames-via-powershell">Configuring Jumbo
+Frames via PowerShell</h3>
+<p>Windows 10 administrators can query and configure adapter settings
+using PowerShell.</p>
+<p>To view current advanced properties for an adapter:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Get-NetAdapterAdvancedProperty <span class="op">-</span>Name <span class="st">&quot;Ethernet&quot;</span></span></code></pre></div>
+<p>To enable jumbo frames by setting the specific driver property:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Set-NetAdapterAdvancedProperty <span class="op">-</span>Name <span class="st">&quot;Ethernet&quot;</span> <span class="op">-</span>DisplayName <span class="st">&quot;Jumbo Packet&quot;</span> <span class="op">-</span>DisplayValue <span class="st">&quot;9014 Bytes&quot;</span></span></code></pre></div>
+<p><em>(Note: Replace <code>"Ethernet"</code> with your adapter name and
+<code>"Jumbo Packet"</code> with the exact display name used by your NIC
+driver).</em></p>
+<p>To adjust the subinterface MTU directly via command line, you can use
+the <code>netsh</code> utility:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>netsh interface ipv4 set subinterface <span class="st">&quot;Ethernet&quot;</span> mtu=9000 store=persistent</span></code></pre></div>
+<h3 id="network-requirements-and-considerations">Network Requirements
+and Considerations</h3>
+<p>For jumbo frames to operate without degrading network performance,
+the following conditions must be met:</p>
+<ul>
+<li><strong>End-to-End Compatibility:</strong> Every device along the
+local network path—including source devices, target devices, and all
+intermediate network switches—must support and be configured for the
+same MTU size.</li>
+<li><strong>Packet Fragmentation:</strong> If a device sends a
+9,000-byte frame to a switch or device configured only for standard
+1,500-byte frames, the packet will either be fragmented (adding latency
+and CPU load) or dropped entirely, resulting in connection
+timeouts.</li>
+<li><strong>Internet Traffic:</strong> Standard internet traffic remains
+restricted to a 1,500-byte MTU. Consequently, jumbo frames are primarily
+beneficial for local subnets, such as connections to Network Attached
+Storage (NAS) or Storage Area Networks (SAN).</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-to-configure-jumbo-frames-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

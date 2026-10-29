@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Manages Live Tile Update Frequencies - windows-10</title>
+    <meta name="description" content="Windows 10 manages live tile update frequencies on the Start menu through a combination of cloud-driven push notifications, scheduled periodic polling, and intelligent local resource management. By decoupling tile updates from active app execution, the op">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-manages-live-tile-update-frequencies">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Manages Live Tile Update Frequencies - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-manages-live-tile-update-frequencies" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 manages live tile update frequencies on the Start menu through a combination of cloud-driven push notifications, scheduled periodic polling, and intelligent local resource management. By decoupling tile updates from active app execution, the op" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-manages-live-tile-update-frequencies">How Windows
+10 Manages Live Tile Update Frequencies</h1>
+<p>Windows 10 manages live tile update frequencies on the Start menu
+through a combination of cloud-driven push notifications, scheduled
+periodic polling, and intelligent local resource management. By
+decoupling tile updates from active app execution, the operating system
+ensures that dynamic content—such as weather updates, news headlines,
+and calendar alerts—remains fresh without causing unnecessary CPU usage,
+battery drain, or network congestion.</p>
+<h3 id="windows-push-notification-service-wns">Windows Push Notification
+Service (WNS)</h3>
+<p>The primary mechanism for real-time live tile updates is the Windows
+Push Notification Service (WNS). Instead of requiring apps to constantly
+run in the background or poll servers, third-party cloud services send
+payload data directly to Microsoft's notification servers. When an
+update is ready, WNS pushes a small XML payload containing the new text,
+badge, or image to the client device. Windows 10 receives this payload
+and updates the corresponding Start menu tile immediately, bypassing the
+need for frequent local processing.</p>
+<h3 id="periodic-scheduled-polling">Periodic (Scheduled) Polling</h3>
+<p>For apps that do not rely on push notifications, Windows 10 provides
+a periodic update engine managed through the
+<code>TileUpdateManager</code> API. Developers can configure an
+application to fetch updated XML data from a specified URI at
+predetermined intervals. The operating system limits these polling
+intervals to specific intervals:</p>
+<ul>
+<li>Every 30 minutes</li>
+<li>Every hour</li>
+<li>Every 6 hours</li>
+<li>Every 12 hours</li>
+<li>Every 24 hours</li>
+</ul>
+<p>The OS strictly enforces these intervals to prevent developers from
+hammering remote servers or running high-frequency background loops that
+could degrade system performance.</p>
+<h3 id="local-background-tasks">Local Background Tasks</h3>
+<p>Applications can also update tiles locally using background tasks
+triggered by system events, such as time triggers, network state
+changes, or location changes. Windows 10 relies on the Background
+Infrastructure and the Process Lifecycle Manager (PLM) to govern these
+tasks. Time-based triggers for standard apps cannot execute more
+frequently than once every 15 minutes, preventing runaway execution
+cycles on the local machine.</p>
+<h3 id="battery-and-network-throttling">Battery and Network
+Throttling</h3>
+<p>Windows 10 dynamically modulates update frequency based on hardware
+and network conditions:</p>
+<ul>
+<li><strong>Battery Saver Mode:</strong> When Battery Saver is engaged,
+Windows 10 throttles background activities, suspending periodic tile
+polling and queuing non-essential push notifications to conserve
+power.</li>
+<li><strong>Metered Connections:</strong> If an active network
+connection is flagged as metered, the OS suppresses non-critical
+periodic tile refreshes to preserve the user's data allowance.</li>
+<li><strong>Start Menu Visibility:</strong> Windows prioritizes
+rendering and cache management depending on whether the Start menu is
+open. While payloads are received in the background, intensive visual
+rendering only takes place when the user opens the Start menu to view
+the tiles.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-manages-live-tile-update-frequencies';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

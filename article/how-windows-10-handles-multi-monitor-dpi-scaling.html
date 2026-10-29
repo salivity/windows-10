@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Handles Multi-Monitor DPI Scaling - windows-10</title>
+    <meta name="description" content="This article explores how Microsoft Windows 10 manages multi-monitor setups with independent dots-per-inch (DPI) scaling. As high-resolution (4K) displays increasingly pair with standard 1080p monitors, operating systems must accommodate vastly different">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-handles-multi-monitor-dpi-scaling">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Handles Multi-Monitor DPI Scaling - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-handles-multi-monitor-dpi-scaling" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores how Microsoft Windows 10 manages multi-monitor setups with independent dots-per-inch (DPI) scaling. As high-resolution (4K) displays increasingly pair with standard 1080p monitors, operating systems must accommodate vastly different" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-handles-multi-monitor-dpi-scaling">How Windows 10
+Handles Multi-Monitor DPI Scaling</h1>
+<p>This article explores how Microsoft Windows 10 manages multi-monitor
+setups with independent dots-per-inch (DPI) scaling. As high-resolution
+(4K) displays increasingly pair with standard 1080p monitors, operating
+systems must accommodate vastly different pixel densities
+simultaneously. Windows 10 achieves this through advanced Desktop Window
+Manager (DWM) architecture, Per-Monitor DPI awareness modes, dynamic
+window-messaging systems, and built-in legacy application scaling
+technologies.</p>
+<h3 id="the-shift-to-per-monitor-dpi">The Shift to Per-Monitor DPI</h3>
+<p>Older versions of Windows relied on a single system-wide DPI setting
+determined by the primary display at login. If secondary displays
+possessed different resolutions or screen sizes, Windows forced the same
+scaling factor across all panels, resulting in oversized or blurry
+interfaces on secondary screens.</p>
+<p>Windows 10 resolves this through independent scaling assignments
+configured via <strong>Settings &gt; System &gt; Display</strong>. Users
+can designate distinct scale factors (e.g., 200% on a compact 4K laptop
+panel and 100% on an external 24-inch 1080p monitor). The Desktop Window
+Manager (DWM) hosts a composited desktop capable of rendering distinct
+display surfaces at their native coordinate spaces without globally
+locking the system scale.</p>
+<h3 id="dpi-awareness-states-in-windows-10">DPI Awareness States in
+Windows 10</h3>
+<p>The quality of rendering across mixed-DPI configurations depends on
+how an application is compiled to interact with the Windows display
+pipeline. Windows 10 categorizes applications into distinct DPI
+awareness levels:</p>
+<ul>
+<li><strong>DPI Unaware:</strong> The application assumes a standard 96
+DPI (100% scale). Windows renders the application off-screen at 96 DPI,
+and the DWM stretches the resulting bitmap dynamically to match the
+target monitor. This prevents the window from appearing tiny on high-DPI
+screens, though it can introduce visual blurriness.</li>
+<li><strong>System DPI Aware:</strong> The application queries the DPI
+of the primary monitor when the user logs in and scales its user
+interface elements (fonts, buttons, padding) accordingly. However, if
+dragged to a secondary monitor with a different DPI, it does not
+re-render; instead, the DWM applies bitmap scaling, causing blurriness
+on the secondary display.</li>
+<li><strong>Per-Monitor DPI Aware (v1):</strong> Introduced in Windows
+8.1 and expanded in Windows 10, these applications listen for dynamic
+scale-change notifications. When a user drags the window across monitor
+boundaries, the OS sends a <code>WM_DPICHANGED</code> message, providing
+a new scaling factor and suggested window bounds so the application can
+redraw its assets natively.</li>
+<li><strong>Per-Monitor DPI Aware (v2):</strong> Introduced in Windows
+10 (Creators Update, Version 1703), Per-Monitor v2 automatically scales
+the non-client areas of a window—including the title bar, scrollbars,
+system menus, and common controls—without requiring custom developer
+code. It also scales native child windows and dialogs
+automatically.</li>
+</ul>
+<h3 id="dynamic-window-transitions">Dynamic Window Transitions</h3>
+<p>When an application moves between displays with different scale
+factors in Windows 10:</p>
+<ol type="1">
+<li><strong>Crossing the Boundary:</strong> The OS tracks the cursor or
+the majority area of the window bounding box across coordinate
+regions.</li>
+<li><strong>Notification Pipeline:</strong> For Per-Monitor aware
+applications, the OS dispatches the <code>WM_DPICHANGED</code> event
+containing the target DPI and a newly calculated <code>RECT</code>
+structure to preserve the window's relative position.</li>
+<li><strong>Asset Rasterization:</strong> Fully aware applications swap
+raster icons for higher- or lower-resolution versions, resize typography
+via DirectWrite, and adjust layout vectors to prevent clipping.</li>
+<li><strong>Fallback Virtualization:</strong> If the application cannot
+handle the message, the DWM handles the handoff via hardware-accelerated
+bilinear filtering to maintain consistent physical size across panels,
+sacrificing pixel sharpness to preserve interface usability.</li>
+</ol>
+<h3 id="enhanced-gdi-scaling-for-legacy-software">Enhanced GDI Scaling
+for Legacy Software</h3>
+<p>To reduce blurriness in legacy applications that do not support
+Per-Monitor scaling natively, Windows 10 includes an advanced
+compatibility mechanism called <strong>GDI DPI Scaling</strong>.</p>
+<p>Available under an executable's compatibility properties, this
+feature intercepts standard Graphics Device Interface (GDI) text and
+vector drawing commands. Instead of allowing the application to draw at
+96 DPI and then stretching the resulting bitmap, Windows 10 forces the
+GDI subsystem to render fonts and vector shapes directly at the target
+monitor's native scale factor. While bitmap assets within these legacy
+tools may still stretch, text and standard UI elements render with
+native clarity across all connected monitors.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-handles-multi-monitor-dpi-scaling';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

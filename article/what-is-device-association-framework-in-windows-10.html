@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is Device Association Framework in Windows 10? - windows-10</title>
+    <meta name="description" content="This article provides an overview of the Device Association Framework (DAF) in the Microsoft Windows 10 operating system, explaining its core purpose, underlying architecture, and real-world functionality. Readers will learn how DAF standardizes device di">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/what-is-device-association-framework-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is Device Association Framework in Windows 10? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/what-is-device-association-framework-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of the Device Association Framework (DAF) in the Microsoft Windows 10 operating system, explaining its core purpose, underlying architecture, and real-world functionality. Readers will learn how DAF standardizes device di" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-device-association-framework-in-windows-10">What Is
+Device Association Framework in Windows 10?</h1>
+<p>This article provides an overview of the Device Association Framework
+(DAF) in the Microsoft Windows 10 operating system, explaining its core
+purpose, underlying architecture, and real-world functionality. Readers
+will learn how DAF standardizes device discovery, facilitates seamless
+pairing across different communication protocols, and powers background
+processes like the Device Association Service host
+(<code>dasHost.exe</code>).</p>
+<h3 id="understanding-the-core-purpose-of-daf">Understanding the Core
+Purpose of DAF</h3>
+<p>The primary purpose of the Device Association Framework is to serve
+as a centralized system infrastructure that allows Windows 10 to
+discover, pair, and manage associations with both wired and wireless
+devices. Before frameworks like DAF, hardware manufacturers and software
+developers had to implement custom discovery and pairing logic for
+different connection types, leading to fragmentation and inconsistent
+user experiences. DAF solves this by providing a unified model for
+connecting external hardware to the operating system.</p>
+<h3 id="protocol-abstraction">Protocol Abstraction</h3>
+<p>Modern computers connect to peripherals using a wide variety of
+standards, such as Bluetooth, Wi-Fi Direct, Universal Plug and Play
+(UPnP), Web Services on Devices (WSD), and IP networks. DAF abstracts
+these underlying network and transport layers.</p>
+<p>Through this abstraction, Windows applications can interact with
+hardware via standardized Windows Runtime (WinRT) APIs—such as
+<code>Windows.Devices.Enumeration</code>—without needing
+protocol-specific code. Whether a user is connecting a smart TV over
+Wi-Fi Direct, a fitness tracker via Bluetooth Low Energy, or a network
+printer over WSD, DAF handles the lower-level communication details
+uniformly.</p>
+<h3 id="secure-pairing-and-association-management">Secure Pairing and
+Association Management</h3>
+<p>The framework governs the lifecycle of a device's connection to a PC,
+which includes:</p>
+<ul>
+<li><strong>Discovery:</strong> Scanning for and identifying available
+devices in proximity or on the local network.</li>
+<li><strong>Association (Pairing):</strong> Managing the authentication
+handshake, such as PIN entry, push-button setup, or cryptographic key
+exchanges.</li>
+<li><strong>State Tracking:</strong> Monitoring whether an associated
+device is currently connected, idle, out of range, or offline.</li>
+<li><strong>Revocation (Unpairing):</strong> Securely removing
+association keys and cleaning up driver configurations when a user
+chooses to forget or remove a device.</li>
+</ul>
+<p>By centralizing these operations, Windows 10 ensures consistent
+security standards across all wireless connections, reducing the risk of
+unauthorized connections or protocol vulnerabilities.</p>
+<h3 id="the-role-of-dashostexe">The Role of
+<code>dasHost.exe</code></h3>
+<p>In the Windows Task Manager, the Device Association Framework runs
+under the executable <code>dasHost.exe</code>, officially titled the
+<strong>Device Association Service Provider Host</strong>. This
+lightweight system process executes the background tasks required for
+pairing and association.</p>
+<p>When you navigate to <strong>Settings &gt; Devices</strong> or
+activate the <strong>Cast</strong> or <strong>Connect</strong> menus,
+<code>dasHost.exe</code> activates to scan for nearby devices. It then
+instantiates the appropriate protocol-specific provider to establish the
+link. Because it functions as an intermediary service, it typically
+consumes minimal system resources unless an active search or heavy data
+exchange with a connected smart device is taking place.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>The Microsoft Windows 10 Device Association Framework is an essential
+component of modern hardware integration. By acting as an abstraction
+layer across diverse networking protocols, providing robust pairing
+security, and offering standardized APIs for developers, DAF ensures
+that connecting external devices remains reliable, secure, and
+user-friendly.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/what-is-device-association-framework-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

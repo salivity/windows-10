@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Monitors Battery Cycles via ACPI - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 tracks battery health and cumulative charge cycles by interfacing directly with the hardware through the Advanced Configuration and Power Interface (ACPI) standard. Rather than calculating cycles independently, the operating system re">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-monitors-battery-cycles-via-acpi">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Monitors Battery Cycles via ACPI - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-monitors-battery-cycles-via-acpi" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 tracks battery health and cumulative charge cycles by interfacing directly with the hardware through the Advanced Configuration and Power Interface (ACPI) standard. Rather than calculating cycles independently, the operating system re" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-monitors-battery-cycles-via-acpi">How Windows 10
+Monitors Battery Cycles via ACPI</h1>
+<p>Microsoft Windows 10 tracks battery health and cumulative charge
+cycles by interfacing directly with the hardware through the Advanced
+Configuration and Power Interface (ACPI) standard. Rather than
+calculating cycles independently, the operating system relies on
+standardized ACPI control methods and low-level drivers to query data
+directly from the system’s Embedded Controller (EC) or smart battery
+hardware. This article explains the technical architecture, driver
+interactions, and specific ACPI methods Windows 10 uses to read and
+report battery cycle counts.</p>
+<h3
+id="the-hardware-foundation-the-embedded-controller-and-fuel-gauge">The
+Hardware Foundation: The Embedded Controller and Fuel Gauge</h3>
+<p>Modern laptop batteries contain a dedicated battery management chip
+(the fuel gauge IC) that continuously measures cell voltages,
+temperatures, and current flow. The fuel gauge tracks the cumulative
+discharge and recharge equivalent to 100% of the battery's design
+capacity, incrementing the hardware cycle counter internally.</p>
+<p>This counter is stored in non-volatile memory managed by the system’s
+Embedded Controller (EC) or communicated via a bus like SMBus or I2C.
+Because Windows cannot communicate with these low-level buses directly,
+it relies on ACPI firmware to bridge the gap.</p>
+<h3 id="acpi-battery-devices-and-namespace">ACPI Battery Devices and
+Namespace</h3>
+<p>In the ACPI namespace, the battery subsystem is typically defined
+under a parent bus (such as <code>_SB.PCI0</code>) with a specific
+device identifier:</p>
+<ul>
+<li><strong>Hardware ID:</strong> <code>PNP0C0A</code> (Control Method
+Battery)</li>
+</ul>
+<p>The ACPI specification requires the device firmware (BIOS/UEFI) to
+expose standardized objects and methods under this device node so any
+compliant operating system can query battery metrics uniformly.</p>
+<h3 id="critical-acpi-methods-for-cycle-counting">Critical ACPI Methods
+for Cycle Counting</h3>
+<p>Windows 10 retrieves battery metrics using specific control methods
+defined in the ACPI specification:</p>
+<ol type="1">
+<li><p><strong><code>_BIX</code> (Battery Information
+Extended):</strong> Historically, the older <code>_BIF</code> (Battery
+Information) method provided general metrics such as design capacity,
+full charge capacity, and serial numbers, but lacked native cycle count
+reporting. The ACPI specification introduced <code>_BIX</code> to expand
+this capability.</p>
+<p>The <code>_BIX</code> package returns an array containing integer and
+string fields. Index 8 of this package is explicitly reserved for
+<strong>Cycle Count</strong>:</p>
+<ul>
+<li>If the hardware supports cycle counting, the firmware returns the
+exact integer value provided by the fuel gauge.</li>
+<li>If unsupported, the method returns <code>0xFFFFFFFF</code>
+(unknown/unsupported).</li>
+</ul></li>
+<li><p><strong><code>_BST</code> (Battery Status):</strong> While
+<code>_BIX</code> provides mostly static data alongside cycle metrics,
+<code>_BST</code> provides real-time state changes, including
+charging/discharging states, present capacity, and current
+rate.</p></li>
+</ol>
+<h3 id="the-windows-10-driver-stack">The Windows 10 Driver Stack</h3>
+<p>The communication between the hardware and the operating system
+proceeds through a standardized driver stack:</p>
+<ol type="1">
+<li><strong><code>acpi.sys</code> (ACPI Driver):</strong> Serves as the
+primary driver responsible for parsing the ACPI Differentiated System
+Description Table (DSDT) and executing ACPI Machine Language (AML)
+code.</li>
+<li><strong><code>cmbatt.sys</code> (Control Method Battery
+Driver):</strong> The miniclass driver designed specifically for
+<code>PNP0C0A</code> devices. It translates OS-level power requests into
+corresponding ACPI calls.</li>
+<li><strong><code>battc.sys</code> (Battery Class Driver):</strong> The
+higher-level driver that aggregates battery data, standardizes it for
+the Windows power management framework, and interfaces with the Windows
+kernel.</li>
+</ol>
+<h3 id="the-query-sequence">The Query Sequence</h3>
+<ol type="1">
+<li><strong>Initialization and Triggers:</strong> Windows 10 issues an
+evaluation request to the ACPI driver via the IOCTL interface (e.g.,
+<code>IOCTL_BATTERY_QUERY_INFORMATION</code>). This query is triggered
+during system boot, when a power state change occurs, or upon
+user-requested diagnostics.</li>
+<li><strong>AML Execution:</strong> <code>acpi.sys</code> executes the
+compiled AML code corresponding to the <code>_BIX</code> object under
+the battery device node.</li>
+<li><strong>Hardware Interrogation:</strong> The executed AML code
+queries the Embedded Controller registers over the low-level hardware
+interface (such as the ACPI EC space) to read the internal register
+storing the fuel gauge's cycle count.</li>
+<li><strong>Data Return:</strong> The cycle count integer is returned
+through the driver stack to the Windows kernel.</li>
+</ol>
+<h3 id="exposing-the-data-to-windows-tools">Exposing the Data to Windows
+Tools</h3>
+<p>Once the cycle count is retrieved by the battery driver stack, it is
+populated into Windows Management Instrumentation (WMI) within classes
+such as <code>BatteryStaticData</code> and
+<code>BatteryFullChargedCapacity</code> under the <code>root\wmi</code>
+namespace.</p>
+<p>This data is the source for internal OS power management strategies
+and allows utilities like the built-in Command Prompt tool
+<code>powercfg /batteryreport</code> to display the "Cycle Count" value
+in generated system health reports. If the firmware returns
+<code>0xFFFFFFFF</code> via <code>_BIX</code> or only implements the
+older <code>_BIF</code> method, Windows 10 simply displays the cycle
+count field as blank or not reported.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-monitors-battery-cycles-via-acpi';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

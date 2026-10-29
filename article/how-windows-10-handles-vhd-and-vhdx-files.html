@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Handles VHD and VHDX Files - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 provides native, operating-system-level support for Virtual Hard Disk (VHD) and Virtual Hard Disk v2 (VHDX) image formats. This article examines how Windows 10 interacts with these virtual storage containers, covering the technical di">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-handles-vhd-and-vhdx-files">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Handles VHD and VHDX Files - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-handles-vhd-and-vhdx-files" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 provides native, operating-system-level support for Virtual Hard Disk (VHD) and Virtual Hard Disk v2 (VHDX) image formats. This article examines how Windows 10 interacts with these virtual storage containers, covering the technical di" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-handles-vhd-and-vhdx-files">How Windows 10
+Handles VHD and VHDX Files</h1>
+<p>Microsoft Windows 10 provides native, operating-system-level support
+for Virtual Hard Disk (VHD) and Virtual Hard Disk v2 (VHDX) image
+formats. This article examines how Windows 10 interacts with these
+virtual storage containers, covering the technical differences between
+VHD and VHDX, native mounting and management through the graphical user
+interface and command-line tools, and advanced capabilities such as
+Native VHD Boot.</p>
+<h3 id="understanding-vhd-vs-vhdx-in-windows-10">Understanding VHD vs.
+VHDX in Windows 10</h3>
+<p>Windows 10 recognizes both formats as virtualized physical
+storage:</p>
+<ul>
+<li><strong>VHD:</strong> The legacy format introduced with Microsoft
+Virtual PC. It supports capacities up to 2 terabytes (TB) and standard
+block allocation, but lacks protection against metadata corruption
+caused by unexpected power loss.</li>
+<li><strong>VHDX:</strong> Introduced in Windows 8 and Windows Server
+2012, VHDX is the modern standard. It increases capacity limits up to 64
+TB, features a 4 KB logical sector size for improved performance on
+modern disks, and includes an internal log mechanism to protect against
+data corruption during system crashes or power failures.</li>
+</ul>
+<p>Both formats can be configured as <strong>Fixed Size</strong> (fully
+allocated up front) or <strong>Dynamically Expanding</strong> (allocates
+physical space only as data is written).</p>
+<h3 id="native-mounting-and-unmounting">Native Mounting and
+Unmounting</h3>
+<p>Windows 10 does not require third-party tools to access virtual
+disks. The operating system integrates VHD and VHDX files directly into
+its storage architecture:</p>
+<ul>
+<li><strong>File Explorer:</strong> Double-clicking a <code>.vhd</code>
+or <code>.vhdx</code> file immediately instructs the system to mount the
+image. Windows assigns it a drive letter, and it functions identically
+to a connected physical hard drive or USB mass storage device.</li>
+<li><strong>Ejecting:</strong> To unmount the disk, users right-click
+the virtual drive icon in File Explorer and select "Eject," which safely
+flushes caches and closes file handles.</li>
+</ul>
+<h3 id="management-via-disk-management">Management via Disk
+Management</h3>
+<p>The graphical Disk Management utility (<code>diskmgmt.msc</code>)
+provides deeper administrative control:</p>
+<ol type="1">
+<li><strong>Creation:</strong> Under the "Action" menu, users can choose
+"Create VHD" to define the file path, size, format (VHD or VHDX), and
+allocation type (fixed or dynamic).</li>
+<li><strong>Attachment:</strong> The "Attach VHD" option allows users to
+mount an existing image, with an optional "Read-only" flag to prevent
+modifications to the virtual drive.</li>
+<li><strong>Partitioning and Formatting:</strong> Once attached, the
+disk must be initialized (using MBR or GPT) and formatted with a file
+system (such as NTFS or exFAT) before use, just like a bare-metal
+drive.</li>
+</ol>
+<h3 id="command-line-administration">Command-Line Administration</h3>
+<p>Windows 10 provides robust command-line tools for scripting and
+automated management:</p>
+<ul>
+<li><strong>DiskPart:</strong> The built-in disk partitioning utility
+handles virtual disks through commands such as
+<code>select vdisk file="C:\path\disk.vhdx"</code>, followed by
+<code>attach vdisk</code> or <code>detach vdisk</code>.</li>
+<li><strong>PowerShell:</strong> On Windows 10 editions with Hyper-V
+features enabled (Pro, Enterprise, and Education), administrators can
+utilize the Hyper-V module cmdlets—such as <code>New-VHD</code>,
+<code>Mount-VHD</code>, <code>Dismount-VHD</code>, and
+<code>Resize-VHD</code>—for automated disk lifecycle management.</li>
+</ul>
+<h3 id="native-vhd-boot">Native VHD Boot</h3>
+<p>A powerful enterprise feature in Windows 10 is Native VHD Boot. This
+capability allows a physical machine to boot directly from a Windows
+operating system installed inside a VHD or VHDX file, bypassing the host
+operating system entirely.</p>
+<p>Unlike a standard virtual machine, the OS running via Native Boot
+utilizes the host computer’s actual physical hardware (CPU, GPU, and
+RAM) with full performance, while keeping the entire operating
+environment isolated inside a single, portable virtual disk file.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-handles-vhd-and-vhdx-files';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

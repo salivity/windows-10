@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Code Integrity to Prevent DLL Injection - windows-10</title>
+    <meta name="description" content="Dynamic-link library (DLL) injection is a prevalent attack technique where malicious code is forced into the address space of a running process to execute under its privileges. The Microsoft Windows 10 operating system counters this threat using robust Co">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-code-integrity-to-prevent-dll-injection">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Code Integrity to Prevent DLL Injection - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-code-integrity-to-prevent-dll-injection" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Dynamic-link library (DLL) injection is a prevalent attack technique where malicious code is forced into the address space of a running process to execute under its privileges. The Microsoft Windows 10 operating system counters this threat using robust Co" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-code-integrity-to-prevent-dll-injection">Windows 10
+Code Integrity to Prevent DLL Injection</h1>
+<p>Dynamic-link library (DLL) injection is a prevalent attack technique
+where malicious code is forced into the address space of a running
+process to execute under its privileges. The Microsoft Windows 10
+operating system counters this threat using robust Code Integrity (CI)
+policies, primarily implemented through Windows Defender Application
+Control (WDAC) and Code Integrity Guard (CIG). By shifting security from
+reactive antivirus detection to proactive signature enforcement, Windows
+10 restricts which modules are permitted to load, effectively nullifying
+traditional and advanced DLL injection vectors.</p>
+<h3 id="the-mechanism-of-dll-injection">The Mechanism of DLL
+Injection</h3>
+<p>In a standard DLL injection attack, an adversary writes code to a
+target process's memory space and forces it to execute
+<code>LoadLibrary</code> or an equivalent API call. If the target
+process runs with elevated privileges or is considered trusted by
+security monitoring tools, the injected DLL inherits those privileges
+while remaining disguised within the legitimate process memory.</p>
+<h3 id="code-integrity-guard-cig">Code Integrity Guard (CIG)</h3>
+<p>Code Integrity Guard is an exploit mitigation feature designed to
+prevent arbitrary DLL loading in user-mode processes. When CIG is
+enabled for an application:</p>
+<ul>
+<li><strong>Signature Enforcement:</strong> The Windows kernel validates
+the cryptographic signature of any dynamic library before mapping it
+into the target process's virtual memory space.</li>
+<li><strong>Strict Trust Chains:</strong> CIG requires the DLL to be
+signed by a trusted authority—such as Microsoft, the Windows Hardware
+Quality Labs (WHQL), or the Microsoft Store—depending on the specific
+policy applied.</li>
+<li><strong>Execution Prevention:</strong> If an attacker attempts to
+inject an unsigned, self-signed, or untrusted third-party DLL, the
+kernel-level code integrity engine rejects the image load request,
+causing the injection attempt to fail immediately.</li>
+</ul>
+<p>Developers and administrators can enforce CIG on specific executables
+using the <code>SetProcessMitigationPolicy</code> API with the
+<code>ProcessSignaturePolicy</code> flag or configure it across
+environments via Group Policy.</p>
+<h3 id="windows-defender-application-control-wdac">Windows Defender
+Application Control (WDAC)</h3>
+<p>While CIG operates at the process level, Windows Defender Application
+Control enforces code integrity across the entire operating system. WDAC
+policies are compiled into binary format and evaluated by the kernel
+(<code>CI.dll</code>):</p>
+<ul>
+<li><strong>System-Wide Restriction:</strong> WDAC creates an explicit
+whitelist defining which DLLs and executables can run based on file
+hashes, paths, or publisher certificates.</li>
+<li><strong>Kernel-Enforced Isolation:</strong> Because the rules are
+evaluated within the kernel during the file-mapping phase, an untrusted
+DLL cannot be loaded by any process on the system, regardless of user
+privileges or injection mechanisms used.</li>
+<li><strong>Elimination of Bypass Techniques:</strong> Attackers
+frequently drop malicious DLLs to disk and load them via reflective
+injection or standard execution calls. WDAC blocks the execution of
+these binaries before memory allocation occurs.</li>
+</ul>
+<h3 id="virtualization-based-security-vbs-and-hvci">Virtualization-Based
+Security (VBS) and HVCI</h3>
+<p>To prevent attackers with administrative or kernel-level access from
+tampering with Code Integrity policies, Windows 10 leverages
+Virtualization-Based Security (VBS) and Hypervisor-Protected Code
+Integrity (HVCI).</p>
+<p>HVCI runs the Code Integrity service inside an isolated virtual
+container managed by the Hyper-V hypervisor. Even if an attacker
+compromises the Windows kernel, they cannot alter the code integrity
+checks or modify page-table permissions to mark unsigned pages
+containing injected code as executable.</p>
+<h3 id="dynamic-code-restrictions">Dynamic Code Restrictions</h3>
+<p>In tandem with signature verification, Windows 10 provides Arbitrary
+Code Guard (ACG). While CIG ensures that files loaded from disk are
+signed, ACG prevents an attacker from generating executable code
+directly in the process's memory (reflective DLL injection). By
+enforcing that memory pages cannot be simultaneously writable and
+executable, and preventing modifications to existing executable pages,
+ACG stops in-memory injection methods where no physical DLL is written
+to the disk.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-code-integrity-to-prevent-dll-injection';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyper-V Network Adapter Isolation in Windows 10 - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 leverages the Hyper-V Virtual Switch to manage and isolate network adapters by decoupling physical hardware from guest operating systems and the host management partition. By implementing a software-defined Layer 2 network switch, Win">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/hyper-v-network-adapter-isolation-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Hyper-V Network Adapter Isolation in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/hyper-v-network-adapter-isolation-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 leverages the Hyper-V Virtual Switch to manage and isolate network adapters by decoupling physical hardware from guest operating systems and the host management partition. By implementing a software-defined Layer 2 network switch, Win" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="hyper-v-network-adapter-isolation-in-windows-10">Hyper-V Network
+Adapter Isolation in Windows 10</h1>
+<p>Microsoft Windows 10 leverages the Hyper-V Virtual Switch to manage
+and isolate network adapters by decoupling physical hardware from guest
+operating systems and the host management partition. By implementing a
+software-defined Layer 2 network switch, Windows 10 enforces traffic
+boundaries using dedicated switch types, virtual local area network
+(VLAN) tagging, Port Access Control Lists (ACLs), and hardware
+abstraction. This architecture prevents virtual machines from
+intercepting or manipulating external and host network traffic unless
+explicitly permitted.</p>
+<h3 id="the-virtual-switch-architecture-and-ndis">The Virtual Switch
+Architecture and NDIS</h3>
+<p>At the foundation of Hyper-V network isolation is the Network Driver
+Interface Specification (NDIS) filter driver. When Hyper-V is enabled
+and a virtual switch is created, the physical network adapter is unbound
+from traditional host protocol stacks. Instead, the physical adapter
+binds exclusively to the Hyper-V Virtual Switch extension.</p>
+<p>All frame processing is routed through the virtual switch. The host
+operating system communicates through a dedicated virtual network
+adapter rather than directly with the physical interface, placing the
+host on equal structural footing with virtual machines. This prevents
+virtual network interfaces from directly accessing physical hardware
+registers or sniffing raw physical traffic.</p>
+<h3 id="switch-types-and-boundary-enforcement">Switch Types and Boundary
+Enforcement</h3>
+<p>Windows 10 provides three distinct types of virtual switches, each
+establishing a specific scope of network adapter isolation:</p>
+<ul>
+<li><strong>Private Virtual Switch:</strong> Restricts communication
+strictly to virtual machines connected to that specific switch. It has
+no bindings to physical network adapters and generates no interface for
+the host operating system, creating an air-gapped virtual segment.</li>
+<li><strong>Internal Virtual Switch:</strong> Restricts network traffic
+to virtual machines on that switch and a single virtual adapter exposed
+to the host operating system. It blocks all outbound traffic to the
+broader physical local network because it lacks an uplink to a physical
+network adapter.</li>
+<li><strong>External Virtual Switch:</strong> Binds directly to a
+physical network interface card (NIC). It allows traffic out to the
+physical network, but isolation is maintained by default; virtual
+machines cannot see each other's traffic unless broadcasted or routed,
+and the host can be entirely excluded from using the physical adapter by
+unchecking the "Allow management operating system to share this network
+adapter" option.</li>
+</ul>
+<h3 id="layer-2-isolation-vlans-and-trunking">Layer 2 Isolation: VLANs
+and Trunking</h3>
+<p>To isolate virtual adapters sharing the same physical uplink, Hyper-V
+uses IEEE 802.1Q VLAN tagging. Administrators can assign specific VLAN
+IDs to individual virtual network adapters in Windows 10.</p>
+<p>The Hyper-V switch tags outbound packets with the designated VLAN ID
+and strips incoming tags before passing data to the VM. Packets lacking
+the matching VLAN ID are dropped at the switch level. This enforces
+logical segmentation, preventing virtual machines residing on different
+VLANs from communicating across the shared switch without an
+intermediate physical or virtual router.</p>
+<h3 id="port-access-control-lists-acls">Port Access Control Lists
+(ACLs)</h3>
+<p>Hyper-V includes a port-level security engine that enforces
+directional filtering directly on the virtual ports of the switch:</p>
+<ul>
+<li><strong>MAC Address Filtering:</strong> Virtual switch ports drop
+packets with mismatched source MAC addresses unless MAC address spoofing
+is explicitly enabled.</li>
+<li><strong>DHCP Guard:</strong> Drops incoming DHCP server offer
+packets from unauthorized virtual machines, preventing malicious VMs
+from acting as rogue DHCP servers.</li>
+<li><strong>Router Guard:</strong> Discards ICMPv6 Router Advertisement
+and IPv4 redirect messages originating from unauthorized virtual network
+adapters to prevent man-in-the-middle attacks.</li>
+<li><strong>Custom Port ACLs:</strong> Configurable via PowerShell,
+these rules block or allow traffic based on IP addresses, MAC addresses,
+and transport protocols, restricting packet flow before it leaves the
+virtual switch layer.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/hyper-v-network-adapter-isolation-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

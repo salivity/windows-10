@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Static IP Mapping in Windows 10 Hosts File - windows-10</title>
+    <meta name="description" content="The Windows 10 hosts file provides a local mechanism to override Domain Name System (DNS) resolutions by manually mapping static IP addresses to domain names. When an application attempts to connect to a domain, the operating system checks this local text">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/configure-static-ip-mapping-in-windows-10-hosts-file">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure Static IP Mapping in Windows 10 Hosts File - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/configure-static-ip-mapping-in-windows-10-hosts-file" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Windows 10 hosts file provides a local mechanism to override Domain Name System (DNS) resolutions by manually mapping static IP addresses to domain names. When an application attempts to connect to a domain, the operating system checks this local text" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-static-ip-mapping-in-windows-10-hosts-file">Configure
+Static IP Mapping in Windows 10 Hosts File</h1>
+<p>The Windows 10 <code>hosts</code> file provides a local mechanism to
+override Domain Name System (DNS) resolutions by manually mapping static
+IP addresses to domain names. When an application attempts to connect to
+a domain, the operating system checks this local text file before
+querying external DNS servers. This guide details the function of the
+file, its location, and the direct steps required to configure custom
+static IP entries using administrative permissions.</p>
+<h3 id="understanding-the-hosts-file">Understanding the Hosts File</h3>
+<p>The <code>hosts</code> file is an operating system-level
+configuration file without a file extension. Because Windows checks the
+local <code>hosts</code> table first during network name resolution, an
+entry here forces traffic bound for a specific hostname to route to the
+defined IP address. This is commonly used for local web development,
+testing server migrations before updating public DNS, or blocking
+network access to specific domains by pointing them to local loopback
+addresses (such as <code>127.0.0.1</code> or <code>0.0.0.0</code>).</p>
+<h3 id="file-location">File Location</h3>
+<p>In Windows 10, the file is stored in a protected system
+directory:</p>
+<p><code>C:\Windows\System32\drivers\etc\hosts</code></p>
+<p>Because this directory is protected by Windows User Account Control
+(UAC), direct modification requires elevated administrative
+privileges.</p>
+<h3 id="steps-to-configure-static-ip-mapping">Steps to Configure Static
+IP Mapping</h3>
+<ol type="1">
+<li><p><strong>Launch a Text Editor as Administrator</strong><br />
+Click the <strong>Start</strong> menu, type <strong>Notepad</strong>,
+right-click the Notepad application from the search results, and select
+<strong>Run as administrator</strong>. Confirm the User Account Control
+(UAC) prompt if prompted.</p></li>
+<li><p><strong>Open the Hosts File</strong><br />
+In Notepad, select <strong>File &gt; Open</strong>. Navigate to
+<code>C:\Windows\System32\drivers\etc</code>. In the bottom-right corner
+of the open file dialog, change the file type filter from **Text
+Documents (<em>.txt)<strong> to </strong>All Files (</em>.*)<strong>.
+Select the <code>hosts</code> file and click </strong>Open**.</p></li>
+<li><p><strong>Add the Static IP Mapping</strong><br />
+Scroll to the bottom of the file. Add a new line using the standard
+syntax: the target IP address, followed by at least one space or tab,
+followed by the domain name. Comments can be appended using the
+<code>#</code> symbol.</p>
+<p>Syntax:</p>
+<pre class="text"><code>[IP Address] [Domain Name]</code></pre>
+<p>Examples:</p>
+<pre class="text"><code># Map a local development server
+192.168.1.50    dev.example.local
+
+# Point a public domain to a specific testing server
+203.0.113.10    example.com www.example.com</code></pre></li>
+<li><p><strong>Save the Changes</strong><br />
+Select <strong>File &gt; Save</strong> (or press <code>Ctrl + S</code>).
+Ensure the file is saved with its original name without an extension (do
+not save it as <code>hosts.txt</code>).</p></li>
+<li><p><strong>Flush the DNS Cache</strong><br />
+While changes to the <code>hosts</code> file typically take effect
+immediately, Windows may retain previously resolved addresses in its
+local cache. To ensure the new mapping is active:</p>
+<ul>
+<li>Open the <strong>Start</strong> menu, type <strong>cmd</strong>, and
+open the <strong>Command Prompt</strong>.</li>
+<li>Run the command: <code>ipconfig /flushdns</code></li>
+<li>Press <strong>Enter</strong>.</li>
+</ul></li>
+</ol>
+<p>Once completed, any local application, such as a web browser or
+terminal tool, will route requests for the specified hostnames directly
+to the configured static IP addresses.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/configure-static-ip-mapping-in-windows-10-hosts-file';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

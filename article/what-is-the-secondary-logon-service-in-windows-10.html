@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the Secondary Logon Service in Windows 10? - windows-10</title>
+    <meta name="description" content="The Secondary Logon service in Microsoft Windows 10 enables users to run programs, administrative tools, and processes with alternate security credentials without having to log out of their current session. By allowing privileged tasks to be executed from">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/what-is-the-secondary-logon-service-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the Secondary Logon Service in Windows 10? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/what-is-the-secondary-logon-service-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Secondary Logon service in Microsoft Windows 10 enables users to run programs, administrative tools, and processes with alternate security credentials without having to log out of their current session. By allowing privileged tasks to be executed from" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-secondary-logon-service-in-windows-10">What Is the
+Secondary Logon Service in Windows 10?</h1>
+<p>The Secondary Logon service in Microsoft Windows 10 enables users to
+run programs, administrative tools, and processes with alternate
+security credentials without having to log out of their current session.
+By allowing privileged tasks to be executed from a standard user
+account, this service plays a vital role in system security,
+administrative efficiency, and software compatibility.</p>
+<h3 id="core-functionality-and-run-as">Core Functionality and "Run
+As"</h3>
+<p>The primary function of the Secondary Logon service (internal name
+<code>seclogon</code>) is to power the "Run as different user" and "Run
+as administrator" features within the Windows operating system. When a
+user right-clicks an executable or shortcut and selects an option to run
+the program under alternate credentials, the Secondary Logon service
+handles the request. It prompts for the appropriate username and
+password, authenticates the credentials against the local security
+authority or domain controller, and launches the application under that
+specific security context.</p>
+<h3 id="supporting-the-principle-of-least-privilege">Supporting the
+Principle of Least Privilege</h3>
+<p>From a security perspective, the Secondary Logon service is a
+cornerstone of the Principle of Least Privilege (PoLP). Best security
+practices dictate that users—including system administrators—should
+operate day-to-day under standard user accounts with limited rights to
+minimize the risk of malware infections and unauthorized system
+modifications.</p>
+<p>When administrative tasks are required, such as modifying system
+settings, installing drivers, or running management consoles (like
+PowerShell or Event Viewer), the Secondary Logon service allows the user
+to temporarily elevate privileges for only that specific task. The
+primary desktop environment remains restricted, preventing malicious
+code from automatically inheriting full administrative control.</p>
+<h3 id="impact-on-third-party-applications-and-gaming">Impact on
+Third-Party Applications and Gaming</h3>
+<p>Beyond administrative management, several third-party applications
+rely on the Secondary Logon service to function properly. For example,
+video game launchers (such as Blizzard's Battle.net) and developer
+environments often use this service to manage background updates,
+install patches, or handle multi-user components. If the service is
+stopped or disabled, these programs may return errors, fail to update,
+or refuse to launch entirely.</p>
+<h3 id="what-happens-if-the-service-is-disabled">What Happens If the
+Service Is Disabled?</h3>
+<p>Disabling the Secondary Logon service directly impacts daily
+usability and administrative workflows:</p>
+<ul>
+<li><strong>Loss of "Run as" Capabilities:</strong> Users cannot
+manually execute applications with alternate credentials.</li>
+<li><strong>UAC Complications:</strong> Standard accounts may encounter
+failures when attempting tasks that require entering administrator
+credentials through User Account Control (UAC).</li>
+<li><strong>Application Failures:</strong> Programs that depend on
+secondary authentication mechanisms to launch secondary worker processes
+will malfunction.</li>
+</ul>
+<h3 id="how-to-manage-the-secondary-logon-service">How to Manage the
+Secondary Logon Service</h3>
+<p>The service runs through <code>svchost.exe</code> and is backed by
+the <code>seclogon.dll</code> file. Its default startup type in Windows
+10 is typically set to <strong>Manual</strong>, meaning Windows starts
+the service only when a process or user requests it.</p>
+<p>To check or modify its status:</p>
+<ol type="1">
+<li>Press <code>Windows Key + R</code>, type <code>services.msc</code>,
+and press <strong>Enter</strong>.</li>
+<li>Scroll down and locate <strong>Secondary Logon</strong>.</li>
+<li>Double-click the entry to view its properties.</li>
+<li>Set the <strong>Startup type</strong> to <strong>Manual</strong>
+(recommended) or <strong>Automatic</strong> if dependent applications
+fail to start it automatically.</li>
+</ol></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/what-is-the-secondary-logon-service-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

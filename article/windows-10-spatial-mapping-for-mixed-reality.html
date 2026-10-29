@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Spatial Mapping for Mixed Reality - windows-10</title>
+    <meta name="description" content="Windows 10 supports spatial mapping for mixed reality platforms through built-in OS-level perception APIs, hardware abstraction, and real-time 3D surface reconstruction. By processing sensor data directly within the operating system, Windows 10 enables de">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-spatial-mapping-for-mixed-reality">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Spatial Mapping for Mixed Reality - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-spatial-mapping-for-mixed-reality" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 supports spatial mapping for mixed reality platforms through built-in OS-level perception APIs, hardware abstraction, and real-time 3D surface reconstruction. By processing sensor data directly within the operating system, Windows 10 enables de" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-spatial-mapping-for-mixed-reality">Windows 10 Spatial
+Mapping for Mixed Reality</h1>
+<p>Windows 10 supports spatial mapping for mixed reality platforms
+through built-in OS-level perception APIs, hardware abstraction, and
+real-time 3D surface reconstruction. By processing sensor data directly
+within the operating system, Windows 10 enables devices like the
+Microsoft HoloLens and compatible Windows Mixed Reality headsets to
+digitally map physical environments, understand room geometry, and
+seamlessly integrate virtual objects into the real world.</p>
+<h3 id="windows-perception-apis">Windows Perception APIs</h3>
+<p>At the software layer, Windows 10 provides the Universal Windows
+Platform (UWP) Perception APIs, specifically within the
+<code>Windows.Perception.Spatial</code> and
+<code>Windows.Perception.Spatial.Surfaces</code> namespaces. These APIs
+expose low-level environmental tracking data to developers without
+requiring them to write custom sensor-processing code.</p>
+<p>The primary interface for spatial mapping is the
+<code>SpatialSurfaceObserver</code>. This component allows applications
+to define an area of interest—such as a bounding box, sphere, or frustum
+around the user—and receive updates whenever the physical geometry
+within that volume changes. The operating system handles the complex
+tasks of spatial tracking, coordinate system alignment, and data
+streaming in the background.</p>
+<h3 id="real-time-surface-reconstruction-and-meshing">Real-Time Surface
+Reconstruction and Meshing</h3>
+<p>Windows 10 continuously converts raw depth-sensor feeds into usable
+geometric data using a process called surface reconstruction:</p>
+<ol type="1">
+<li><strong>Depth Sensing and Point Clouds:</strong> Integrated depth
+cameras and infrared sensors emit and capture signals to measure
+distances to nearby physical surfaces, generating continuous point-cloud
+data.</li>
+<li><strong>Triangular Mesh Generation:</strong> The OS processes these
+point clouds through surface reconstruction algorithms to generate
+polygonal (triangle) meshes.</li>
+<li><strong>Level of Detail (LOD) Control:</strong> Developers can
+request meshes at varying levels of detail. A low-resolution mesh can be
+used for coarse collision detection, while a high-resolution mesh can be
+used for precise placement and physics interactions.</li>
+<li><strong>Dynamic Caching:</strong> Windows 10 divides the physical
+environment into manageable spatial volumes (surface mesh chunks). As
+the user moves through a space, the OS updates only the chunks that have
+changed, conserving CPU and GPU resources.</li>
+</ol>
+<h3 id="coordinate-systems-and-spatial-anchors">Coordinate Systems and
+Spatial Anchors</h3>
+<p>To ensure virtual objects remain stationary relative to the real
+world, Windows 10 implements spatial coordinate systems. The OS supports
+both stationary coordinate systems (fixed to a specific location in
+space) and attached coordinate systems (fixed to the moving user).</p>
+<p>Through the <code>SpatialAnchor</code> class, Windows 10 allows
+developers to lock holographic content to a specific physical point. The
+OS continuously refines its understanding of the environment and
+automatically adjusts the anchor's local coordinates to compensate for
+tracking drift. Furthermore, spatial anchors can be persisted locally or
+shared across multiple devices, allowing persistent holographic
+placement over time.</p>
+<h3 id="occlusion-and-physics-integration">Occlusion and Physics
+Integration</h3>
+<p>Windows 10 supplies spatial mapping data in formats directly
+compatible with standard graphics and physics engines, such as DirectX,
+Unity, and Unreal Engine. Once the operating system delivers the surface
+meshes to an application, they can be utilized for:</p>
+<ul>
+<li><strong>Occlusion:</strong> Rendering invisible occlusion shaders
+over the real-world mesh so that physical objects realistically hide
+virtual holograms positioned behind them.</li>
+<li><strong>Collision and Physics:</strong> Applying standard physics
+colliders to the environmental mesh so that digital objects bounce off
+floors, land on tables, or interact with physical walls.</li>
+<li><strong>Surface Classification:</strong> Identifying specific types
+of surfaces, such as floors, walls, and ceilings, allowing automated
+placement logic for applications and system shells.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-spatial-mapping-for-mixed-reality';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

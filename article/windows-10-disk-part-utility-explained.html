@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 DiskPart Utility Explained - windows-10</title>
+    <meta name="description" content="This article explores the purpose, core functions, and primary use cases of the DiskPart command-line utility in Microsoft Windows 10. Readers will learn how DiskPart enables advanced storage administration, why it is preferred over graphical tools for co">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-disk-part-utility-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 DiskPart Utility Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-disk-part-utility-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores the purpose, core functions, and primary use cases of the DiskPart command-line utility in Microsoft Windows 10. Readers will learn how DiskPart enables advanced storage administration, why it is preferred over graphical tools for co" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-diskpart-utility-explained">Windows 10 DiskPart
+Utility Explained</h1>
+<p>This article explores the purpose, core functions, and primary use
+cases of the DiskPart command-line utility in Microsoft Windows 10.
+Readers will learn how DiskPart enables advanced storage administration,
+why it is preferred over graphical tools for complex tasks, and how it
+manages disks, partitions, and volumes directly through the command
+line.</p>
+<p>DiskPart is a text-mode command interpreter included in Windows 10
+that allows administrators and users to manage computer storage devices,
+including internal hard drives, solid-state drives (SSDs), external USB
+drives, and virtual hard disks (VHDs). Introduced to replace the older
+<code>fdisk</code> utility, DiskPart interacts directly with the
+operating system storage subsystem to provide granular control over
+partition layouts and file system structures.</p>
+<p>The primary purpose of DiskPart is to configure, partition, format,
+and organize storage media. While the standard Windows 10 Disk
+Management graphical interface handles basic tasks, DiskPart offers
+low-level access necessary for operations the GUI cannot perform or
+restricts.</p>
+<p>Key capabilities of DiskPart include:</p>
+<ul>
+<li><strong>Partition and Volume Creation:</strong> Users can create
+primary, extended, and logical partitions, as well as specific system
+partitions such as the EFI System Partition (ESP) or Microsoft Reserved
+(MSR) partition.</li>
+<li><strong>Volume Resizing and Deletion:</strong> DiskPart can extend
+or shrink existing volumes to optimize storage allocation, and it can
+force the deletion of protected partitions, such as hidden OEM recovery
+partitions.</li>
+<li><strong>Disk Cleaning and Sanitization:</strong> Commands like
+<code>clean</code> and <code>clean all</code> remove all partition and
+volume formatting from a targeted drive, overwriting data with zeros in
+the case of <code>clean all</code> to prepare drives for
+repurposing.</li>
+<li><strong>Disk Conversion:</strong> It converts initialized disks
+between Master Boot Record (MBR) and GUID Partition Table (GPT)
+partition styles, as well as between basic and dynamic disk
+architectures.</li>
+<li><strong>Drive Letter and Path Assignment:</strong> Administrators
+can assign, change, or remove mount points and drive letters for
+specific volumes.</li>
+<li><strong>Virtual Disk Management:</strong> DiskPart supports
+creating, attaching, detaching, and configuring VHD and VHDX files
+natively.</li>
+</ul>
+<p>DiskPart is frequently utilized in troubleshooting and recovery
+environments, such as the Windows Preinstallation Environment (WinPE) or
+Windows Recovery Environment (WinRE). When Windows 10 fails to boot,
+DiskPart allows technicians to repair corrupted partition tables,
+rebuild boot structures, or prepare new drives without requiring an
+active operating system desktop. Additionally, it supports scripted
+automation via text files, making it a critical tool for automated drive
+provisioning in enterprise deployment workflows.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-disk-part-utility-explained';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role of Winlogon.exe in Windows 10 Startup - windows-10</title>
+    <meta name="description" content="The winlogon.exe process, known as the Windows Logon Application, is a critical system architecture component responsible for managing user logon and logoff operations in Windows 10. During the boot sequence, it acts as the bridge between core operating s">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/role-of-winlogon-exe-in-windows-10-startup">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Role of Winlogon.exe in Windows 10 Startup - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/role-of-winlogon-exe-in-windows-10-startup" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The winlogon.exe process, known as the Windows Logon Application, is a critical system architecture component responsible for managing user logon and logoff operations in Windows 10. During the boot sequence, it acts as the bridge between core operating s" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="role-of-winlogonexe-in-windows-10-startup">Role of Winlogon.exe
+in Windows 10 Startup</h1>
+<p>The <code>winlogon.exe</code> process, known as the Windows Logon
+Application, is a critical system architecture component responsible for
+managing user logon and logoff operations in Windows 10. During the boot
+sequence, it acts as the bridge between core operating system
+initialization and the user environment. This article outlines the
+specific responsibilities of <code>winlogon.exe</code> during startup,
+including secure authentication, environment initialization, and shell
+loading.</p>
+<p>During the Windows 10 boot sequence, the Session Manager Subsystem
+(<code>smss.exe</code>) creates the interactive user session (Session 1)
+and initiates <code>winlogon.exe</code>. Once executed,
+<code>winlogon.exe</code> prepares the graphical interface and the
+security subsystems required for a user to access the machine.</p>
+<p>One of its primary tasks is managing the Secure Attention Sequence
+(SAS). Historically triggered by the Ctrl+Alt+Delete key combination,
+this sequence guarantees that the genuine Windows logon screen appears
+rather than a spoofed, malicious login prompt. In modern Windows 10
+installations, <code>winlogon.exe</code> launches
+<code>LogonUI.exe</code>, which renders the lock screen and credential
+entry fields.</p>
+<p>After a user enters their credentials or uses Windows Hello,
+<code>winlogon.exe</code> passes the authentication data to the Local
+Security Authority Subsystem Service (<code>lsass.exe</code>). The
+<code>lsass.exe</code> process verifies the credentials against the
+local Security Accounts Manager (SAM) database or a network domain
+controller via Active Directory.</p>
+<p>Upon successful authentication, <code>winlogon.exe</code> sets up the
+user's specific operating environment:</p>
+<ul>
+<li>It loads the user’s registry profile located in
+<code>NTUSER.DAT</code> into the <code>HKEY_CURRENT_USER</code> registry
+hive.</li>
+<li>It applies assigned Group Policies through background engine
+calls.</li>
+<li>It initializes network drives and establishes the desktop security
+context.</li>
+</ul>
+<p>Finally, <code>winlogon.exe</code> reads the system registry to
+identify the default user interface shell—typically
+<code>explorer.exe</code>—and launches it under the authenticated user's
+access token. Once the Windows desktop appears,
+<code>winlogon.exe</code> relinquishes primary interaction but remains
+active in the background to handle subsequent lock, unlock, logoff, and
+shutdown sequences. Because it is marked as a critical system process,
+any termination or crash of <code>winlogon.exe</code> triggers an
+immediate system halt (Blue Screen of Death) to protect system
+integrity.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/role-of-winlogon-exe-in-windows-10-startup';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

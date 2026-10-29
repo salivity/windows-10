@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Manage Windows 10 Permissions Using icacls - windows-10</title>
+    <meta name="description" content="The Microsoft Windows 10 operating system relies on Access Control Lists (ACLs) to dictate how users and system processes interact with files and folders. The icacls (Integrity Control Access Control List) command-line utility is a native administrative t">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-to-manage-windows-10-permissions-using-icacls">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Manage Windows 10 Permissions Using icacls - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-to-manage-windows-10-permissions-using-icacls" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Microsoft Windows 10 operating system relies on Access Control Lists (ACLs) to dictate how users and system processes interact with files and folders. The icacls (Integrity Control Access Control List) command-line utility is a native administrative t" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-manage-windows-10-permissions-using-icacls">How to Manage
+Windows 10 Permissions Using icacls</h1>
+<p>The Microsoft Windows 10 operating system relies on Access Control
+Lists (ACLs) to dictate how users and system processes interact with
+files and folders. The <code>icacls</code> (Integrity Control Access
+Control List) command-line utility is a native administrative tool that
+allows users to view, modify, grant, deny, back up, and restore these
+Discretionary Access Control Lists (DACLs) directly from the Command
+Prompt or PowerShell. This article explains how Windows 10 processes
+file permissions through <code>icacls</code>, covering the core
+permission syntax, practical permission modifications, inheritance
+handling, and backup procedures.</p>
+<h3 id="understanding-access-control-lists-and-icacls">Understanding
+Access Control Lists and icacls</h3>
+<p>In Windows 10, every file and folder on an NTFS or ReFS drive is
+assigned a security descriptor. This descriptor contains a DACL composed
+of individual Access Control Entries (ACEs). Each ACE identifies a
+security principal (a user account, group, or SID) and specifies whether
+access rights are granted or denied.</p>
+<p>The <code>icacls</code> command directly interfaces with the Windows
+security subsystem to read and manipulate these ACEs. When you run
+<code>icacls</code>, Windows applies changes immediately to the target
+object's metadata.</p>
+<h3 id="basic-syntax-and-viewing-permissions">Basic Syntax and Viewing
+Permissions</h3>
+<p>To display the current permissions of a file or directory, run the
+following command in an elevated Command Prompt:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\Path\To\FileOrFolder&quot;</span></span></code></pre></div>
+<p>The output displays the path followed by user/group accounts and
+their associated access masks, represented by standard abbreviation
+codes:</p>
+<ul>
+<li><strong>F:</strong> Full access</li>
+<li><strong>M:</strong> Modify access</li>
+<li><strong>RX:</strong> Read and execute access</li>
+<li><strong>R:</strong> Read-only access</li>
+<li><strong>W:</strong> Write-only access</li>
+<li><strong>D:</strong> Delete access</li>
+</ul>
+<p>Inheritance flags may also be displayed in parentheses:</p>
+<ul>
+<li><strong>(OI):</strong> Object inherit (files inherit this ACE)</li>
+<li><strong>(CI):</strong> Container inherit (subfolders inherit this
+ACE)</li>
+<li><strong>(IO):</strong> Inherit only (applies to children, not the
+current container)</li>
+<li><strong>(I):</strong> Inherited from the parent container</li>
+</ul>
+<h3 id="granting-permissions">Granting Permissions</h3>
+<p>To grant permissions to a user or group, use the <code>/grant</code>
+switch:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\TestFolder&quot;</span> <span class="at">/grant</span> UserName:(OI<span class="kw">)(</span>CI)M</span></code></pre></div>
+<p>This command grants the specified user "Modify" permissions on
+<code>C:\TestFolder</code>, applying the rule to all subfolders
+<code>(CI)</code> and files <code>(OI)</code> within it.</p>
+<p>By default, <code>/grant</code> adds the permission to existing
+rights. If you want to replace any existing explicit permissions for
+that user rather than appending to them, use <code>/grant:r</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\TestFolder&quot;</span> <span class="at">/grant:</span>r UserName:(OI<span class="kw">)(</span>CI)F</span></code></pre></div>
+<h3 id="denying-permissions">Denying Permissions</h3>
+<p>Windows security evaluates explicit "Deny" entries before explicit
+"Grant" entries. To explicitly deny an account access, use the
+<code>/deny</code> parameter:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\TestFolder&quot;</span> <span class="at">/deny</span> BadUser:(OI<span class="kw">)(</span>CI)W</span></code></pre></div>
+<p>This explicitly blocks write access to <code>BadUser</code>,
+overriding any inherited or group-based grant permissions that would
+otherwise allow writing.</p>
+<h3 id="removing-permissions">Removing Permissions</h3>
+<p>To remove an existing user's permissions from an object without using
+an explicit deny rule, use <code>/remove</code>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\TestFolder&quot;</span> <span class="at">/remove</span> UserName</span></code></pre></div>
+<p>To remove permissions only if they are inherited or explicitly
+defined, options such as <code>/remove:g</code> (removes granted rights)
+or <code>/remove:d</code> (removes denied rights) can be specified.</p>
+<h3 id="managing-permission-inheritance">Managing Permission
+Inheritance</h3>
+<p>Windows 10 enables permission inheritance by default, meaning newly
+created files and subfolders automatically receive permissions from
+their parent directory. You can manage inheritance using the
+<code>/inheritance</code> switch:</p>
+<ul>
+<li><p><strong>Disable inheritance and copy existing rules:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\TestFolder&quot;</span> <span class="at">/inheritance:</span>d</span></code></pre></div></li>
+<li><p><strong>Disable inheritance and remove all inherited
+rules:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\TestFolder&quot;</span> <span class="at">/inheritance:</span>r</span></code></pre></div></li>
+<li><p><strong>Enable inheritance:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\TestFolder&quot;</span> <span class="at">/inheritance:</span>e</span></code></pre></div></li>
+</ul>
+<h3 id="backing-up-and-restoring-acls">Backing Up and Restoring
+ACLs</h3>
+<p>Before modifying critical system files or complex directory
+structures, <code>icacls</code> allows you to export current permissions
+to an ACL text file and restore them later if needed.</p>
+<ol type="1">
+<li><p><strong>Backup permissions recursively:</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\DataFolder&quot;</span> <span class="at">/save</span> C:\Backup\DataFolder_ACLs.txt <span class="at">/t</span></span></code></pre></div>
+<p><em>(The <code>/t</code> flag operates recursively through all
+subdirectories and files.)</em></p></li>
+<li><p><strong>Restore permissions:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:</span><span class="sc">\&quot;</span><span class="st"> /restore C:\Backup\DataFolder_ACLs.txt</span></span></code></pre></div>
+<p><em>Note: When restoring, specify the parent directory of the path
+that was originally saved.</em></p></li>
+</ol></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-to-manage-windows-10-permissions-using-icacls';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

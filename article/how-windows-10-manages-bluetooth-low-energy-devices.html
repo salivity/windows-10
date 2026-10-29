@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Manages Bluetooth Low Energy Devices - windows-10</title>
+    <meta name="description" content="This article explores how the Microsoft Windows 10 operating system manages peripheral connections using Bluetooth Low Energy (BLE). It details the underlying architectural stack, device discovery, the pairing lifecycle, and the Generic Attribute Profile">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-manages-bluetooth-low-energy-devices">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Manages Bluetooth Low Energy Devices - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-manages-bluetooth-low-energy-devices" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores how the Microsoft Windows 10 operating system manages peripheral connections using Bluetooth Low Energy (BLE). It details the underlying architectural stack, device discovery, the pairing lifecycle, and the Generic Attribute Profile" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-manages-bluetooth-low-energy-devices">How Windows
+10 Manages Bluetooth Low Energy Devices</h1>
+<p>This article explores how the Microsoft Windows 10 operating system
+manages peripheral connections using Bluetooth Low Energy (BLE). It
+details the underlying architectural stack, device discovery, the
+pairing lifecycle, and the Generic Attribute Profile (GATT) caching
+mechanisms Windows 10 employs to maintain low power consumption while
+ensuring responsive hardware communication.</p>
+<h3 id="the-bluetooth-low-energy-architecture-in-windows-10">The
+Bluetooth Low Energy Architecture in Windows 10</h3>
+<p>Windows 10 controls BLE devices through an integrated subsystem
+composed of the Windows Driver Framework (WDF), the Bluetooth Core
+driver layer (<code>bthport.sys</code>), and a dedicated Bluetooth Low
+Energy bus driver (<code>Microsoft.Bluetooth.Legacy.sys</code> and
+<code>BthLEEnum.sys</code>). This architecture separates traditional
+Bluetooth Classic (BR/EDR) streams from low-energy protocols, allowing
+the OS to manage low-duty-cycle peripherals—such as fitness trackers,
+medical sensors, and input devices—without running high-power radio
+states continuously.</p>
+<p>Communication is primarily handled through the Generic Attribute
+Profile (GATT). Windows 10 supports dual-role operations: it can act as
+a GATT Client (requesting data from a peripheral acting as a GATT
+Server) and, starting with the Creators Update, as a GATT Server,
+allowing external peripherals to read and write attributes directly to
+the OS.</p>
+<h3 id="advertisement-scanning-and-device-discovery">Advertisement
+Scanning and Device Discovery</h3>
+<p>Windows 10 continuously or periodically monitors the 2.4 GHz radio
+spectrum for BLE advertisement packets broadcasted by nearby peripherals
+on primary advertising channels (37, 38, and 39).</p>
+<p>The OS utilizes the <code>BluetoothLEAdvertisementWatcher</code>
+subsystem to parse these packets without establishing a physical
+connection. Windows filters advertisements based on signal strength
+(RSSI), service UUIDs, and manufacturer-specific payload data. This
+scanning operates in two modes:</p>
+<ul>
+<li><strong>Passive Scanning:</strong> Listens for packets without
+transmitting requests, minimizing host power consumption.</li>
+<li><strong>Active Scanning:</strong> Sends a <code>SCAN_REQ</code>
+packet upon receiving an advertisement to request additional payload
+details (<code>SCAN_RSP</code>) from the device, which populates the
+device name and available services in the Windows Settings menu.</li>
+</ul>
+<h3 id="pairing-and-cryptographic-security">Pairing and Cryptographic
+Security</h3>
+<p>When a user initiates pairing, Windows 10 negotiates security
+parameters through the Bluetooth Security Manager (SM). Depending on the
+I/O capabilities of the peripheral, Windows executes one of four
+association models:</p>
+<ol type="1">
+<li><strong>Just Works:</strong> For headless devices without displays
+or input keys, establishing an unauthenticated encrypted link.</li>
+<li><strong>Passkey Entry:</strong> Used when one device has a display
+and the other has a numeric keypad.</li>
+<li><strong>Numeric Comparison (Bluetooth 4.2+ Secure
+Connections):</strong> Displays a 6-digit confirmation key on both the
+peripheral and the Windows interface.</li>
+<li><strong>Out-of-Band (OOB):</strong> Uses secondary channels, such as
+Near Field Communication (NFC), to exchange cryptographic discovery
+keys.</li>
+</ol>
+<p>Once authenticated, Windows 10 securely stores the Long Term Key
+(LTK) and Identity Resolving Key (IRK) in the Windows credential and
+device registry stores. The IRK enables Windows to resolve private,
+randomly generated MAC addresses commonly used by modern BLE peripherals
+for privacy.</p>
+<h3 id="on-demand-connection-and-gatt-caching">On-Demand Connection and
+GATT Caching</h3>
+<p>Unlike Bluetooth Classic, which maintains an active channel, Windows
+10 implements an on-demand, event-driven connection model for BLE:</p>
+<ul>
+<li><strong>Dynamic Connection Establishment:</strong> Windows connects
+to a BLE peripheral only when an application or the OS explicitly
+requests data via a GATT transaction (read/write) or when listening for
+registered notifications. Once the transaction completes, the OS adjusts
+the connection interval to save power or allows the link to idle.</li>
+<li><strong>GATT Caching:</strong> Querying a device's entire GATT
+database (all services, characteristics, and descriptors) consumes
+substantial time and battery. Windows 10 solves this by caching the
+peripheral's GATT hierarchy locally upon first discovery. On subsequent
+reconnects, Windows checks the peripheral's "Service Changed"
+characteristic; if no changes are flagged, it interacts using the cached
+map instantly, eliminating discovery overhead.</li>
+</ul>
+<h3 id="background-operations-and-application-integration">Background
+Operations and Application Integration</h3>
+<p>Windows 10 integrates BLE hardware management into the Universal
+Windows Platform (UWP) and Win32 runtimes via the
+<code>Windows.Devices.Bluetooth</code> and
+<code>Windows.Devices.Bluetooth.GenericAttributeProfile</code>
+namespaces.</p>
+<p>To prevent desktop applications or background apps from draining
+system resources, Windows handles BLE event monitoring at the kernel
+level. Applications register background tasks tied to
+<code>GattCharacteristicNotificationTrigger</code>. When a peripheral
+sends an asynchronous indication or notification (such as a heart rate
+measurement or a button press), the Windows Bluetooth stack intercepts
+the packet, wakes or alerts the subscribed application, passes the
+payload, and allows the system to return to a low-power sleep state.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-manages-bluetooth-low-energy-devices';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

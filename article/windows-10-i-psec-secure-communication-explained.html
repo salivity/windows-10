@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 IPsec Secure Communication Explained - windows-10</title>
+    <meta name="description" content="Internet Protocol Security (IPsec) in Microsoft Windows 10 provides a framework of open standards that ensures private, authenticated, and tamper-proof communication across IP networks. Windows 10 implements IPsec directly at the network layer through the">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-i-psec-secure-communication-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 IPsec Secure Communication Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-i-psec-secure-communication-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Internet Protocol Security (IPsec) in Microsoft Windows 10 provides a framework of open standards that ensures private, authenticated, and tamper-proof communication across IP networks. Windows 10 implements IPsec directly at the network layer through the" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-ipsec-secure-communication-explained">Windows 10
+IPsec Secure Communication Explained</h1>
+<p>Internet Protocol Security (IPsec) in Microsoft Windows 10 provides a
+framework of open standards that ensures private, authenticated, and
+tamper-proof communication across IP networks. Windows 10 implements
+IPsec directly at the network layer through the Windows Defender
+Firewall with Advanced Security (WFAS) architecture. By using
+standardized negotiation protocols such as Internet Key Exchange (IKE)
+and authenticated IP (AuthIP), the operating system establishes
+encrypted tunnels and transport sessions without requiring
+application-level modifications.</p>
+<h2 id="connection-security-rules-and-policy-matching">Connection
+Security Rules and Policy Matching</h2>
+<p>The process begins when an outbound or inbound network packet matches
+an established Connection Security Rule within the Windows Defender
+Firewall. Administrators configure these rules via Group Policy or local
+security settings to define how and when traffic must be secured. A rule
+specifies:</p>
+<ul>
+<li><strong>Endpoints:</strong> Source and destination IPv4 or IPv6
+addresses or subnets.</li>
+<li><strong>Requirements:</strong> Whether authentication is requested
+or strictly required.</li>
+<li><strong>Traffic Types:</strong> Specific protocols (TCP, UDP) and
+port numbers.</li>
+</ul>
+<p>When an application initiates a connection matching a rule that
+requires IPsec, the Windows networking stack halts normal packet
+delivery and initiates the negotiation handshake before user data is
+sent.</p>
+<h2 id="phase-1-establishing-the-secure-channel-main-mode">Phase 1:
+Establishing the Secure Channel (Main Mode)</h2>
+<p>Windows 10 uses IKEv1, IKEv2, or Microsoft's proprietary AuthIP
+extension to mutually authenticate endpoints and create a secure
+management channel. This step is known as Main Mode.</p>
+<ol type="1">
+<li><strong>Policy Negotiation:</strong> The two communicating computers
+agree on an encryption algorithm (such as AES-256 or AES-128), an
+integrity algorithm (such as SHA-256), and a Diffie-Hellman (DH) group
+to establish shared secret keys.</li>
+<li><strong>Authentication:</strong> Windows 10 authenticates the remote
+host. It supports several methods:
+<ul>
+<li><strong>Kerberos v5:</strong> Used automatically within Active
+Directory domain environments.</li>
+<li><strong>X.509 Digital Certificates:</strong> Issued by a trusted
+Public Key Infrastructure (PKI) for cross-domain or remote
+connections.</li>
+<li><strong>Pre-Shared Keys (PSK):</strong> Static passphrases typically
+reserved for testing or simple site-to-site tunnels.</li>
+</ul></li>
+<li><strong>Security Association (SA) Creation:</strong> Once validated,
+a bidirectional Main Mode Security Association (SA) is stored in the
+Windows IPsec driver cache, protecting all subsequent management
+exchanges.</li>
+</ol>
+<p>AuthIP in Windows 10 allows separate authentication for both the
+computer and the logged-on user, enabling user-based access control
+policies alongside device security.</p>
+<h2 id="phase-2-negotiating-data-protection-quick-mode">Phase 2:
+Negotiating Data Protection (Quick Mode)</h2>
+<p>With the secure Phase 1 channel established, Windows 10 negotiates
+Quick Mode (Phase 2), which determines how actual application data will
+be protected.</p>
+<ul>
+<li><strong>Protocol Selection:</strong> The endpoints choose between
+<strong>Encapsulating Security Payload (ESP)</strong>, which provides
+encryption, integrity, and authentication, or <strong>Authentication
+Header (AH)</strong>, which provides integrity and authentication
+without encryption. In modern deployments, Windows 10 almost exclusively
+uses ESP.</li>
+<li><strong>Traffic Selectors:</strong> Quick Mode defines the specific
+IP filters (source, destination, port) that apply to the data
+stream.</li>
+<li><strong>Key Generation:</strong> Fresh symmetric encryption keys are
+derived for data transmission, often reinforced by Perfect Forward
+Secrecy (PFS) to ensure past sessions remain secure even if future keys
+are compromised.</li>
+</ul>
+<p>This stage produces a pair of unidirectional Quick Mode SAs (one for
+inbound traffic, one for outbound traffic).</p>
+<h2 id="modes-of-operation">Modes of Operation</h2>
+<p>Windows 10 operates IPsec in one of two modes:</p>
+<ul>
+<li><strong>Transport Mode:</strong> The original IP header is
+preserved, and only the payload is encrypted and signed. This mode is
+used for direct peer-to-peer communication within a local network or
+between domain-joined devices.</li>
+<li><strong>Tunnel Mode:</strong> The entire original IP packet (header
+and payload) is encapsulated inside a brand-new IP packet. This mode is
+commonly used for Virtual Private Network (VPN) connections between
+Windows 10 clients and remote network gateways.</li>
+</ul>
+<h2 id="data-transmission-and-hardware-offloading">Data Transmission and
+Hardware Offloading</h2>
+<p>Once SAs are active, the Windows TCP/IP stack routes matching
+outbound packets to the IPsec driver (<code>tcpip.sys</code> and
+<code>ipsec.sys</code>). The driver encrypts and encapsulates the packet
+according to the Quick Mode parameters before transmitting it over the
+wire. Inbound packets are decrypted, verified against the cryptographic
+hash, and delivered to the destination application.</p>
+<p>To minimize latency and CPU utilization, Windows 10 supports
+<strong>IPsec Task Offload (IPsec-TO)</strong>. If the installed network
+interface card (NIC) supports hardware offloading, the encryption and
+decryption workloads are transferred directly to the network
+adapter.</p>
+<h2 id="session-maintenance-and-rekeying">Session Maintenance and
+Rekeying</h2>
+<p>IPsec SAs are temporary. Windows 10 monitors active SAs using
+time-based and byte-count thresholds. When an SA reaches its configured
+limit (for example, eight hours or a specific gigabyte threshold), the
+operating system triggers a rekeying procedure in the background to
+replace expired keys without disrupting active user connections. If an
+endpoint stops responding, Dead Peer Detection (DPD) terminates the SAs
+to release local system resources.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-i-psec-secure-communication-explained';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
