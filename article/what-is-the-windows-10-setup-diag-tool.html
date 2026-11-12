@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the Windows 10 SetupDiag Tool? - windows-10</title>
+    <meta name="description" content="This article provides an overview of the Microsoft SetupDiag diagnostic tool for Windows 10, explaining its primary purpose, how it operates, and why it is essential for resolving upgrade failures. SetupDiag is a specialized command-line utility designed">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/what-is-the-windows-10-setup-diag-tool">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the Windows 10 SetupDiag Tool? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/what-is-the-windows-10-setup-diag-tool" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of the Microsoft SetupDiag diagnostic tool for Windows 10, explaining its primary purpose, how it operates, and why it is essential for resolving upgrade failures. SetupDiag is a specialized command-line utility designed" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-windows-10-setupdiag-tool">What Is the Windows 10
+SetupDiag Tool?</h1>
+<p>This article provides an overview of the Microsoft SetupDiag
+diagnostic tool for Windows 10, explaining its primary purpose, how it
+operates, and why it is essential for resolving upgrade failures.
+SetupDiag is a specialized command-line utility designed to analyze
+Windows Setup logs to determine why an operating system upgrade or
+update failed. By understanding its functionality, system administrators
+and users can quickly pinpoint installation roadblocks, interpret
+complex error codes, and find actionable steps to complete Windows 10
+installations successfully.</p>
+<h3 id="the-purpose-of-setupdiag">The Purpose of SetupDiag</h3>
+<p>The primary purpose of SetupDiag is to automate the troubleshooting
+process for failed Windows 10 upgrades and feature updates.</p>
+<p>When a Windows upgrade fails, the operating system generates
+extensive log files—such as <code>setupact.log</code> and
+<code>setuperr.log</code>—which often contain hundreds of thousands of
+lines of data. Manually searching through these logs to locate the exact
+point of failure is tedious and requires deep technical expertise.
+SetupDiag eliminates this manual effort by automatically scanning the
+logs, matching errors against a known database of issues, and outputting
+the exact root cause of the failure in a clear, readable format.</p>
+<h3 id="how-setupdiag-works">How SetupDiag Works</h3>
+<p>SetupDiag relies on an internal rules engine to evaluate setup
+logs:</p>
+<ul>
+<li><strong>Rule Matching:</strong> The tool contains pre-configured
+rules mapped to known update issues, including driver conflicts,
+incompatible software, disk space shortages, hardware incompatibilities,
+and corrupt system files.</li>
+<li><strong>Log Parsing:</strong> When executed, it searches standard
+Windows upgrade directories (such as
+<code>$Windows.~BT\Sources\Rollback</code> and
+<code>Windows\Panther</code>) to retrieve the relevant logs from the
+most recent failed installation attempt.</li>
+<li><strong>Result Generation:</strong> After analyzing the logs,
+SetupDiag outputs a concise summary directly to the command line and
+generates output files, including a <code>SetupDiagResults.log</code>
+text file and an XML/JSON file suitable for automated tracking.</li>
+</ul>
+<h3 id="key-information-provided-by-the-tool">Key Information Provided
+by the Tool</h3>
+<p>When SetupDiag identifies an issue, the generated report includes
+critical details to assist in remediation:</p>
+<ol type="1">
+<li><strong>Failure Phase:</strong> Identifies precisely when the setup
+stopped (e.g., SafeOS phase, First Boot, or Downlevel phase).</li>
+<li><strong>Error and Extended Codes:</strong> Provides standard Windows
+error codes (such as <code>0xC1900101</code> or <code>0x80070002</code>)
+along with extended codes that specify the failure sub-category.</li>
+<li><strong>Matched Rule Name:</strong> Names the specific diagnostic
+rule that detected the problem, often accompanied by a description of
+the blocking application, file, or driver.</li>
+<li><strong>Remediation Guidance:</strong> Frequently points directly to
+the corrective action required, such as uninstalling a conflicting
+third-party antivirus or updating a specific hardware driver.</li>
+</ol>
+<h3 id="when-to-use-setupdiag">When to Use SetupDiag</h3>
+<p>SetupDiag should be deployed immediately after a Windows 10 upgrade
+or feature update fails and rolls back to the previous state. While
+newer versions of Windows 10 and Windows 11 have SetupDiag functionality
+integrated directly into the setup engine, the standalone executable
+remains an essential diagnostic utility for examining previous attempts
+and offline log files on impacted machines.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/what-is-the-windows-10-setup-diag-tool';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

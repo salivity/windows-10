@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is Windows Error Reporting in Windows 10? - windows-10</title>
+    <meta name="description" content="This article provides an overview of the Windows Error Reporting (WER) service in the Microsoft Windows 10 operating system, detailing its core purpose, how it functions behind the scenes, and its benefits for both end users and software developers. Reade">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/what-is-windows-error-reporting-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is Windows Error Reporting in Windows 10? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/what-is-windows-error-reporting-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of the Windows Error Reporting (WER) service in the Microsoft Windows 10 operating system, detailing its core purpose, how it functions behind the scenes, and its benefits for both end users and software developers. Reade" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-windows-error-reporting-in-windows-10">What Is Windows
+Error Reporting in Windows 10?</h1>
+<p>This article provides an overview of the Windows Error Reporting
+(WER) service in the Microsoft Windows 10 operating system, detailing
+its core purpose, how it functions behind the scenes, and its benefits
+for both end users and software developers. Readers will learn how WER
+captures critical crash and hang diagnostics, transmits telemetry data
+to Microsoft, and facilitates targeted software patches and driver
+updates without requiring manual troubleshooting from the user.</p>
+<h3 id="the-core-purpose-of-windows-error-reporting">The Core Purpose of
+Windows Error Reporting</h3>
+<p>Windows Error Reporting (WER) is a built-in event-based feedback
+infrastructure designed to detect, log, and analyze software crashes,
+system freezes, and kernel-level faults (Blue Screens of Death). The
+primary goal of WER is to automate the troubleshooting pipeline. Instead
+of requiring users to manually capture memory logs and submit bug
+reports, the service silently gathers diagnostic data the moment a
+failure occurs, evaluates the root cause, and checks for available
+solutions.</p>
+<h3 id="how-wer-operates">How WER Operates</h3>
+<p>When an application crashes or becomes unresponsive in Windows 10,
+the WER process (<code>WerFault.exe</code>) is invoked
+automatically:</p>
+<ol type="1">
+<li><strong>Detection:</strong> The system detects an unhandled software
+exception, application hang, or kernel crash.</li>
+<li><strong>Data Collection:</strong> WER collects a diagnostic snapshot
+containing the state of the application at the time of failure. This
+data usually includes memory addresses, call stacks, loaded drivers, and
+hardware configurations. Depending on system settings, this can range
+from a small memory dump (minidump) to a more detailed user-mode
+dump.</li>
+<li><strong>Transmission:</strong> The gathered data is packaged and
+sent securely to Microsoft's Watson servers via encrypted telemetry
+channels.</li>
+<li><strong>Resolution Lookup:</strong> The servers compare the crash
+signature against an extensive database of known issues. If a patch,
+hotfix, or updated driver is available, Windows 10 alerts the user via
+the Action Center or Windows Update with recommended steps to resolve
+the issue.</li>
+</ol>
+<h3 id="benefits-to-end-users-and-developers">Benefits to End Users and
+Developers</h3>
+<ul>
+<li><strong>Automated Fix Delivery:</strong> End users frequently
+receive silent updates or actionable notifications that address
+recurring stability issues without having to contact customer
+support.</li>
+<li><strong>Developer Insights:</strong> Software developers and
+hardware vendors registered with the Microsoft Partner Network can
+access anonymized crash reports generated by WER. This telemetry
+provides real-world data showing where their applications fail across
+diverse hardware combinations, allowing them to release targeted
+software updates.</li>
+<li><strong>OS Stability Improvements:</strong> Microsoft utilizes
+aggregate WER data across millions of Windows 10 machines to identify
+widespread operating system bugs, prioritize engineering efforts, and
+issue cumulative monthly updates.</li>
+</ul>
+<h3 id="privacy-and-configuration-control">Privacy and Configuration
+Control</h3>
+<p>WER is engineered with privacy safeguards. By default, the service
+collects only the technical parameters necessary to diagnose the
+problem. It avoids intentionally scraping personal files, though
+transient user data held in active memory during a crash could
+theoretically be captured in full-memory dumps.</p>
+<p>System administrators and users retain control over how WER behaves.
+Through the Windows Services manager (<code>services.msc</code>), the
+Local Group Policy Editor, or the Windows Registry, the service can be
+configured to prompt the user before sending reports, limit the depth of
+the data collected, or be disabled entirely in high-security, air-gapped
+environments.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/what-is-windows-error-reporting-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

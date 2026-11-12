@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Handles Protocol Schemes - windows-10</title>
+    <meta name="description" content="This article explains how the Microsoft Windows 10 operating system processes, registers, and manages Uniform Resource Identifier (URI) protocol schemes such as mailto and tel. It covers the underlying Windows Registry framework, the security mechanisms t">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-handles-protocol-schemes">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Handles Protocol Schemes - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-handles-protocol-schemes" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how the Microsoft Windows 10 operating system processes, registers, and manages Uniform Resource Identifier (URI) protocol schemes such as mailto and tel. It covers the underlying Windows Registry framework, the security mechanisms t" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-handles-protocol-schemes">How Windows 10 Handles
+Protocol Schemes</h1>
+<p>This article explains how the Microsoft Windows 10 operating system
+processes, registers, and manages Uniform Resource Identifier (URI)
+protocol schemes such as <code>mailto</code> and <code>tel</code>. It
+covers the underlying Windows Registry framework, the security
+mechanisms that prevent unauthorized protocol hijacking, the user
+configuration interface, and the end-to-end execution flow when a
+protocol link is triggered.</p>
+<h3 id="understanding-protocol-schemes-in-windows-10">Understanding
+Protocol Schemes in Windows 10</h3>
+<p>Unlike standard file extensions (such as <code>.txt</code> or
+<code>.docx</code>), which bind specific file types to applications,
+protocol schemes (such as <code>mailto:</code>, <code>tel:</code>, or
+<code>http:</code>) define actions and resource locations. When a user
+clicks a <code>mailto:</code> link in a web browser or a document, the
+operating system does not open a file; instead, it passes the URI
+parameters directly to the application designated to handle that
+specific protocol.</p>
+<h3 id="registry-registration-and-the-progid-system">Registry
+Registration and the ProgID System</h3>
+<p>Windows 10 manages protocol schemes primarily through the Windows
+Registry. Applications register their ability to handle protocols during
+installation by creating specific keys:</p>
+<ol type="1">
+<li><strong>System and User Capabilities:</strong> Applications define
+supported protocols under
+<code>HKEY_LOCAL_MACHINE\Software\Clients</code> or within their own
+application capability keys under
+<code>HKEY_LOCAL_MACHINE\Software\[Vendor]\[App]\Capabilities\URLAssociations</code>.</li>
+<li><strong>Protocol Definitions:</strong> The base scheme definition
+resides in <code>HKEY_CLASSES_ROOT\&lt;protocol&gt;</code> (for
+instance, <code>HKEY_CLASSES_ROOT\mailto</code>). This key must contain
+a string value named <code>URL Protocol</code> to signal to the Windows
+Shell that it is a valid protocol handler.</li>
+<li><strong>Command Execution:</strong> The registry outlines the exact
+execution string under <code>shell\open\command</code>, specifying the
+executable path and passing the URI argument via <code>%1</code>.</li>
+</ol>
+<h3 id="the-userchoice-hash-protection">The UserChoice Hash
+Protection</h3>
+<p>In earlier Windows versions, any application could overwrite default
+protocol handlers by simply modifying the registry. To prevent
+unauthorized hijacking, Windows 10 enforces a security layer using a
+cryptographic hash:</p>
+<ul>
+<li><strong>Location:</strong> User preferences are stored in
+<code>HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\&lt;protocol&gt;\UserChoice</code>.</li>
+<li><strong>Hash Validation:</strong> The <code>UserChoice</code> key
+contains the <code>ProgId</code> of the selected application and a
+<code>Hash</code> value. This hash is generated using a proprietary
+Microsoft algorithm tied to the user's SID, the protocol name, the
+ProgID, and a machine-specific secret.</li>
+<li><strong>Tamper Prevention:</strong> If a program modifies the
+<code>ProgId</code> directly without generating a valid hash, Windows 10
+detects the mismatch, invalidates the setting, and resets the protocol
+handler to the operating system default (often prompting the user to
+select an app).</li>
+</ul>
+<h3 id="user-configuration-choose-default-apps-by-protocol">User
+Configuration: "Choose Default Apps by Protocol"</h3>
+<p>Users can manually configure how Windows 10 handles schemes via the
+Settings interface:</p>
+<ol type="1">
+<li>Open <strong>Settings</strong> and navigate to <strong>Apps</strong>
+&gt; <strong>Default apps</strong>.</li>
+<li>Scroll to the bottom and select <strong>Choose default apps by
+protocol</strong>.</li>
+<li>Locate the target protocol (e.g., <code>MAILTO</code> for email or
+<code>TEL</code> for telephony).</li>
+<li>Click the associated program to view compatible installed
+applications and select the preferred default.</li>
+</ol>
+<p>When an application is selected, Windows 10 generates the appropriate
+<code>UserChoice</code> registry key and cryptographic hash on behalf of
+the user.</p>
+<h3 id="execution-flow">Execution Flow</h3>
+<p>When a user initiates an action containing a protocol URI:</p>
+<ol type="1">
+<li><strong>Invocation:</strong> The calling application (e.g.,
+Microsoft Edge or Google Chrome) calls the Windows API function
+<code>ShellExecuteEx</code>, passing the URI string (e.g.,
+<code>mailto:support@example.com</code>).</li>
+<li><strong>Lookup:</strong> The Windows Shell checks
+<code>HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\&lt;protocol&gt;\UserChoice</code>.</li>
+<li><strong>Verification:</strong> The OS verifies that the associated
+hash matches the current system state.</li>
+<li><strong>Launch:</strong> Windows retrieves the command string mapped
+to the active <code>ProgId</code> and launches the application process,
+passing the complete URI into the application's command-line arguments
+for parsing.</li>
+</ol>
+<h3 id="enterprise-deployment-and-group-policy">Enterprise Deployment
+and Group Policy</h3>
+<p>IT administrators can standardize protocol associations across
+enterprise environments. Using the Deployment Image Servicing and
+Management (DISM) tool or Group Policy, administrators export a default
+association configuration using
+<code>dism /online /Export-DefaultAppAssociations:defaults.xml</code>.</p>
+<p>Within this XML configuration, protocols are defined using the
+<code>&lt;Association Identifier="mailto" ProgId="Outlook.URL.mailto.15" ApplicationName="Outlook" /&gt;</code>
+structure. When applied via the <strong>Set a default associations
+configuration file</strong> Group Policy setting, Windows enforces these
+defaults during the user's initial profile creation.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-handles-protocol-schemes';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

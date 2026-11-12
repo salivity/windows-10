@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Kernel Driver Signature Validation - windows-10</title>
+    <meta name="description" content="To protect system integrity and prevent rootkits from compromising the operating system, Microsoft Windows 10 mandates that all kernel-mode drivers be cryptographically validated before execution. This security mechanism relies on Kernel Mode Code Signing">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-kernel-driver-signature-validation">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Kernel Driver Signature Validation - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-kernel-driver-signature-validation" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="To protect system integrity and prevent rootkits from compromising the operating system, Microsoft Windows 10 mandates that all kernel-mode drivers be cryptographically validated before execution. This security mechanism relies on Kernel Mode Code Signing" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-kernel-driver-signature-validation">Windows 10 Kernel
+Driver Signature Validation</h1>
+<p>To protect system integrity and prevent rootkits from compromising
+the operating system, Microsoft Windows 10 mandates that all kernel-mode
+drivers be cryptographically validated before execution. This security
+mechanism relies on Kernel Mode Code Signing (KMCS) enforced through a
+chain of trust that begins at firmware startup and passes through the
+Windows Boot Manager, the Windows OS Loader, and the kernel itself. By
+checking digital signatures against trusted root certificates, Windows
+10 ensures that driver code has not been tampered with and originates
+from a verified, Microsoft-approved publisher before it ever executes in
+Ring 0.</p>
+<h3 id="the-chain-of-trust-uefi-and-secure-boot">The Chain of Trust:
+UEFI and Secure Boot</h3>
+<p>The validation process begins before Windows even initializes. If
+Secure Boot is enabled within the UEFI firmware, the system
+authenticates the boot environment using OEM-enrolled keys.</p>
+<ol type="1">
+<li>The firmware verifies the signature of the Windows Boot Manager
+(<code>bootmgr.efi</code>).</li>
+<li>The Boot Manager loads and validates the Windows OS Loader
+(<code>winload.efi</code>).</li>
+<li><code>winload.efi</code> takes ownership of validating early-launch
+components, boot-start drivers, and the kernel itself
+(<code>ntoskrnl.exe</code>).</li>
+</ol>
+<h3 id="authenticode-and-catalog-file-verification">Authenticode and
+Catalog File Verification</h3>
+<p>Every kernel driver package consists of the binary file
+(<code>.sys</code>) and an optional security catalog
+(<code>.cat</code>). When checking a driver:</p>
+<ul>
+<li><strong>Embedded Signatures:</strong> Boot-start drivers required
+for initial initialization must contain an embedded Authenticode
+signature within the PE (Portable Executable) header.</li>
+<li><strong>Catalog Files:</strong> Non-boot drivers can store their
+signature in a catalog file, which contains a collection of
+cryptographic hashes for the driver package files.</li>
+</ul>
+<p>The loader reads the driver's binary, computes its cryptographic hash
+(typically SHA-256), and compares it to the digest encrypted inside the
+digital signature. If the computed hash matches the decrypted hash, the
+file's integrity is confirmed, proving it has not been modified since it
+was signed.</p>
+<h3
+id="certificate-hierarchy-and-microsoft-signing-authorities">Certificate
+Hierarchy and Microsoft Signing Authorities</h3>
+<p>Windows 10 strictly regulates which Certificate Authorities (CAs) are
+trusted for kernel execution. Starting with Windows 10 version 1607,
+standard third-party commercial certificates are no longer sufficient
+for kernel loading on 64-bit systems.</p>
+<ol type="1">
+<li><strong>Microsoft WHQL / Partner Center:</strong> The driver must be
+submitted to the Microsoft Hardware Developer Center Dashboard.
+Microsoft signs the driver package using the Microsoft Windows Hardware
+Compatibility Program CA or an Attestation signing certificate.</li>
+<li><strong>Root CA Validation:</strong> <code>winload.efi</code> and
+the Windows kernel trace the signature’s certificate path back to the
+Microsoft Root Certificate Authority.</li>
+<li><strong>Cross-Certificates (Deprecation):</strong> In legacy
+configurations or older builds, cross-certificates tied to Microsoft’s
+root were accepted, but modern Windows 10 systems enforce a direct
+Microsoft signature.</li>
+</ol>
+<h3 id="driver-signature-enforcement-dse">Driver Signature Enforcement
+(DSE)</h3>
+<p>Driver Signature Enforcement is the kernel-level gatekeeper. Before
+calling the <code>DriverEntry</code> routine of any driver:</p>
+<ul>
+<li>The loader evaluates the code integrity flags.</li>
+<li>DSE checks revocation lists, including the Driver Revocation List (a
+component of Windows Defender Application Control) and Certificate
+Revocation Lists (CRLs), to confirm the signing key has not been
+compromised.</li>
+<li>If a signature is missing, expired without a valid timestamp,
+untrusted, or modified, DSE aborts the load process. On boot-start
+drivers, this results in a system halt (Bug Check / Blue Screen of
+Death); for runtime drivers, the system logs an event (such as Event ID
+5038) and returns an access-denied status
+(<code>STATUS_INVALID_IMAGE_HASH</code>).</li>
+</ul>
+<h3 id="hypervisor-protected-code-integrity-hvci">Hypervisor-Protected
+Code Integrity (HVCI)</h3>
+<p>In enterprise and modern Windows 10 configurations using
+Virtualization-based Security (VBS), driver validation is supplemented
+by Hypervisor-Protected Code Integrity (HVCI). Under HVCI, code
+integrity runs inside an isolated virtual machine (Virtual Secure Mode)
+created by the Windows hypervisor. The hypervisor enforces Second Level
+Address Translation (SLAT) permissions to ensure that pages marked as
+executable cannot be modified, preventing even an exploited kernel from
+dynamically altering or executing unsigned driver code in system
+memory.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-kernel-driver-signature-validation';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

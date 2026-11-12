@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Throttles Background Apps in Power Saver - windows-10</title>
+    <meta name="description" content="This article examines how the Microsoft Windows 10 operating system manages and restricts background applications when operating under power-saver profiles. When a device switches to power-saving mode, Windows 10 implements an automated framework that lev">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-throttles-background-apps-in-power-saver">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Throttles Background Apps in Power Saver - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-throttles-background-apps-in-power-saver" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines how the Microsoft Windows 10 operating system manages and restricts background applications when operating under power-saver profiles. When a device switches to power-saving mode, Windows 10 implements an automated framework that lev" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-throttles-background-apps-in-power-saver">How
+Windows 10 Throttles Background Apps in Power Saver</h1>
+<p>This article examines how the Microsoft Windows 10 operating system
+manages and restricts background applications when operating under
+power-saver profiles. When a device switches to power-saving mode,
+Windows 10 implements an automated framework that leverages CPU Quality
+of Service (QoS) levels, task suspension, timer coalescing, and
+system-level telemetry to minimize energy consumption. The following
+sections outline the specific mechanisms Windows 10 employs to detect,
+prioritize, and constrain background tasks without compromising critical
+system operations or active user workflows.</p>
+<h2 id="the-power-throttling-mechanism-and-process-qos">The Power
+Throttling Mechanism and Process QoS</h2>
+<p>The primary engine behind background application constraint in
+Windows 10 is Power Throttling, introduced via the operating system's
+Process Quality of Service (QoS) APIs. When a power-saver profile is
+engaged—such as the native "Battery Saver" mode or when the battery
+slider is shifted to "Best battery life"—the Windows kernel dynamically
+identifies which threads belong to background processes versus the
+active foreground application.</p>
+<p>The operating system down-clocks or shifts background threads to the
+processor's most energy-efficient operating states. On supported modern
+processors (utilizing technologies such as Intel Speed Shift), the
+scheduler forces non-essential threads to execute at lower core
+frequencies. This ensures that background tasks still complete, but they
+do so using the minimum energy per clock cycle.</p>
+<h2 id="suspension-of-universal-windows-platform-uwp-apps">Suspension of
+Universal Windows Platform (UWP) Apps</h2>
+<p>Windows 10 treats modern Universal Windows Platform (UWP)
+applications differently from traditional desktop (Win32) software
+through its strict application lifecycle:</p>
+<ul>
+<li><strong>Automatic Suspension:</strong> When a UWP app is minimized
+or hidden behind another window, the Windows Process Lifetime Manager
+(PLM) automatically transitions the application into a suspended
+state.</li>
+<li><strong>State Preservation:</strong> The app’s state is preserved in
+RAM, but its execution threads are completely halted, consuming zero CPU
+cycles.</li>
+<li><strong>Power-Saver Enforcement:</strong> Under standard profiles,
+background tasks for UWP apps can run intermittently via system
+triggers. Under power-saver profiles, background execution triggers
+(such as periodic sync operations, live tile updates, and background
+network polls) are comprehensively blocked unless specifically exempted
+by the user.</li>
+</ul>
+<h2 id="throttling-win32-desktop-applications">Throttling Win32
+(Desktop) Applications</h2>
+<p>Because traditional Win32 applications do not inherently support the
+PLM lifecycle, Windows 10 cannot safely freeze them without risking
+crashes or broken connections. Instead, the OS uses non-destructive
+scheduling techniques:</p>
+<ul>
+<li><strong>Timer Coalescing:</strong> Windows groups software timer
+interrupts together rather than letting individual apps wake the
+processor independently, increasing the duration the CPU remains in
+low-power idle states (C-states).</li>
+<li><strong>Lowering Thread Priorities:</strong> The Windows scheduler
+lowers the base priority of background threads to background or idle
+classes (<code>THREAD_PRIORITY_IDLE</code>), preventing them from
+competing with foreground tasks.</li>
+<li><strong>I/O and Memory Throttling:</strong> Background disk reads,
+writes, and memory allocation requests are downgraded to a lower
+priority, reducing power spikes from storage controllers and bus
+operations.</li>
+</ul>
+<h2 id="heuristics-for-active-task-detection">Heuristics for Active Task
+Detection</h2>
+<p>To prevent interrupting workloads the user is actively relying on,
+Windows 10 monitors specific signals before applying power throttling.
+Applications are exempted from throttling if they meet any of the
+following criteria:</p>
+<ul>
+<li>The application window is currently active and focused in the
+foreground.</li>
+<li>The process is rendering audio to an active playback device.</li>
+<li>The application is utilizing high-priority hardware devices, such as
+an active camera feed.</li>
+<li>The process is designated by the user as an exception within system
+settings.</li>
+</ul>
+<h2 id="system-level-restrictions-under-battery-saver">System-Level
+Restrictions Under Battery Saver</h2>
+<p>When the battery drops below a set threshold (defaulting to 20%) or
+the user manually toggles Battery Saver mode, the operating system
+applies blanket system-wide restrictions:</p>
+<ul>
+<li><strong>Email and Calendar Sync:</strong> Automatic synchronization
+is halted; emails update only when the application is launched into the
+foreground.</li>
+<li><strong>Push Notifications:</strong> Windows Push Notification
+Services (WNS) reduces connection polling, deferring non-urgent
+alerts.</li>
+<li><strong>Display and Brightness:</strong> Display brightness is
+lowered automatically, and screen-off timeouts are shortened to conserve
+panel power.</li>
+</ul>
+<h2 id="user-overrides-and-configuration">User Overrides and
+Configuration</h2>
+<p>Users can modify how aggressively Windows 10 throttles individual
+programs by navigating to <strong>Settings &gt; System &gt; Battery &gt;
+Battery usage by app</strong>. Within this interface, users can change
+the background permission for any app between "Always allowed in
+background," "Managed by Windows," or "Never allowed in background."
+Selecting "Never allowed" imposes full execution halts whenever the app
+loses focus, while "Always allowed" excludes the program from Power
+Throttling restrictions even when maximum power savings are active.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-throttles-background-apps-in-power-saver';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Ethernet to Wi-Fi Automatic Failover - windows-10</title>
+    <meta name="description" content="Windows 10 handles automatic network failover between Ethernet and Wi-Fi using an internal routing metric system and real-time connection monitoring. By default, the operating system assigns priority based on connection speed and connection state, routing">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-ethernet-to-wi-fi-automatic-failover">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Ethernet to Wi-Fi Automatic Failover - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-ethernet-to-wi-fi-automatic-failover" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 handles automatic network failover between Ethernet and Wi-Fi using an internal routing metric system and real-time connection monitoring. By default, the operating system assigns priority based on connection speed and connection state, routing" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-ethernet-to-wi-fi-automatic-failover">Windows 10
+Ethernet to Wi-Fi Automatic Failover</h1>
+<p>Windows 10 handles automatic network failover between Ethernet and
+Wi-Fi using an internal routing metric system and real-time connection
+monitoring. By default, the operating system assigns priority based on
+connection speed and connection state, routing all network traffic
+through the fastest, most stable link—typically wired Ethernet. If that
+primary connection disconnects or loses internet access, Windows
+instantly redirects active traffic to the secondary Wi-Fi adapter
+without requiring user intervention.</p>
+<h3 id="the-role-of-interface-metrics">The Role of Interface
+Metrics</h3>
+<p>Windows 10 relies on a TCP/IP routing feature called
+<strong>Interface Metric</strong> to determine which network adapter
+takes precedence when multiple connections are active. Every network
+route in Windows is assigned a metric value, which acts as a cost; the
+operating system always routes traffic through the adapter with the
+lowest metric.</p>
+<p>By default, the "Automatic Metric" feature is enabled on all network
+adapters. Windows assigns these metrics dynamically based on the
+reported link speed of the adapter:</p>
+<ul>
+<li><strong>High-Speed Wired Ethernet (1 Gbps or higher):</strong>
+Assigned a low metric (typically 10 to 25).</li>
+<li><strong>Fast Ethernet (100 Mbps):</strong> Assigned a metric around
+20 to 25.</li>
+<li><strong>Standard Wi-Fi (802.11ac/ax, variable signal):</strong>
+Assigned a higher metric (typically 35 to 50 or higher, depending on
+link negotiation).</li>
+</ul>
+<p>Because the Ethernet adapter negotiates a higher throughput and lower
+latency, Windows assigns it a lower numerical metric than the Wi-Fi
+adapter, establishing Ethernet as the primary gateway for all outbound
+traffic.</p>
+<h3 id="network-connectivity-status-indicator-ncsi">Network Connectivity
+Status Indicator (NCSI)</h3>
+<p>Windows 10 does not only look at physical link states (such as an
+unplugged cable); it continuously verifies active internet reachability
+using the <strong>Network Connectivity Status Indicator
+(NCSI)</strong>.</p>
+<ol type="1">
+<li><strong>Active Probing:</strong> NCSI periodically sends a DNS
+request to resolve a specific Microsoft domain (such as
+<code>dns.msftncsi.com</code>) and attempts to download a lightweight
+text file (such as <code>http://www.msftncsi.com/ncsi.txt</code>).</li>
+<li><strong>Passive Monitoring:</strong> The system tracks TCP
+connection activity and packet retries to detect degraded network
+health.</li>
+</ol>
+<p>If Ethernet physical link is lost (unplugged cable) or NCSI
+determines the Ethernet path has no internet route, Windows modifies the
+routing table. The route associated with that adapter is either removed
+or marked unreachable.</p>
+<h3 id="how-the-automatic-failover-occurs">How the Automatic Failover
+Occurs</h3>
+<ol type="1">
+<li><strong>Simultaneous Association:</strong> When both Ethernet and
+Wi-Fi are turned on, both adapters connect to their respective networks
+and obtain IP configurations (via DHCP or static assignment).</li>
+<li><strong>Routing Table Hierarchy:</strong> Windows builds the routing
+table with default gateways for both adapters, placing the lower-metric
+Ethernet route at the top.</li>
+<li><strong>Trigger Event:</strong> If the Ethernet cable is unplugged
+or the local wired gateway goes down:
+<ul>
+<li>The media state changes to disconnected, or NCSI flags the route as
+unusable.</li>
+<li>Windows immediately withdraws the Ethernet default gateway from
+active route selection.</li>
+</ul></li>
+<li><strong>Instant Switch:</strong> The Wi-Fi adapter’s gateway becomes
+the route with the lowest active metric. Subsequent TCP/IP packets are
+immediately routed through the Wi-Fi interface.</li>
+<li><strong>Failback:</strong> Once the Ethernet cable is reconnected
+and internet access is verified via NCSI, its low metric route is
+reinserted at the top of the routing table, automatically shifting
+traffic back to Ethernet.</li>
+</ol>
+<h3 id="configuring-or-overriding-automatic-failover">Configuring or
+Overriding Automatic Failover</h3>
+<p>If Windows 10 does not prioritize Ethernet over Wi-Fi automatically,
+you can manually define the adapter priorities:</p>
+<ol type="1">
+<li>Press <code>Win + R</code>, type <code>ncpa.cpl</code>, and press
+<strong>Enter</strong> to open <strong>Network
+Connections</strong>.</li>
+<li>Right-click your <strong>Ethernet</strong> adapter and select
+<strong>Properties</strong>.</li>
+<li>Select <strong>Internet Protocol Version 4 (TCP/IPv4)</strong> and
+click <strong>Properties</strong>.</li>
+<li>Click <strong>Advanced</strong>.</li>
+<li>At the bottom of the <strong>IP Settings</strong> tab, uncheck
+<strong>Automatic metric</strong>.</li>
+<li>Enter <code>10</code> in the <strong>Interface metric</strong> field
+and click <strong>OK</strong>.</li>
+<li>Repeat the process for your <strong>Wi-Fi</strong> adapter, but set
+its <strong>Interface metric</strong> to <code>20</code> or higher.</li>
+</ol>
+<p>Assigning a lower number to the Ethernet adapter guarantees that
+Windows 10 uses it as the primary interface whenever connected,
+seamlessly dropping back to Wi-Fi only when the wired route is
+offline.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-ethernet-to-wi-fi-automatic-failover';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure DNS Suffix Search List in Windows 10 - windows-10</title>
+    <meta name="description" content="In Microsoft Windows 10, a DNS suffix search list allows the operating system to resolve unqualified, single-label domain names (such as &quot;server1&quot;) into Fully Qualified Domain Names (FQDNs, such as &quot;server1.corp.domain.com&quot;) by appending specific domain s">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/configure-dns-suffix-search-list-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure DNS Suffix Search List in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/configure-dns-suffix-search-list-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In Microsoft Windows 10, a DNS suffix search list allows the operating system to resolve unqualified, single-label domain names (such as &quot;server1&quot;) into Fully Qualified Domain Names (FQDNs, such as &quot;server1.corp.domain.com&quot;) by appending specific domain s" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-dns-suffix-search-list-in-windows-10">Configure DNS
+Suffix Search List in Windows 10</h1>
+<p>In Microsoft Windows 10, a DNS suffix search list allows the
+operating system to resolve unqualified, single-label domain names (such
+as "server1") into Fully Qualified Domain Names (FQDNs, such as
+"server1.corp.domain.com") by appending specific domain suffixes during
+DNS queries. Windows 10 configures and manages this search list through
+multiple mechanisms, primarily using Group Policy, local network adapter
+properties, DHCP assignment, and PowerShell or the Windows Registry.
+Understanding how these configuration paths work and how Windows
+establishes precedence between them is essential for proper internal
+network name resolution.</p>
+<h3 id="the-role-of-the-dns-suffix-search-list">The Role of the DNS
+Suffix Search List</h3>
+<p>When a user or application attempts to connect to a host using a
+short name, the Windows DNS client checks the DNS suffix search list. It
+appends the configured suffixes sequentially to the query until a
+successful DNS response is received or all options fail.</p>
+<h3 id="method-1-group-policy-object-gpo">Method 1: Group Policy Object
+(GPO)</h3>
+<p>Group Policy is the most common enterprise method for managing the
+DNS suffix search list across Windows 10 devices. When set via GPO, it
+overrides local configurations and DHCP settings.</p>
+<ol type="1">
+<li>Open the Local Group Policy Editor (<code>gpedit.msc</code>) or the
+Group Policy Management Console.</li>
+<li>Navigate to:<br />
+<strong>Computer Configuration</strong> &gt; <strong>Administrative
+Templates</strong> &gt; <strong>Network</strong> &gt; <strong>DNS
+Client</strong></li>
+<li>Locate and double-click the policy named <strong>DNS Suffix Search
+List</strong>.</li>
+<li>Set the policy to <strong>Enabled</strong>.</li>
+<li>In the <strong>DNS Suffixes</strong> field, enter a comma-separated
+list of the desired domain suffixes (e.g.,
+<code>corp.example.com,dev.example.com,example.com</code>).</li>
+<li>Click <strong>Apply</strong> and <strong>OK</strong>.</li>
+</ol>
+<p>Changes take effect after running <code>gpupdate /force</code> or
+restarting the client machine.</p>
+<h3 id="method-2-network-adapter-properties-manual-gui">Method 2:
+Network Adapter Properties (Manual GUI)</h3>
+<p>For individual or non-domain-joined machines, the suffix search list
+can be configured manually via the Network Connections control
+panel.</p>
+<ol type="1">
+<li>Press <code>Win + R</code>, type <code>ncpa.cpl</code>, and press
+Enter.</li>
+<li>Right-click the active network adapter and select
+<strong>Properties</strong>.</li>
+<li>Select <strong>Internet Protocol Version 4 (TCP/IPv4)</strong> and
+click <strong>Properties</strong>.</li>
+<li>Click the <strong>Advanced</strong> button in the lower right
+corner, then switch to the <strong>DNS</strong> tab.</li>
+<li>Under the section titled <strong>Append these DNS suffixes (in
+order)</strong>, select the radio button.</li>
+<li>Click <strong>Add</strong> to specify each suffix in the preferred
+order of resolution.</li>
+<li>Click <strong>OK</strong> on all dialog boxes to save the
+configuration.</li>
+</ol>
+<h3 id="method-3-powershell-and-windows-registry">Method 3: PowerShell
+and Windows Registry</h3>
+<p>Administrators can use PowerShell to configure global DNS suffix
+search lists programmatically without opening the graphical
+interface.</p>
+<p>To set the search list globally via PowerShell, run the following
+command as an Administrator:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Set-DnsClientGlobalSetting <span class="op">-</span>SuffixSearchList <span class="op">@(</span><span class="st">&quot;corp.example.com&quot;</span><span class="op">,</span> <span class="st">&quot;dev.example.com&quot;</span><span class="op">)</span></span></code></pre></div>
+<p>This cmdlet modifies the Windows Registry under the following
+key:<br />
+<code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters</code><br />
+Value: <code>SearchList</code> (String / <code>REG_SZ</code>) containing
+the suffixes separated by commas.</p>
+<h3 id="method-4-dhcp-option-119-and-option-15">Method 4: DHCP (Option
+119 and Option 15)</h3>
+<p>Windows 10 also acquires DNS search information dynamically from the
+local network's DHCP server:</p>
+<ul>
+<li><strong>DHCP Option 15 (Domain Name):</strong> Provides a single
+primary domain suffix (e.g., <code>corp.example.com</code>). If no
+specific suffix search list is defined, Windows appends this primary
+suffix followed by parent domains depending on devolution settings.</li>
+<li><strong>DHCP Option 119 (Domain Search List):</strong> Designed to
+supply multiple suffixes via DHCP. While native support for Option 119
+has historically been limited on standard Windows DHCP clients compared
+to Unix-based systems, modern Windows 10 builds can process this option
+if third-party or customized network configurations pass the
+attribute.</li>
+</ul>
+<h3 id="configuration-precedence">Configuration Precedence</h3>
+<p>Windows 10 prioritizes DNS suffix configurations in a specific
+order:</p>
+<ol type="1">
+<li><strong>Group Policy:</strong> Overrides all other settings. If
+configured, local adapter and DHCP suffix settings are ignored.</li>
+<li><strong>Local Registry / PowerShell Global Settings:</strong>
+Applied if no Group Policy is defined.</li>
+<li><strong>Adapter-Specific Settings:</strong> Custom lists set within
+the adapter's Advanced TCP/IP properties.</li>
+<li><strong>DHCP Provided Suffixes:</strong> Used as fallback when no
+static lists are explicitly defined.</li>
+</ol></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/configure-dns-suffix-search-list-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

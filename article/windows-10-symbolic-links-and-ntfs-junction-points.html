@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Symbolic Links and NTFS Junction Points - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 utilizes the NTFS file system to provide path-redirection mechanisms that allow files and folders to reference alternate locations on storage drives without duplicating data. The two primary methods for achieving this are NTFS Junctio">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-symbolic-links-and-ntfs-junction-points">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Symbolic Links and NTFS Junction Points - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-symbolic-links-and-ntfs-junction-points" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 utilizes the NTFS file system to provide path-redirection mechanisms that allow files and folders to reference alternate locations on storage drives without duplicating data. The two primary methods for achieving this are NTFS Junctio" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-symbolic-links-and-ntfs-junction-points">Windows 10
+Symbolic Links and NTFS Junction Points</h1>
+<p>Microsoft Windows 10 utilizes the NTFS file system to provide
+path-redirection mechanisms that allow files and folders to reference
+alternate locations on storage drives without duplicating data. The two
+primary methods for achieving this are NTFS Junction Points and Symbolic
+Links (Symlinks). While both mechanisms rely on NTFS reparse points to
+transparently route applications and users to a target location, Windows
+10 handles them differently regarding network traversal, target types,
+path formats, and user security permissions.</p>
+<h3 id="ntfs-junction-points">NTFS Junction Points</h3>
+<p>Introduced in NTFS 3.0 with Windows 2000, junction points serve as
+hard-link equivalents for directories.</p>
+<ul>
+<li><strong>Target Restrictions:</strong> Junction points can link only
+to local directories. They cannot link to individual files or remote
+network shares (UNC paths).</li>
+<li><strong>Path Resolution:</strong> Junctions use absolute local
+paths. If the drive letter or path structure of the host volume changes,
+the junction point breaks.</li>
+<li><strong>Processing:</strong> The local operating system's NTFS file
+system driver resolves junction points entirely on the host
+machine.</li>
+<li><strong>Permissions:</strong> In Windows 10, any standard user can
+create a junction point using the command-line utility
+<code>mklink /J &lt;Link&gt; &lt;Target&gt;</code> without needing
+administrative elevation, provided the user has write access to the
+directory where the link is created.</li>
+</ul>
+<h3 id="symbolic-links-symlinks">Symbolic Links (Symlinks)</h3>
+<p>Introduced in Windows Vista and refined in Windows 10, symbolic links
+are advanced file system shortcuts designed to mirror Unix-style soft
+links.</p>
+<ul>
+<li><strong>Target Versatility:</strong> Symlinks can target both
+directories (created with <code>mklink /D</code>) and individual files
+(created with standard <code>mklink</code>).</li>
+<li><strong>Path Flexibility:</strong> Symlinks support both absolute
+paths and relative paths. A relative link remains functional if the
+parent folder hierarchy is moved together.</li>
+<li><strong>Remote Redirection:</strong> Symlinks support network
+targets, allowing references to UNC paths (e.g.,
+<code>\\Server\Share</code>).</li>
+<li><strong>Client-Side Resolution:</strong> When a symlink points to a
+remote network path, the path resolution occurs on the client machine
+rather than the file server, ensuring remote security boundaries remain
+intact.</li>
+<li><strong>Permissions and Developer Mode:</strong> By default,
+creating symbolic links requires elevated administrative privileges or
+the <code>SeCreateSymbolicLinkPrivilege</code> user right to mitigate
+security risks such as directory traversal attacks. However, Windows 10
+allows non-administrative users to create symlinks if <strong>Developer
+Mode</strong> is enabled under the system's "For developers"
+settings.</li>
+</ul>
+<h3 id="file-system-mechanics-and-reparse-points">File System Mechanics
+and Reparse Points</h3>
+<p>Windows 10 manages both structures through NTFS <strong>reparse
+points</strong>. A reparse point contains user-defined data and a
+specific tag identifying the link type:</p>
+<ul>
+<li><strong>Junction Points:</strong> Tagged as
+<code>IO_REPARSE_TAG_MOUNT_POINT</code>.</li>
+<li><strong>Symbolic Links:</strong> Tagged as
+<code>IO_REPARSE_TAG_SYMLINK</code>.</li>
+</ul>
+<p>When an application opens a path containing a reparse point, the
+Windows I/O manager intercepts the request, recognizes the reparse tag,
+and restarts the path lookup using the target data stored inside the
+tag. Most user-mode applications interact with junctions and symlinks
+transparently, treating them as normal directories or files.</p>
+<p>Deleting a junction point or symbolic link in Windows 10 removes only
+the reparse point reference; the underlying target data remains intact.
+However, modifying or deleting the contents displayed <em>inside</em> a
+linked directory will alter or delete the files located at the target
+destination.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-symbolic-links-and-ntfs-junction-points';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

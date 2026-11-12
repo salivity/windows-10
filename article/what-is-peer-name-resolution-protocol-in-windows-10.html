@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is Peer Name Resolution Protocol in Windows 10? - windows-10</title>
+    <meta name="description" content="The Peer Name Resolution Protocol (PNRP) in Microsoft Windows 10 is a decentralized name resolution protocol designed to enable serverless, peer-to-peer (P2P) network discovery and communication. This article outlines the fundamental purpose of PNRP, how">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/what-is-peer-name-resolution-protocol-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is Peer Name Resolution Protocol in Windows 10? - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/what-is-peer-name-resolution-protocol-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Peer Name Resolution Protocol (PNRP) in Microsoft Windows 10 is a decentralized name resolution protocol designed to enable serverless, peer-to-peer (P2P) network discovery and communication. This article outlines the fundamental purpose of PNRP, how" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-peer-name-resolution-protocol-in-windows-10">What Is
+Peer Name Resolution Protocol in Windows 10?</h1>
+<p>The Peer Name Resolution Protocol (PNRP) in Microsoft Windows 10 is a
+decentralized name resolution protocol designed to enable serverless,
+peer-to-peer (P2P) network discovery and communication. This article
+outlines the fundamental purpose of PNRP, how it replaces traditional
+centralized name resolution systems like DNS for dynamic environments,
+how it functions using IPv6, and its practical applications and current
+status within the Windows operating system.</p>
+<h3 id="the-core-purpose-of-pnrp">The Core Purpose of PNRP</h3>
+<p>Traditional name resolution systems, such as the Domain Name System
+(DNS), rely on centralized servers to map human-readable hostnames to IP
+addresses. While effective for static web servers and enterprise
+infrastructures, DNS struggles with dynamic, ad-hoc peer networks where
+devices frequently join, leave, or change network configurations.</p>
+<p>PNRP solves this problem by allowing devices to discover and
+communicate with each other directly without a central server. Its
+primary purpose is to provide dynamic, secure, and scalable name
+resolution specifically tailored for peer-to-peer applications, ensuring
+that any participating node can locate any other node in a shared
+network space.</p>
+<h3 id="key-characteristics-and-functionality">Key Characteristics and
+Functionality</h3>
+<ol type="1">
+<li><strong>Decentralized Operation:</strong> PNRP does not depend on a
+central authority or database. Instead, participating nodes form a
+distributed hash table (DHT) spread across the network, known as a PNRP
+cloud. Each node stores a small portion of the global name cache and
+helps route queries to other nodes.</li>
+<li><strong>Reliance on IPv6:</strong> PNRP is built natively on IPv6 to
+take advantage of its vast address space and end-to-end connectivity. In
+networks where native IPv6 is unavailable, PNRP relies on transition
+technologies like Teredo to tunnel IPv6 traffic over IPv4 networks.</li>
+<li><strong>Secure Peer Names:</strong> PNRP supports both secure and
+unsecured peer names. Secure names use public-key cryptography to
+prevent spoofing: a peer name is bound to a cryptographic public key,
+ensuring that only the rightful owner can register and update that
+identity.</li>
+<li><strong>Dynamic Adaptation:</strong> When a device's IP address
+changes due to roaming or network reassignments, PNRP automatically
+updates its records in the peer cloud with minimal latency, maintaining
+persistent communication links.</li>
+</ol>
+<h3 id="use-cases-in-windows-10">Use Cases in Windows 10</h3>
+<p>In Windows 10, PNRP provides the underlying infrastructure for
+networking features that do not rely on centralized infrastructure,
+including:</p>
+<ul>
+<li><strong>Remote Assistance:</strong> Assisting users in establishing
+direct connections between two endpoints across the internet without
+manually entering complex IP addresses.</li>
+<li><strong>Distributed Applications:</strong> Enabling custom
+third-party peer-to-peer software, distributed file sharing, and
+real-time multiplayer gaming to locate participants automatically.</li>
+<li><strong>Legacy Collaborative Tools:</strong> Supporting earlier
+Windows collaboration features and mesh networking components designed
+to operate over local subnets or across the internet.</li>
+</ul>
+<h3 id="current-relevance">Current Relevance</h3>
+<p>While PNRP remains integrated as a service in Windows 10
+(<code>pnrpsvc</code>), modern cloud architectures and the deprecation
+of legacy P2P services—such as Windows HomeGroup—have reduced its
+widespread consumer use. Nonetheless, PNRP remains a core networking
+component for specialized decentralized software and legacy Windows
+peer-to-peer application programming interfaces (APIs).</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/what-is-peer-name-resolution-protocol-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

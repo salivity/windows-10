@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Enforces Privilege Separation - windows-10</title>
+    <meta name="description" content="This article explores how the Microsoft Windows 10 operating system strictly isolates standard user environments from high-privilege system services. By leveraging core architectural boundaries such as Session 0 isolation, Mandatory Integrity Control, Dis">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-enforces-privilege-separation">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Enforces Privilege Separation - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-enforces-privilege-separation" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores how the Microsoft Windows 10 operating system strictly isolates standard user environments from high-privilege system services. By leveraging core architectural boundaries such as Session 0 isolation, Mandatory Integrity Control, Dis" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-enforces-privilege-separation">How Windows 10
+Enforces Privilege Separation</h1>
+<p>This article explores how the Microsoft Windows 10 operating system
+strictly isolates standard user environments from high-privilege system
+services. By leveraging core architectural boundaries such as Session 0
+isolation, Mandatory Integrity Control, Discretionary Access Control
+Lists, security access tokens, and Windows Service Hardening, Windows 10
+ensures that standard user processes cannot tamper with or assume the
+identity of critical system components.</p>
+<h3 id="session-0-isolation">Session 0 Isolation</h3>
+<p>Windows 10 physically separates user interface tasks from
+system-level background processes through Session 0 isolation. In older
+versions of Windows, services and the first logged-on user shared
+Session 0, exposing services to interactive messaging attacks (such as
+"shatter attacks"). Windows 10 mitigates this by dedicating Session 0
+exclusively to non-interactive system services and drivers. All user
+logons are assigned distinct sessions (Session 1, Session 2, and so
+forth). Because graphical user interface (GUI) message loops and window
+handles cannot cross session boundaries, code running in a standard
+user's desktop session cannot send arbitrary or malicious messages to
+services running in Session 0.</p>
+<h3 id="access-tokens-and-security-identifiers-sids">Access Tokens and
+Security Identifiers (SIDs)</h3>
+<p>Every process in Windows 10 runs within a security context defined by
+an access token. When a standard user logs on, the Local Security
+Authority Subsystem Service (LSASS) creates a restricted token
+containing the user’s Security Identifier (SID), group SIDs, and
+specific assigned privileges. System services run under specialized
+identities such as <code>NT AUTHORITY\SYSTEM</code>,
+<code>NT AUTHORITY\LOCAL SERVICE</code>, or
+<code>NT AUTHORITY\NETWORK SERVICE</code>.</p>
+<p>Standard user tokens are stripped of critical operating system
+privileges (such as <code>SeDebugPrivilege</code> or
+<code>SeTakeOwnershipPrivilege</code>), meaning user-spawned processes
+cannot inspect memory, inject threads, or modify the state of processes
+owned by elevated service accounts.</p>
+<h3 id="mandatory-integrity-control-mic">Mandatory Integrity Control
+(MIC)</h3>
+<p>Mandatory Integrity Control enforces privilege boundaries regardless
+of traditional permissions. Windows 10 assigns an Integrity Level (IL)
+to securable objects (files, processes, registry keys) and access
+tokens:</p>
+<ul>
+<li><strong>Low:</strong> Sandboxed applications (e.g., restricted
+browser tabs).</li>
+<li><strong>Medium:</strong> Standard user processes.</li>
+<li><strong>High:</strong> Administrative processes running with
+elevated rights.</li>
+<li><strong>System:</strong> Windows operating system services.</li>
+</ul>
+<p>Under MIC rules, a process with a lower integrity level cannot write
+to, alter, or terminate an object with a higher integrity level
+(No-Write-Up policy). Even if standard file permissions accidentally
+allow write access, a standard user process at Medium IL is blocked by
+the kernel from modifying a System IL service executable, process
+memory, or configuration.</p>
+<h3 id="discretionary-access-control-lists-dacls">Discretionary Access
+Control Lists (DACLs)</h3>
+<p>Securable resources—including system files, registry entries, named
+pipes, and service objects—are governed by Discretionary Access Control
+Lists (DACLs). The Windows Security Reference Monitor (SRM) validates
+every requested action against the target object's DACL.</p>
+<p>Windows Service Controller objects, the Service Control Manager
+(SCM), and service binary paths are configured out-of-the-box with
+strict DACLs that permit standard users only query-related rights (such
+as <code>SERVICE_QUERY_STATUS</code> or
+<code>SERVICE_QUERY_CONFIG</code>). Rights to change configurations
+(<code>SERVICE_CHANGE_CONFIG</code>), stop services
+(<code>SERVICE_STOP</code>), or start sensitive services are withheld
+from standard users.</p>
+<h3 id="windows-service-hardening-wsh">Windows Service Hardening
+(WSH)</h3>
+<p>To limit the blast radius should a service be compromised, Windows 10
+implements Windows Service Hardening:</p>
+<ul>
+<li><strong>Per-Service SIDs:</strong> Rather than granting shared
+system accounts broad access to the entire operating system, services
+can be assigned a unique SID. Access to specific files, registry keys,
+and network ports is then granted strictly to that specific service SID
+rather than to <code>NT AUTHORITY\SYSTEM</code> globally.</li>
+<li><strong>Privilege Stripping:</strong> Services in Windows 10
+explicitly declare the exact set of privileges they require to function.
+During service startup, the Service Control Manager strips away all
+unneeded privileges from the service’s access token, ensuring the
+service cannot be abused to perform unauthorized system operations.</li>
+<li><strong>Restricted Tokens:</strong> Network-facing services are
+often executed using restricted tokens that block access to sensitive
+local resources entirely, even if the service process is somehow
+hijacked.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-enforces-privilege-separation';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

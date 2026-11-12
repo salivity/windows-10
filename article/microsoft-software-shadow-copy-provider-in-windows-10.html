@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Software Shadow Copy Provider in Windows 10 - windows-10</title>
+    <meta name="description" content="The Microsoft Software Shadow Copy Provider is a core system component responsible for managing and creating software-based point-in-time volume snapshots on Windows 10. This article explains how this default provider functions within the Volume Shadow Co">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/microsoft-software-shadow-copy-provider-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Microsoft Software Shadow Copy Provider in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/microsoft-software-shadow-copy-provider-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Microsoft Software Shadow Copy Provider is a core system component responsible for managing and creating software-based point-in-time volume snapshots on Windows 10. This article explains how this default provider functions within the Volume Shadow Co" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="microsoft-software-shadow-copy-provider-in-windows-10">Microsoft
+Software Shadow Copy Provider in Windows 10</h1>
+<p>The Microsoft Software Shadow Copy Provider is a core system
+component responsible for managing and creating software-based
+point-in-time volume snapshots on Windows 10. This article explains how
+this default provider functions within the Volume Shadow Copy Service
+(VSS) framework, its role in coordinating live disk backups without
+system downtime, and why it is critical for maintaining data consistency
+during backup operations.</p>
+<p>The Microsoft Software Shadow Copy Provider acts as the default
+engine that executes volume snapshots at the software level. While the
+overarching Volume Shadow Copy Service (VSS) coordinates the overall
+snapshot process between applications, operating system components, and
+backup software, the provider is the worker component that actually
+intercepts, manages, and creates the static view of the storage
+volume.</p>
+<p>During a disk or partition backup on Windows 10, the provider relies
+on a "copy-on-write" mechanism. When a backup begins, the provider
+momentarily pauses write operations to capture the volume state. Once
+this point-in-time snapshot is registered, the provider allows normal
+disk writes to resume. If an application attempts to modify a data block
+that existed when the snapshot was taken, the provider copies the
+original block to a designated diff area (System Volume Information)
+before allowing the new data to be written to the disk.</p>
+<p>This process directly addresses the challenge of backing up locked or
+actively changing files, such as system registries, databases, and
+running application states. When backup utilities—such as Windows
+Backup, System Restore, or third-party imaging tools—read the disk, the
+software provider presents the snapshot as an unchanging, read-only
+volume. This ensures that the resulting backup image is fully consistent
+and free of corrupted or partially written files.</p>
+<p>Because it operates at the operating system storage stack level, the
+Microsoft Software Shadow Copy Provider removes the need for proprietary
+hardware-based storage controllers to perform live backups. In Windows
+10, it enables routine functions like System Restore points and
+comprehensive system image creation to run seamlessly in the background
+without requiring the user to reboot or close active applications.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/microsoft-software-shadow-copy-provider-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

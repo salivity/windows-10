@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Proxy Setup Using PAC Script URLs - windows-10</title>
+    <meta name="description" content="This article explains how the Microsoft Windows 10 operating system configures network proxy settings using Proxy Auto-Configuration (PAC) script URLs. It covers the technical role of PAC scripts in dynamic traffic routing, step-by-step methods to apply a">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-proxy-setup-using-pac-script-ur-ls">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Proxy Setup Using PAC Script URLs - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-proxy-setup-using-pac-script-ur-ls" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how the Microsoft Windows 10 operating system configures network proxy settings using Proxy Auto-Configuration (PAC) script URLs. It covers the technical role of PAC scripts in dynamic traffic routing, step-by-step methods to apply a" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-proxy-setup-using-pac-script-urls">Windows 10 Proxy
+Setup Using PAC Script URLs</h1>
+<p>This article explains how the Microsoft Windows 10 operating system
+configures network proxy settings using Proxy Auto-Configuration (PAC)
+script URLs. It covers the technical role of PAC scripts in dynamic
+traffic routing, step-by-step methods to apply a PAC URL via the Windows
+Settings app, legacy Internet Properties, Group Policy, and the Windows
+Registry, as well as how the underlying Windows network stack downloads
+and executes these scripts.</p>
+<hr />
+<h3 id="what-is-a-pac-script">What is a PAC Script?</h3>
+<p>A Proxy Auto-Configuration (PAC) file is a JavaScript file that
+defines how web browsers and other network clients automatically choose
+the appropriate proxy server for fetching a given URL. The file contains
+a core JavaScript function named
+<code>FindProxyForURL(url, host)</code>. When configured, Windows 10
+queries this function before initiating an outbound connection,
+dynamically determining whether to send traffic through a specific proxy
+server or establish a direct connection.</p>
+<h3 id="how-windows-10-configures-pac-urls">How Windows 10 Configures
+PAC URLs</h3>
+<p>Windows 10 exposes several mechanisms for users and system
+administrators to define the PAC script URL (often referred to as an
+"Automatic configuration script" or "Setup script").</p>
+<h4 id="1-via-the-modern-windows-settings-app">1. Via the Modern Windows
+Settings App</h4>
+<p>This is the standard interface for individual users:</p>
+<ol type="1">
+<li>Open <strong>Settings</strong> (press <code>Win + I</code>).</li>
+<li>Navigate to <strong>Network &amp; Internet</strong> &gt;
+<strong>Proxy</strong>.</li>
+<li>Under the <strong>Automatic proxy setup</strong> section, toggle the
+<strong>Use setup script</strong> switch to <strong>On</strong>.</li>
+<li>In the <strong>Script address</strong> field, enter the full URL of
+the <code>.pac</code> file (e.g.,
+<code>http://proxy.corp.example.com/accelerated.pac</code>).</li>
+<li>Click <strong>Save</strong>.</li>
+</ol>
+<h4 id="2-via-legacy-internet-properties-inetcplcpl">2. Via Legacy
+Internet Properties (inetcpl.cpl)</h4>
+<p>Windows 10 maintains backward compatibility with legacy WinINet
+settings:</p>
+<ol type="1">
+<li>Press <code>Win + R</code>, type <code>inetcpl.cpl</code>, and press
+<strong>Enter</strong>.</li>
+<li>Switch to the <strong>Connections</strong> tab and click the
+<strong>LAN settings</strong> button.</li>
+<li>Check the box labeled <strong>Use automatic configuration
+script</strong>.</li>
+<li>Enter the PAC file URL in the <strong>Address</strong> text
+box.</li>
+<li>Click <strong>OK</strong>, then click <strong>Apply</strong>.</li>
+</ol>
+<h4 id="3-via-the-windows-registry">3. Via the Windows Registry</h4>
+<p>Both modern Settings and legacy Internet Properties write to the
+Windows Registry. Administrators can set this directly via scripts or
+command-line tools:</p>
+<ul>
+<li><strong>Registry Path:</strong>
+<code>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings</code></li>
+<li><strong>Value Name:</strong> <code>AutoConfigURL</code></li>
+<li><strong>Type:</strong> <code>REG_SZ</code> (String)</li>
+<li><strong>Value Data:</strong> The PAC script URL (e.g.,
+<code>http://192.168.1.10/wpad.dat</code>)</li>
+</ul>
+<p>Setting this value automatically activates the "Use setup script"
+toggle in the operating system.</p>
+<h4 id="4-via-group-policy-active-directory--local-gpo">4. Via Group
+Policy (Active Directory / Local GPO)</h4>
+<p>For enterprise-wide management across multiple Windows 10
+machines:</p>
+<ol type="1">
+<li>Open the Local Group Policy Editor (<code>gpedit.msc</code>) or
+Group Policy Management Console.</li>
+<li>Navigate to: <strong>User Configuration</strong> &gt;
+<strong>Administrative Templates</strong> &gt; <strong>Windows
+Components</strong> &gt; <strong>Internet Explorer</strong>.</li>
+<li>Locate and enable <strong>Disable changing Automatic Configuration
+settings</strong> to lock the setting against user modification, or
+deploy the configuration using <strong>Group Policy Preferences</strong>
+under: <code>User Configuration</code> &gt; <code>Preferences</code>
+&gt; <code>Control Panel Settings</code> &gt;
+<code>Internet Settings</code>.</li>
+<li>Define the PAC file URL inside the automatic configuration
+dialog.</li>
+</ol>
+<hr />
+<h3 id="how-windows-10-processes-the-pac-script-at-runtime">How Windows
+10 Processes the PAC Script at Runtime</h3>
+<p>Once the PAC URL is saved, the Windows 10 network architecture
+handles execution using the following process:</p>
+<ol type="1">
+<li><strong>Fetching the Script:</strong> Windows network APIs (WinINet
+and WinHTTP) make an HTTP or HTTPS request to retrieve the
+<code>.pac</code> file from the specified URL into local memory or
+temporary cache.</li>
+<li><strong>Execution via Script Engine:</strong> Windows utilizes an
+isolated, out-of-process scripting host (typically executing through
+<code>pacjscript.dll</code>) to evaluate the JavaScript function for
+each destination URL.</li>
+<li><strong>Caching and Routing:</strong> To reduce latency, Windows
+caches resolved proxy routes for repeatedly accessed domains. If the
+destination matches proxy rules in the script, the traffic is redirected
+to the designated proxy IP and port; otherwise, it connects directly
+(<code>DIRECT</code>).</li>
+<li><strong>Fallback Handling:</strong> If the PAC script URL is
+unreachable or contains syntax errors, Windows falls back to direct
+network communication or standard failover policies configured within
+the operating system.</li>
+</ol></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-proxy-setup-using-pac-script-ur-ls';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

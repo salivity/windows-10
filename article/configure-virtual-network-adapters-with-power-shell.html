@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Virtual Network Adapters with PowerShell - windows-10</title>
+    <meta name="description" content="This article explains how the Microsoft Windows 10 operating system configures virtual network adapters using built-in PowerShell cmdlets. By utilizing the Hyper-V module and the NetAdapter/NetTCPIP modules, administrators can automate the creation, bindi">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/configure-virtual-network-adapters-with-power-shell">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure Virtual Network Adapters with PowerShell - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/configure-virtual-network-adapters-with-power-shell" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how the Microsoft Windows 10 operating system configures virtual network adapters using built-in PowerShell cmdlets. By utilizing the Hyper-V module and the NetAdapter/NetTCPIP modules, administrators can automate the creation, bindi" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-virtual-network-adapters-with-powershell">Configure
+Virtual Network Adapters with PowerShell</h1>
+<p>This article explains how the Microsoft Windows 10 operating system
+configures virtual network adapters using built-in PowerShell cmdlets.
+By utilizing the Hyper-V module and the NetAdapter/NetTCPIP modules,
+administrators can automate the creation, binding, addressing, and
+advanced configuration of virtual network interface cards (vNICs) for
+both the host management operating system and guest virtual machines
+without relying on graphical user interfaces.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>To manage virtual network adapters using PowerShell in Windows 10,
+the Hyper-V feature must be enabled. PowerShell must also be launched
+with elevated administrator privileges. The core cmdlets reside within
+the <code>Hyper-V</code> and <code>NetAdapter</code> modules.</p>
+<h3 id="1-identifying-existing-switches-and-adapters">1. Identifying
+Existing Switches and Adapters</h3>
+<p>Before configuring a virtual adapter, verify existing virtual
+switches and physical network interfaces:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View all available virtual switches</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Get-VMSwitch</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># View existing virtual network adapters on the host and VMs</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Get-VMNetworkAdapter <span class="op">-</span>All</span></code></pre></div>
+<h3 id="2-creating-and-attaching-a-virtual-switch">2. Creating and
+Attaching a Virtual Switch</h3>
+<p>A virtual network adapter requires a virtual switch to route traffic.
+If one does not already exist, create an external, internal, or private
+virtual switch:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an Internal switch (for host-to-VM communication)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>New-VMSwitch <span class="op">-</span>Name <span class="st">&quot;InternalSwitch&quot;</span> <span class="op">-</span>SwitchType Internal</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an External switch (bound to a physical Ethernet adapter)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>New-VMSwitch <span class="op">-</span>Name <span class="st">&quot;ExternalSwitch&quot;</span> <span class="op">-</span>NetAdapterName <span class="st">&quot;Ethernet&quot;</span> <span class="op">-</span>AllowManagementOS <span class="va">$true</span></span></code></pre></div>
+<h3 id="3-adding-a-virtual-network-adapter">3. Adding a Virtual Network
+Adapter</h3>
+<p>You can add a virtual network adapter either to a specific virtual
+machine or directly to the Windows 10 host management OS.</p>
+<p><strong>To add a vNIC to a Virtual Machine:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Add-VMNetworkAdapter <span class="op">-</span>VMName <span class="st">&quot;TargetVM&quot;</span> <span class="op">-</span>Name <span class="st">&quot;VM_vNIC1&quot;</span> <span class="op">-</span>SwitchName <span class="st">&quot;InternalSwitch&quot;</span></span></code></pre></div>
+<p><strong>To add a vNIC directly to the Management OS
+(Host):</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Add-VMNetworkAdapter <span class="op">-</span>ManagementOS <span class="op">-</span>Name <span class="st">&quot;Host_vNIC1&quot;</span> <span class="op">-</span>SwitchName <span class="st">&quot;InternalSwitch&quot;</span></span></code></pre></div>
+<h3 id="4-configuring-advanced-adapter-settings">4. Configuring Advanced
+Adapter Settings</h3>
+<p>Windows 10 provides cmdlets to modify network adapter capabilities,
+such as MAC address spoofing, bandwidth limits, and VLAN
+identification.</p>
+<p><strong>Enabling MAC Spoofing and Setting Bandwidth
+Limits:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Set-VMNetworkAdapter <span class="op">-</span>VMName <span class="st">&quot;TargetVM&quot;</span> <span class="op">-</span>Name <span class="st">&quot;VM_vNIC1&quot;</span> <span class="op">-</span>MacAddressSpoofing On <span class="op">-</span>MinimumBandwidthAbsolute <span class="dv">10000000</span></span></code></pre></div>
+<p><strong>Configuring VLAN Tagging:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure the adapter for Access mode on VLAN 20</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Set-VMNetworkAdapterVlan <span class="op">-</span>VMName <span class="st">&quot;TargetVM&quot;</span> <span class="op">-</span>VMNetworkAdapterName <span class="st">&quot;VM_vNIC1&quot;</span> <span class="op">-</span>Access <span class="op">-</span>VlanId <span class="dv">20</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure the Management OS adapter for a specific VLAN</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>Set-VMNetworkAdapterVlan <span class="op">-</span>ManagementOS <span class="op">-</span>VMNetworkAdapterName <span class="st">&quot;Host_vNIC1&quot;</span> <span class="op">-</span>Access <span class="op">-</span>VlanId <span class="dv">10</span></span></code></pre></div>
+<h3 id="5-configuring-ip-address-and-dns-nettcpip-module">5. Configuring
+IP Address and DNS (NetTCPIP Module)</h3>
+<p>Once the virtual adapter is active in Windows 10, configure its Layer
+3 IP addressing using the standard <code>NetTCPIP</code> cmdlets:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign a static IPv4 address and default gateway</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>New-NetIPAddress <span class="op">-</span>InterfaceAlias <span class="st">&quot;vEthernet (Host_vNIC1)&quot;</span> <span class="op">-</span>IPAddress <span class="dv">192.168</span><span class="op">.</span><span class="dv">10.50</span> <span class="op">-</span>PrefixLength <span class="dv">24</span> <span class="op">-</span>DefaultGateway <span class="dv">192.168</span><span class="op">.</span><span class="dv">10.1</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure DNS server addresses</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Set-DnsClientServerAddress <span class="op">-</span>InterfaceAlias <span class="st">&quot;vEthernet (Host_vNIC1)&quot;</span> <span class="op">-</span>ServerAddresses <span class="op">(</span><span class="st">&quot;192.168.10.1&quot;</span><span class="op">,</span> <span class="st">&quot;8.8.8.8&quot;</span><span class="op">)</span></span></code></pre></div>
+<h3 id="6-removing-a-virtual-network-adapter">6. Removing a Virtual
+Network Adapter</h3>
+<p>To decommission and remove a virtual network adapter, use the
+<code>Remove-VMNetworkAdapter</code> cmdlet:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove a vNIC from a virtual machine</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>Remove-VMNetworkAdapter <span class="op">-</span>VMName <span class="st">&quot;TargetVM&quot;</span> <span class="op">-</span>Name <span class="st">&quot;VM_vNIC1&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove a vNIC from the management OS</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>Remove-VMNetworkAdapter <span class="op">-</span>ManagementOS <span class="op">-</span>Name <span class="st">&quot;Host_vNIC1&quot;</span></span></code></pre></div></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/configure-virtual-network-adapters-with-power-shell';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

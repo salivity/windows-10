@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Dynamic Disk Spanned and Striped Volumes - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 supports dynamic disks through the Logical Disk Manager (LDM) subsystem, allowing users to combine multiple physical hard drives into unified software-defined volumes such as spanned and striped sets. This article explains how Windows">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-dynamic-disk-spanned-and-striped-volumes">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Dynamic Disk Spanned and Striped Volumes - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-dynamic-disk-spanned-and-striped-volumes" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 supports dynamic disks through the Logical Disk Manager (LDM) subsystem, allowing users to combine multiple physical hard drives into unified software-defined volumes such as spanned and striped sets. This article explains how Windows" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-dynamic-disk-spanned-and-striped-volumes">Windows 10
+Dynamic Disk Spanned and Striped Volumes</h1>
+<p>Microsoft Windows 10 supports dynamic disks through the Logical Disk
+Manager (LDM) subsystem, allowing users to combine multiple physical
+hard drives into unified software-defined volumes such as spanned and
+striped sets. This article explains how Windows 10 implements dynamic
+disk architecture, outlines the mechanics and performance implications
+of spanned and striped volumes, details their configuration, and
+examines their operational limitations alongside modern alternatives
+like Storage Spaces.</p>
+<h3 id="understanding-dynamic-disks-in-windows-10">Understanding Dynamic
+Disks in Windows 10</h3>
+<p>Unlike traditional basic disks that rely on standard partition tables
+(such as MBR or GPT) to track partitions, dynamic disks use a hidden
+Logical Disk Manager (LDM) database located at the end of the physical
+drive. This database records all volume configurations, drive layout
+information, and dynamic disk metadata. Windows 10 dynamically syncs
+this database across all physical drives assigned to the dynamic disk
+group, enabling multi-disk storage architectures without requiring a
+dedicated hardware RAID controller.</p>
+<h3 id="spanned-volumes">Spanned Volumes</h3>
+<p>A spanned volume combines unallocated space from at least two
+physical drives (up to a maximum of 32 drives) into a single logical
+drive letter.</p>
+<ul>
+<li><strong>Allocation Mechanics:</strong> Data is written sequentially.
+The operating system fills the allocated space on the first physical
+disk completely before moving to the next drive in the span.</li>
+<li><strong>Drive Sizing:</strong> The physical drives or partitions do
+not need to be of equal size. For example, a 500 GB drive and a 1 TB
+drive can be merged to create a 1.5 TB spanned volume.</li>
+<li><strong>Fault Tolerance and Performance:</strong> Spanned volumes
+offer no performance advantage over a single disk and provide zero fault
+tolerance. If any single drive in the spanned set fails, the entire
+volume becomes corrupted and data recovery across the set becomes
+extremely difficult.</li>
+</ul>
+<h3 id="striped-volumes-software-raid-0">Striped Volumes (Software RAID
+0)</h3>
+<p>A striped volume combines free space from two or more physical disks
+(up to 32 drives) into a single volume using data interleaving.</p>
+<ul>
+<li><strong>Allocation Mechanics:</strong> Windows 10 distributes data
+evenly across all disks in the array in fixed blocks (stripes),
+typically 64 KB in size. Data is written across all drives
+simultaneously rather than sequentially.</li>
+<li><strong>Drive Sizing:</strong> Striped volumes require identical
+amounts of unallocated space from each participating disk. If you
+combine a 500 GB drive and a 1 TB drive, Windows 10 limits the usable
+capacity to 500 GB per drive, yielding a 1 TB total striped volume.</li>
+<li><strong>Fault Tolerance and Performance:</strong> Striped volumes
+provide significantly higher read and write speeds because multiple
+drives handle I/O requests concurrently. However, like spanned volumes,
+striped sets have zero redundancy. If one drive fails, the entire
+striped array fails and all data is lost.</li>
+</ul>
+<h3 id="configuration-in-windows-10">Configuration in Windows 10</h3>
+<p>Windows 10 provides two primary native utilities to configure and
+manage dynamic volumes:</p>
+<ol type="1">
+<li><strong>Disk Management (<code>diskmgmt.msc</code>):</strong>
+<ul>
+<li>Converting drives: Right-click a basic disk and select
+<strong>Convert to Dynamic Disk</strong>.</li>
+<li>Creating a volume: Right-click unallocated space on a dynamic drive
+and select <strong>New Spanned Volume</strong> or <strong>New Striped
+Volume</strong>. A wizard prompts you to select participating dynamic
+disks, define capacity per disk, assign a drive letter, and format the
+volume using NTFS or ReFS.</li>
+</ul></li>
+<li><strong>DiskPart Command-Line Utility:</strong>
+<ul>
+<li>Administrators can automate volume creation using commands such as
+<code>convert dynamic</code>,
+<code>create volume stripe size=&lt;N&gt; disk=&lt;N,N,...&gt;</code>,
+or <code>create volume span disk=&lt;N,N,...&gt;</code>.</li>
+</ul></li>
+</ol>
+<h3 id="deprecation-status-and-limitations">Deprecation Status and
+Limitations</h3>
+<p>While Windows 10 fully supports dynamic disks for backward
+compatibility, Microsoft has deprecated dynamic disks for future
+development. Notable limitations include:</p>
+<ul>
+<li><strong>Boot Limitations:</strong> Windows 10 cannot boot from a
+spanned or striped dynamic volume. The operating system files must
+reside on a basic disk or a simple dynamic volume.</li>
+<li><strong>Portability:</strong> Dynamic volumes cannot be read by
+non-Windows operating systems or legacy versions of Windows Home
+editions without third-party tools.</li>
+<li><strong>Storage Spaces:</strong> Microsoft recommends using
+<strong>Storage Spaces</strong> instead of dynamic disks on Windows 10.
+Storage Spaces virtualizes storage across pooled drives, supports drive
+resiliency (mirroring and parity), and permits hot-swapping and thin
+provisioning, which dynamic disks cannot natively do.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-dynamic-disk-spanned-and-striped-volumes';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

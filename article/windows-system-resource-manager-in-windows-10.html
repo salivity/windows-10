@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows System Resource Manager in Windows 10 - windows-10</title>
+    <meta name="description" content="This article examines the role of the Windows System Resource Manager (WSRM) in relation to the Microsoft Windows 10 Operating System. While historically recognized as a tool for managing CPU and memory distribution in server environments, WSRM does not o">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-system-resource-manager-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows System Resource Manager in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-system-resource-manager-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines the role of the Windows System Resource Manager (WSRM) in relation to the Microsoft Windows 10 Operating System. While historically recognized as a tool for managing CPU and memory distribution in server environments, WSRM does not o" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-system-resource-manager-in-windows-10">Windows System
+Resource Manager in Windows 10</h1>
+<p>This article examines the role of the Windows System Resource Manager
+(WSRM) in relation to the Microsoft Windows 10 Operating System. While
+historically recognized as a tool for managing CPU and memory
+distribution in server environments, WSRM does not operate natively
+within Windows 10. The following sections clarify WSRM's background, its
+absence from the client operating system, and the alternative mechanisms
+Windows 10 utilizes to govern system resource allocation.</p>
+<h3 id="the-origin-and-purpose-of-wsrm">The Origin and Purpose of
+WSRM</h3>
+<p>Windows System Resource Manager was introduced by Microsoft to manage
+CPU and memory resources on multi-user and multi-application server
+environments. Available primarily in Windows Server editions up through
+Windows Server 2012 (where it was officially deprecated), WSRM enabled
+administrators to set explicit resource allocation policies. These
+policies ensured that individual processes, users, or Internet
+Information Services (IIS) application pools did not monopolize system
+resources, maintaining fair performance across multi-tenant servers.</p>
+<h3 id="wsrm-availability-in-windows-10">WSRM Availability in Windows
+10</h3>
+<p>Windows System Resource Manager plays no direct operational role in
+Windows 10 because it is entirely absent from the operating system. WSRM
+was designed strictly for server architectures and was never included in
+client editions of Windows. Furthermore, Microsoft deprecated the
+feature prior to the release of Windows 10, meaning it cannot be
+installed through standard "Windows Features" or administrative tool
+packages on a Windows 10 machine.</p>
+<h3 id="how-windows-10-allocates-resources-instead">How Windows 10
+Allocates Resources Instead</h3>
+<p>In the absence of WSRM, Windows 10 relies on internal kernel-level
+mechanisms and modern frameworks to dynamically balance and restrict
+resource consumption:</p>
+<ul>
+<li><strong>Kernel Thread Scheduling and Dynamic Priority:</strong> The
+Windows 10 kernel automatically schedules threads based on 32 priority
+levels. The system adjusts priorities dynamically to prioritize the
+active foreground application, ensuring responsiveness while keeping
+background tasks from stalling the system.</li>
+<li><strong>Windows Job Objects:</strong> Windows 10 utilizes Job
+Objects to manage groups of processes as a single unit. Applications
+like web browsers and containerization platforms leverage Job Objects to
+enforce hard limits on CPU rate, working set memory size, and I/O
+usage.</li>
+<li><strong>Task Manager and Process Priority:</strong> End users and
+administrators can manually influence resource distribution by setting
+process priority classes (such as Low, Normal, or High) and CPU affinity
+through the Task Manager or administrative command-line tools.</li>
+<li><strong>Quality of Service (QoS) Policies:</strong> Network resource
+allocation in Windows 10 is managed through Group Policy-driven Quality
+of Service settings, which prioritize network bandwidth for critical
+applications rather than managing local hardware components.</li>
+</ul>
+<p>While the legacy Windows System Resource Manager is not a component
+of Windows 10, the operating system achieves resource allocation goals
+automatically via its built-in kernel scheduler, Job Objects, and
+process management architecture.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-system-resource-manager-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

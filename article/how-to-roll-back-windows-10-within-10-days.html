@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Roll Back Windows 10 Within 10 Days - windows-10</title>
+    <meta name="description" content="When you install a major feature update on Windows 10, the operating system creates a built-in safety net that allows you to revert to your previous version within a strict 10-day window. This article explains the technical mechanics behind this feature,">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-to-roll-back-windows-10-within-10-days">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Roll Back Windows 10 Within 10 Days - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-to-roll-back-windows-10-within-10-days" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When you install a major feature update on Windows 10, the operating system creates a built-in safety net that allows you to revert to your previous version within a strict 10-day window. This article explains the technical mechanics behind this feature," />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-roll-back-windows-10-within-10-days">How to Roll Back
+Windows 10 Within 10 Days</h1>
+<p>When you install a major feature update on Windows 10, the operating
+system creates a built-in safety net that allows you to revert to your
+previous version within a strict 10-day window. This article explains
+the technical mechanics behind this feature, including how Windows
+preserves your previous operating system data, why the countdown exists,
+how the system executes the rollback process, and the exact steps to
+initiate it.</p>
+<h3 id="the-role-of-the-windowsold-folder">The Role of the Windows.old
+Folder</h3>
+<p>The recovery feature relies on an automated backup process executed
+during any major feature update. Before applying the new OS files,
+Windows moves the critical components of your previous installation into
+a hidden folder on your system drive named
+<code>C:\Windows.old</code>.</p>
+<p>This directory contains:</p>
+<ul>
+<li>The previous Windows system files and binaries
+(<code>System32</code>, drivers, etc.).</li>
+<li>The previous Registry hives containing your system and user
+configurations.</li>
+<li>The <code>Program Files</code> and <code>ProgramData</code>
+directories.</li>
+<li>A snapshot of your user profiles (<code>Users</code>
+directory).</li>
+</ul>
+<p>Windows also creates temporary tracking folders, such as
+<code>$Windows.~BT</code> and <code>$Windows.~WS</code>, which contain
+setup logs and installation media used to orchestrate the upgrade and
+facilitate the reversal.</p>
+<h3 id="the-10-day-automated-deletion-mechanism">The 10-Day Automated
+Deletion Mechanism</h3>
+<p>Originally set to 30 days in early versions of Windows 10, Microsoft
+reduced the rollback period to 10 days via the Anniversary Update.
+Telemetry showed that most users who encounter critical stability issues
+roll back within the first few days, and retaining the massive
+<code>Windows.old</code> directory (often 20 GB to 40 GB) unnecessarily
+consumed drive space.</p>
+<p>A background maintenance task managed by Windows Task Scheduler
+monitors the creation timestamp of <code>Windows.old</code>. Once 10
+days (240 hours) have elapsed, Windows runs automated disk cleanup
+routines—often tied to Storage Sense—to permanently delete the
+<code>Windows.old</code> folder. Once this folder is removed, the
+built-in option to roll back is permanently disabled.</p>
+<h3 id="what-happens-during-the-rollback-process">What Happens During
+the Rollback Process</h3>
+<p>When you trigger the rollback mechanism, Windows executes the
+following technical sequence:</p>
+<ol type="1">
+<li><strong>System Reboot into Windows Recovery Environment
+(WinRE):</strong> The active OS unloads, and the computer boots into an
+isolated recovery environment to prevent file-locking conflicts.</li>
+<li><strong>File Swap:</strong> WinRE replaces the current system
+binaries and configuration files with those stored inside
+<code>Windows.old</code>.</li>
+<li><strong>Registry Restoration:</strong> The current Registry is
+replaced by the archived Registry hives from the previous build.</li>
+<li><strong>Boot Configuration Update:</strong> The Boot Configuration
+Data (BCD) is rewritten to point to the restored operating system
+kernel.</li>
+<li><strong>Cleanup:</strong> The updated OS files that were being
+tested are purged, and the system reboots directly into the prior
+version of Windows 10.</li>
+</ol>
+<p>Personal documents, photos, and files stored in standard user folders
+are preserved. However, any programs installed, settings changed, or
+drivers updated after the upgrade are permanently removed.</p>
+<h3 id="how-to-initiate-the-rollback">How to Initiate the Rollback</h3>
+<p>To trigger the rollback while inside the 10-day window:</p>
+<ol type="1">
+<li>Open <strong>Settings</strong> from the Start menu.</li>
+<li>Click on <strong>Update &amp; Security</strong>.</li>
+<li>Select <strong>Recovery</strong> from the left-hand navigation
+pane.</li>
+<li>Locate the section titled <strong>Go back to the previous version of
+Windows 10</strong> and click <strong>Get started</strong>.</li>
+<li>Select a reason for going back, decline the prompt to check for
+updates, and accept the warnings regarding app reinstallation and
+passwords.</li>
+<li>Click <strong>Go back to earlier build</strong> to begin the
+automated restoration process.</li>
+</ol></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-to-roll-back-windows-10-within-10-days';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

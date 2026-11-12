@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Digital License Management Explained - windows-10</title>
+    <meta name="description" content="This article explores how the Windows 10 operating system manages digital license entitlements associated with Microsoft accounts. It covers the technical mechanics behind hardware-based digital entitlements, the process of binding these licenses to a use">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-digital-license-management-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Digital License Management Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-digital-license-management-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores how the Windows 10 operating system manages digital license entitlements associated with Microsoft accounts. It covers the technical mechanics behind hardware-based digital entitlements, the process of binding these licenses to a use" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-digital-license-management-explained">Windows 10
+Digital License Management Explained</h1>
+<p>This article explores how the Windows 10 operating system manages
+digital license entitlements associated with Microsoft accounts. It
+covers the technical mechanics behind hardware-based digital
+entitlements, the process of binding these licenses to a user's cloud
+identity, and how this integration simplifies OS activation during
+hardware changes or system reinstalls.</p>
+<h2 id="what-is-a-windows-10-digital-license">What Is a Windows 10
+Digital License?</h2>
+<p>A digital license, formerly known as a digital entitlement, is an
+activation method in Windows 10 that eliminates the need to enter a
+25-character product key. Instead of storing an encrypted key in the
+system registry or BIOS, Windows registers the device's activation state
+directly with Microsoft's cloud-based activation servers.</p>
+<h2 id="hardware-id-hwid-generation">Hardware ID (HWID) Generation</h2>
+<p>When Windows 10 is activated for the first time, the operating system
+inspects the physical components of the computer to generate a unique
+Hardware ID (HWID).</p>
+<ul>
+<li><strong>Component Weighting:</strong> The HWID algorithm analyzes
+multiple components, giving the highest priority to the motherboard,
+followed by the CPU, system drive, and network adapter.</li>
+<li><strong>Tolerances:</strong> The system allows for minor hardware
+modifications (such as upgrading RAM, replacing a GPU, or swapping a
+secondary hard drive) without invalidating the generated HWID.</li>
+<li><strong>Server Verification:</strong> Once generated, the HWID is
+transmitted to Microsoft activation servers, which verify the license
+status and return an activation token to the local machine.</li>
+</ul>
+<h2 id="binding-digital-licenses-to-a-microsoft-account">Binding Digital
+Licenses to a Microsoft Account</h2>
+<p>Starting with Windows 10 build 1607 (Anniversary Update), Microsoft
+introduced the ability to link a device's HWID directly to a user's
+personal Microsoft Account (MSA).</p>
+<ol type="1">
+<li><strong>Association:</strong> When an administrator signs in to an
+activated Windows 10 PC using an MSA, the operating system contacts
+Microsoft’s activation infrastructure.</li>
+<li><strong>Account Linking:</strong> The local activation status
+updates to state: <em>"Windows is activated with a digital license
+linked to your Microsoft account."</em></li>
+<li><strong>Identity Layer:</strong> The digital license is no longer
+bound solely to the mathematical representation of the machine's
+hardware; it is now associated with the user’s cloud identity in
+Microsoft's database.</li>
+</ol>
+<h2 id="activation-management-and-hardware-changes">Activation
+Management and Hardware Changes</h2>
+<p>The primary advantage of linking a digital license to an MSA is
+streamlining reactivation after substantial hardware replacements, such
+as changing the motherboard.</p>
+<ul>
+<li><strong>Reactivation via Troubleshooter:</strong> If a hardware swap
+alters the HWID sufficiently to break automatic activation, the user
+runs the built-in Activation Troubleshooter
+(<code>Settings &gt; Update &amp; Security &gt; Activation &gt; Troubleshoot</code>).</li>
+<li><strong>Hardware Replacement Workflow:</strong> The user selects
+<em>"I changed hardware on this device recently"</em> and authenticates
+with their linked MSA.</li>
+<li><strong>License Transfer:</strong> The system queries Microsoft's
+servers, retrieves a list of devices tied to that MSA, and allows the
+user to reassign the existing digital entitlement from the old hardware
+configuration to the new one.</li>
+</ul>
+<h2 id="oem-vs-retail-license-rules">OEM vs. Retail License Rules</h2>
+<p>The MSA entitlement management respects the underlying licensing
+terms:</p>
+<ul>
+<li><strong>Retail Licenses:</strong> Can be transferred between
+different hardware configurations via the Microsoft account workflow
+without limitation, provided the license is active on only one PC at a
+time.</li>
+<li><strong>OEM Licenses:</strong> Licenses pre-installed by the
+manufacturer are legally tied to the original motherboard. While an MSA
+can record an OEM digital license, Microsoft's activation servers will
+generally reject transferring an OEM entitlement to a completely new PC
+or an unbranded motherboard replacement.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-digital-license-management-explained';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

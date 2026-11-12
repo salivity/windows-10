@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Default Apps and File Associations Guide - windows-10</title>
+    <meta name="description" content="Windows 10 manages default applications and file type associations through a centralized, user-centric framework designed to balance user convenience with system security. Unlike older versions of Windows, where software could silently rewrite association">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-default-apps-and-file-associations-guide">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Default Apps and File Associations Guide - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-default-apps-and-file-associations-guide" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 manages default applications and file type associations through a centralized, user-centric framework designed to balance user convenience with system security. Unlike older versions of Windows, where software could silently rewrite association" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-default-apps-and-file-associations-guide">Windows 10
+Default Apps and File Associations Guide</h1>
+<p>Windows 10 manages default applications and file type associations
+through a centralized, user-centric framework designed to balance user
+convenience with system security. Unlike older versions of Windows,
+where software could silently rewrite associations, Windows 10 relies on
+a protected registry system paired with the Settings app to ensure that
+users maintain explicit control over which software opens specific
+formats and protocols. This article covers the architecture behind these
+associations, how Windows 10 prevents unauthorized changes, and the
+tools available for individual users and system administrators to manage
+them.</p>
+<h2 id="the-modern-user-choice-model">The Modern User-Choice Model</h2>
+<p>In Windows 10, Microsoft replaced the legacy programmatic assignment
+method with a strictly regulated "User Choice" architecture. In previous
+versions like Windows 7, installers could alter the Windows Registry
+directly to hijack file types without user consent. Windows 10 prohibits
+applications from directly overwriting these settings. Instead,
+applications must register their capabilities with the operating system,
+and the user must explicitly confirm or select them through the modern
+Windows interface.</p>
+<h2 id="cryptographic-hash-protection">Cryptographic Hash
+Protection</h2>
+<p>To prevent unauthorized applications from modifying file associations
+in the background, Windows 10 implements a unique cryptographic hash
+validation system.</p>
+<p>When a user selects a default application for a file extension or
+protocol, the operating system generates a hash based on:</p>
+<ul>
+<li>The user's Security Identifier (SID)</li>
+<li>The file extension or protocol</li>
+<li>The programmatic identifier (ProgID) of the target application</li>
+<li>A internal, rotating system timestamp and proprietary salt</li>
+</ul>
+<p>This data is written to the Windows Registry under the following key:
+<code>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\[.Extension]\UserChoice</code></p>
+<p>If a third-party script, installer, or malware modifies the registry
+entries in the <code>UserChoice</code> key without calculating the
+correct hash, the operating system detects the tampering. Windows 10
+immediately voids the invalid association and resets the file type to
+its system default (typically an in-box application such as Microsoft
+Edge for PDFs or Photos for images), accompanied by an operating system
+notification stating that an app default was reset.</p>
+<h2 id="how-file-associations-are-registered">How File Associations Are
+Registered</h2>
+<p>For an application to be recognized as a viable default handler in
+Windows 10, it must register its capabilities in the registry during
+installation.</p>
+<ol type="1">
+<li><strong>Application Registration:</strong> The program writes its
+execution commands and supported MIME types, extensions, and protocols
+to <code>HKEY_LOCAL_MACHINE\SOFTWARE\RegisteredApplications</code> or
+<code>HKEY_CURRENT_USER\SOFTWARE\RegisteredApplications</code>.</li>
+<li><strong>Capability Definition:</strong> The software defines a
+<code>Capabilities</code> subkey listing all file types it can process
+under <code>FileAssociations</code> and
+<code>URLAssociations</code>.</li>
+<li><strong>ProgID Creation:</strong> File formats are linked to unique
+programmatic identifiers (ProgIDs) under <code>HKEY_CLASSES_ROOT</code>,
+defining file context menus, icons, and shell launch commands.</li>
+</ol>
+<p>Once registered, Windows 10 surfaces the application as an option
+inside the user interface.</p>
+<h2 id="user-management-via-the-settings-interface">User Management via
+the Settings Interface</h2>
+<p>Standard users configure associations via the Windows Settings
+interface located at <strong>Settings &gt; Apps &gt; Default
+apps</strong>. Within this menu, Windows 10 provides four primary
+methods for configuration:</p>
+<ul>
+<li><strong>Default Apps by Feature:</strong> Assigns core system
+functions, such as the default web browser, email client, music player,
+photo viewer, and video player.</li>
+<li><strong>Choose Default Apps by File Type:</strong> Maps specific
+extensions (such as <code>.pdf</code>, <code>.docx</code>, or
+<code>.zip</code>) to designated applications.</li>
+<li><strong>Choose Default Apps by Protocol:</strong> Links standard
+system protocols (such as <code>HTTP</code>, <code>HTTPS</code>, or
+<code>MAILTO</code>) to appropriate handling software.</li>
+<li><strong>Set Defaults by App:</strong> Allows users to select an
+installed program and view or assign all possible file types and
+protocols that the software is capable of handling.</li>
+</ul>
+<p>Additionally, right-clicking any file in File Explorer, selecting
+<strong>Open with</strong>, and clicking <strong>Choose another
+app</strong> enables users to toggle the "Always use this app to open
+files" option, which writes a new valid <code>UserChoice</code>
+entry.</p>
+<h2 id="enterprise-management-and-group-policy">Enterprise Management
+and Group Policy</h2>
+<p>Because standard registry modifications fail under the protected hash
+model, system administrators must deploy file associations across
+Windows 10 environments using specific enterprise management tools:</p>
+<ol type="1">
+<li><strong>Exporting Associations:</strong> An administrator configures
+a reference system and exports the configuration via the Deployment
+Image Servicing and Management (DISM) command:
+<code>dism /online /export-defaultappassociations:C:\AppAssoc.xml</code></li>
+<li><strong>Deploying Associations:</strong> The generated XML file maps
+file types and protocols directly to application ProgIDs. This file can
+be deployed across a network using Group Policy:
+<ul>
+<li>Navigate to: <strong>Computer Configuration &gt; Administrative
+Templates &gt; Windows Components &gt; File Explorer</strong></li>
+<li>Enable: <strong>Set a default associations configuration
+file</strong></li>
+<li>Point the policy path to the network share containing the
+<code>AppAssoc.xml</code> file.</li>
+</ul></li>
+</ol>
+<p>When applied via Group Policy, the operating system imports these
+definitions during the user's initial logon session, establishing
+standard enterprise defaults while retaining system integrity.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-default-apps-and-file-associations-guide';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

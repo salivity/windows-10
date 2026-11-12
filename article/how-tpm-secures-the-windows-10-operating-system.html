@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How TPM Secures the Windows 10 Operating System - windows-10</title>
+    <meta name="description" content="The Trusted Platform Module (TPM) is a dedicated, hardware-based security processor that provides a tamper-resistant foundation for core security operations in Microsoft Windows 10. By securely generating, storing, and managing cryptographic keys, the TPM">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-tpm-secures-the-windows-10-operating-system">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How TPM Secures the Windows 10 Operating System - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-tpm-secures-the-windows-10-operating-system" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Trusted Platform Module (TPM) is a dedicated, hardware-based security processor that provides a tamper-resistant foundation for core security operations in Microsoft Windows 10. By securely generating, storing, and managing cryptographic keys, the TPM" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-tpm-secures-the-windows-10-operating-system">How TPM Secures
+the Windows 10 Operating System</h1>
+<p>The Trusted Platform Module (TPM) is a dedicated, hardware-based
+security processor that provides a tamper-resistant foundation for core
+security operations in Microsoft Windows 10. By securely generating,
+storing, and managing cryptographic keys, the TPM ensures that system
+credentials, encryption processes, and system integrity checks are
+isolated from software-level attacks. It acts as a hardware root of
+trust that enables essential Windows 10 features, including BitLocker
+drive encryption, Windows Hello biometric authentication, and secure
+boot verification.</p>
+<h3 id="hardware-level-cryptographic-key-storage">Hardware-Level
+Cryptographic Key Storage</h3>
+<p>The fundamental function of a TPM chip is to store cryptographic keys
+inside a physically isolated environment. In Windows 10, software
+applications do not access private encryption keys directly. Instead,
+the TPM performs cryptographic operations—such as key generation,
+encryption, decryption, and digital signing—within its own secure
+boundary. Because these keys never reside in the standard system RAM,
+malicious software cannot read or extract them from memory.</p>
+<h3 id="powering-bitlocker-drive-encryption">Powering BitLocker Drive
+Encryption</h3>
+<p>Windows 10 integrates directly with the TPM to power BitLocker
+full-volume encryption. When BitLocker is enabled, the TPM seals the
+volume master key and only unseals it if the device boots in a known,
+trusted state. If an attacker removes the storage drive and places it in
+another machine, or modifies the system firmware or startup files, the
+TPM refuses to release the key, preventing unauthorized access to the
+stored data.</p>
+<h3 id="enhancing-windows-hello-and-credential-guard">Enhancing Windows
+Hello and Credential Guard</h3>
+<p>Windows 10 leverages the TPM to protect user identities and
+authentication tokens:</p>
+<ul>
+<li><strong>Windows Hello:</strong> Biometric data (facial recognition
+or fingerprints) and PINs are bound to a TPM-protected key. An attacker
+attempting to spoof the operating system cannot authenticate without
+passing verification tied to the hardware chip.</li>
+<li><strong>Credential Guard:</strong> Uses virtualization-based
+security (VBS) alongside the TPM to isolate critical system secrets,
+such as NTLM password hashes and Kerberos tickets, preventing
+Pass-the-Hash attacks.</li>
+</ul>
+<h3 id="platform-integrity-and-measured-boot">Platform Integrity and
+Measured Boot</h3>
+<p>During startup, the TPM monitors the boot sequence using Platform
+Configuration Registers (PCRs). As each component of the boot process
+loads—including the UEFI firmware, bootloader, kernel, and early
+drivers—a cryptographic hash of the component is recorded into the TPM.
+This process, known as Measured Boot:</p>
+<ul>
+<li>Detects whether rootkits or unauthorized firmware modifications have
+altered the startup environment.</li>
+<li>Generates a tamper-proof log that can be sent to a remote management
+server (Health Attestation Service) to verify whether the PC is healthy
+before granting access to corporate networks.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-tpm-secures-the-windows-10-operating-system';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Static Routes in Windows 10 Using Route Add - windows-10</title>
+    <meta name="description" content="Configuring a static route in Microsoft Windows 10 allows you to manually specify the network path network traffic must take to reach a specific destination network or host. This article explains how to use the built-in route add command within the Window">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/configure-static-routes-in-windows-10-using-route-add">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure Static Routes in Windows 10 Using Route Add - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/configure-static-routes-in-windows-10-using-route-add" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Configuring a static route in Microsoft Windows 10 allows you to manually specify the network path network traffic must take to reach a specific destination network or host. This article explains how to use the built-in route add command within the Window" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-static-routes-in-windows-10-using-route-add">Configure
+Static Routes in Windows 10 Using Route Add</h1>
+<p>Configuring a static route in Microsoft Windows 10 allows you to
+manually specify the network path network traffic must take to reach a
+specific destination network or host. This article explains how to use
+the built-in <code>route add</code> command within the Windows Command
+Prompt, the required syntax, how to make routes persistent across system
+reboots, and how to verify or remove configured routes.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>To add or modify routing tables in Windows 10, you must open the
+Command Prompt with elevated privileges:</p>
+<ol type="1">
+<li>Press the <strong>Windows Key</strong>, type <code>cmd</code>.</li>
+<li>Right-click <strong>Command Prompt</strong> and select <strong>Run
+as administrator</strong>.</li>
+</ol>
+<h3 id="basic-syntax-of-the-route-add-command">Basic Syntax of the
+<code>route add</code> Command</h3>
+<p>The core syntax for adding a static route in Windows 10 is:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>route ADD <span class="kw">&lt;</span>destination_network<span class="kw">&gt;</span> MASK <span class="kw">&lt;</span>subnet_mask<span class="kw">&gt;</span> <span class="kw">&lt;</span>gateway_ip<span class="kw">&gt;</span> METRIC <span class="kw">&lt;</span>metric_value<span class="kw">&gt;</span> IF <span class="kw">&lt;</span>interface_number<span class="kw">&gt;</span></span></code></pre></div>
+<ul>
+<li><strong><code>&lt;destination_network&gt;</code></strong>: The IP
+address of the target network or host.</li>
+<li><strong><code>MASK &lt;subnet_mask&gt;</code></strong>: The subnet
+mask for the destination network (defaults to
+<code>255.255.255.255</code> if omitted).</li>
+<li><strong><code>&lt;gateway_ip&gt;</code></strong>: The IP address of
+the router/gateway through which traffic should be directed.</li>
+<li><strong><code>METRIC &lt;metric_value&gt;</code></strong>
+<em>(Optional)</em>: An integer cost value used to determine route
+priority. Lower values have higher priority.</li>
+<li><strong><code>IF &lt;interface_number&gt;</code></strong>
+<em>(Optional)</em>: Specifies the network interface index to use.</li>
+</ul>
+<h3 id="adding-a-temporary-static-route">Adding a Temporary Static
+Route</h3>
+<p>By default, routes added via <code>route add</code> are temporary and
+will be cleared when Windows restarts or the network adapter resets.</p>
+<p>To route traffic bound for the subnet <code>192.168.20.0/24</code>
+through a gateway at <code>192.168.1.1</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>route ADD 192.168.20.0 MASK 255.255.255.0 192.168.1.1</span></code></pre></div>
+<p>If successful, the Command Prompt will display: <code>OK!</code></p>
+<h3 id="making-routes-persistent">Making Routes Persistent</h3>
+<p>To ensure a static route remains in the Windows routing table across
+system reboots, insert the <code>-p</code> flag immediately after the
+<code>route</code> command:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>route <span class="at">-p</span> ADD 192.168.20.0 MASK 255.255.255.0 192.168.1.1</span></code></pre></div>
+<p>Persistent routes are stored in the Windows Registry under:
+<code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\PersistentRoutes</code></p>
+<h3 id="specifying-an-interface-index">Specifying an Interface
+Index</h3>
+<p>If your Windows 10 computer has multiple network adapters, traffic
+may need to exit through a specific network interface.</p>
+<ol type="1">
+<li><p>View your network adapters and their interface IDs by
+running:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>route print</span></code></pre></div></li>
+<li><p>The <strong>Interface List</strong> at the top displays the index
+number associated with each network card.</p></li>
+<li><p>Specify the interface index at the end of the command using the
+<code>IF</code> argument:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>route <span class="at">-p</span> ADD 10.0.0.0 MASK 255.0.0.0 192.168.1.1 IF 12</span></code></pre></div></li>
+</ol>
+<h3 id="verifying-and-removing-static-routes">Verifying and Removing
+Static Routes</h3>
+<p>To verify that the route was successfully added:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>route print</span></code></pre></div>
+<p>Look for your entry under the <strong>IPv4 Route Table</strong>
+section, or under <strong>Persistent Routes</strong> if the
+<code>-p</code> switch was used.</p>
+<p>To delete a configured static route, use the
+<code>route delete</code> command followed by the destination IP:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>route delete 192.168.20.0</span></code></pre></div></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/configure-static-routes-in-windows-10-using-route-add';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 64-Bit Kernel Memory and PTE Management - windows-10</title>
+    <meta name="description" content="In the 64-bit edition of Microsoft Windows 10, the operating system manages memory using a hierarchical page-table architecture that translates 64-bit virtual addresses into physical memory locations. Kernel-mode Page-Table Entries (PTEs) serve as the fun">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-64-bit-kernel-memory-and-pte-management">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 64-Bit Kernel Memory and PTE Management - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-64-bit-kernel-memory-and-pte-management" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In the 64-bit edition of Microsoft Windows 10, the operating system manages memory using a hierarchical page-table architecture that translates 64-bit virtual addresses into physical memory locations. Kernel-mode Page-Table Entries (PTEs) serve as the fun" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-64-bit-kernel-memory-and-pte-management">Windows 10
+64-Bit Kernel Memory and PTE Management</h1>
+<p>In the 64-bit edition of Microsoft Windows 10, the operating system
+manages memory using a hierarchical page-table architecture that
+translates 64-bit virtual addresses into physical memory locations.
+Kernel-mode Page-Table Entries (PTEs) serve as the fundamental data
+structures responsible for tracking this translation, controlling access
+privileges, and managing page states across physical RAM and secondary
+storage. This article details the structural mechanics of x64 PTEs in
+Windows 10, including the multi-level translation hierarchy, PTE state
+tracking, dynamic self-referencing page-table mechanisms, and security
+features like Kernel Virtual Address Shadowing (KVAS).</p>
+<h3 id="multi-level-page-table-hierarchy">Multi-Level Page-Table
+Hierarchy</h3>
+<p>Windows 10 on the x64 architecture primarily utilizes 48-bit virtual
+addressing, structured through a four-level paging hierarchy. The
+virtual address space is split evenly into two 128 TB regions: user
+space (lower half) and kernel space (canonical upper half, typically
+beginning at <code>0xFFFF800000000000</code>).</p>
+<p>To translate a 64-bit virtual address, the processor uses the
+hardware-defined CR3 control register, which holds the base physical
+address of the initial root table. The translation spans four distinct
+structures:</p>
+<ol type="1">
+<li><strong>Page Map Level 4 (PML4):</strong> Bits 47–39 index into the
+PML4 table to locate a Page Directory Pointer Table (PDPT).</li>
+<li><strong>Page Directory Pointer Table (PDPT):</strong> Bits 38–30
+index into the PDPT to locate a Page Directory (PD).</li>
+<li><strong>Page Directory (PD):</strong> Bits 29–21 index into the PD
+to locate a Page Table (PT).</li>
+<li><strong>Page Table (PT):</strong> Bits 20–12 index into the PT to
+pinpoint the exact Page-Table Entry (PTE).</li>
+<li><strong>Page Offset:</strong> Bits 11–0 provide the direct byte
+offset within the selected 4 KB physical frame.</li>
+</ol>
+<p>If large pages are used (such as 2 MB pages for the kernel image or
+high-performance pools), the PD entry points directly to a 2 MB physical
+frame, bypassing the PT stage entirely.</p>
+<h3 id="hardware-vs-software-pte-structure">Hardware vs. Software PTE
+Structure</h3>
+<p>A 64-bit PTE occupies 8 bytes (64 bits). Its internal bit layout
+changes dynamically depending on whether the target page currently
+resides in physical RAM.</p>
+<h4 id="valid-hardware-ptes">Valid (Hardware) PTEs</h4>
+<p>When the least significant bit (Bit 0, the <em>Present</em> bit) is
+set to <code>1</code>, the CPU hardware Memory Management Unit (MMU)
+handles translation directly. Key bits include:</p>
+<ul>
+<li><strong>Present (P, Bit 0):</strong> Must be <code>1</code> for the
+page to be valid in RAM.</li>
+<li><strong>Read/Write (R/W, Bit 1):</strong> Configures read-only or
+read/write access.</li>
+<li><strong>User/Supervisor (U/S, Bit 2):</strong> Enforces isolation;
+set to <code>0</code> for kernel-mode pages to prevent user-mode
+execution or access.</li>
+<li><strong>Page-level Write-Through and Cache-Disable (PWT/PCD, Bits
+3–4):</strong> Controls caching policies.</li>
+<li><strong>Accessed and Dirty (A/D, Bits 5–6):</strong> Set by hardware
+when the page is read or written.</li>
+<li><strong>Physical Frame Number (PFN, Bits 12–47):</strong> Contains
+the upper bits of the physical address pointing to the 4 KB page
+frame.</li>
+<li><strong>No-Execute / Execute-Disable (NX/XD, Bit 63):</strong>
+Mitigates exploitation by marking data pages as non-executable.</li>
+</ul>
+<h4 id="invalid-software-ptes">Invalid (Software) PTEs</h4>
+<p>When Bit 0 is <code>0</code>, referencing the address triggers a page
+fault (Interrupt 14). The Windows Memory Manager intercepts this fault
+and interprets the remaining 63 bits as custom software flags. Software
+PTEs fall into several categories:</p>
+<ul>
+<li><strong>Demand-Zero:</strong> Instructs the kernel to allocate a
+fresh, zeroed physical frame on first access.</li>
+<li><strong>Transition:</strong> The page is present in physical memory
+(e.g., on the modified or standby list) but marked invalid to force a
+soft fault, which quickly restores the valid state.</li>
+<li><strong>Pagefile:</strong> Contains indices indicating which
+pagefile and disk block stores the swapped-out content.</li>
+<li><strong>Prototype PTEs:</strong> Pointers to unified structures used
+for shared resources, such as memory-mapped files and shared DLL
+sections, ensuring multiple processes map to identical physical backing
+stores without duplicating allocation metadata.</li>
+</ul>
+<h3 id="dynamic-self-referential-page-tables">Dynamic Self-Referential
+Page Tables</h3>
+<p>Prior to Windows 10, the operating system used a predictable
+self-referencing PML4 entry (traditionally index <code>0x1ED</code>,
+mapping the page directory tables at virtual address
+<code>0xFFFFF68000000000</code>). This static mapping allowed kernel
+code to calculate the virtual address of any page-table structure
+efficiently, but it became a primary target for kernel exploitation.</p>
+<p>Beginning with Windows 10, Microsoft introduced randomized
+self-referential entries. During boot initialization, the Memory Manager
+selects a random PML4 slot to point back to the PML4 itself. Because
+this self-map address changes with every system restart, exploit
+payloads cannot rely on hardcoded page-table base addresses to
+manipulate PTE permissions (such as toggling the Read/Write or NX
+bits).</p>
+<h3 id="page-frame-number-pfn-database-synchronization">Page Frame
+Number (PFN) Database Synchronization</h3>
+<p>Every valid PTE coordinates with the Windows PFN database
+(<code>nt!MmPfnDatabase</code>), an array of structures that stores
+metadata for every physical page in RAM. When a PTE is updated, the
+kernel updates the associated <code>MMPFN</code> entry to reflect state
+changes, reference counts, and the original virtual address.</p>
+<p>When modifying PTE attributes (such as unmapping a page or marking it
+invalid), the operating system issues an <code>INVLPG</code> (Invalidate
+Page) instruction or a multi-processor inter-processor interrupt (IPI)
+to flush stale translations from the CPU's Translation Lookaside Buffer
+(TLB).</p>
+<h3 id="kernel-virtual-address-shadowing-kvas">Kernel Virtual Address
+Shadowing (KVAS)</h3>
+<p>To mitigate side-channel speculative execution vulnerabilities (such
+as Meltdown), modern builds of 64-bit Windows 10 implement Kernel
+Virtual Address Shadowing.</p>
+<p>Under KVAS, the system maintains two separate PML4 translation tables
+for each user process:</p>
+<ul>
+<li><strong>User PML4:</strong> Active when code executes in ring 3. It
+maps the user-mode address space, but masks almost all kernel-mode
+memory, exposing only minimal entry-point stubs and interrupt-handling
+tables required to transition into the kernel.</li>
+<li><strong>Kernel PML4:</strong> Loaded into the CR3 register upon
+entry to ring 0 via system calls or hardware interrupts. This table
+contains the complete, unshadowed view of kernel-space PTEs.</li>
+</ul>
+<p>By segmenting the kernel PTE landscape across isolated CR3 contexts,
+Windows 10 prevents speculative hardware operations in user mode from
+probing protected kernel memory structures.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-64-bit-kernel-memory-and-pte-management';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

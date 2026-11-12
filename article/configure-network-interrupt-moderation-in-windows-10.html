@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Network Interrupt Moderation in Windows 10 - windows-10</title>
+    <meta name="description" content="Interrupt moderation in Windows 10 is a network card mechanism that bundles incoming packets and generates a single hardware interrupt rather than signaling the CPU for every individual packet. By managing interrupt moderation rates, the operating system">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/configure-network-interrupt-moderation-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure Network Interrupt Moderation in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/configure-network-interrupt-moderation-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Interrupt moderation in Windows 10 is a network card mechanism that bundles incoming packets and generates a single hardware interrupt rather than signaling the CPU for every individual packet. By managing interrupt moderation rates, the operating system" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-network-interrupt-moderation-in-windows-10">Configure
+Network Interrupt Moderation in Windows 10</h1>
+<p>Interrupt moderation in Windows 10 is a network card mechanism that
+bundles incoming packets and generates a single hardware interrupt
+rather than signaling the CPU for every individual packet. By managing
+interrupt moderation rates, the operating system balances processor
+utilization with network latency, allowing users and administrators to
+optimize for high-throughput environments or low-latency tasks such as
+online gaming and real-time audio streaming. Windows 10 configures these
+rates primarily through vendor-supplied network device drivers, Device
+Manager properties, PowerShell cmdlets, and the Windows Registry.</p>
+<h3 id="understanding-interrupt-moderation-rates">Understanding
+Interrupt Moderation Rates</h3>
+<p>When a network adapter receives packets, it issues interrupts to the
+CPU to process the data. Under high traffic, thousands of interrupts per
+second can cause "interrupt storms," overwhelming the processor.
+Interrupt moderation introduces a brief delay, coalescing multiple
+packets into a single processing cycle.</p>
+<p>Network interface cards (NICs) generally support several moderation
+presets:</p>
+<ul>
+<li><strong>Off:</strong> Disables packet coalescing. The NIC fires an
+interrupt for every incoming packet, providing the absolute lowest
+latency at the cost of significantly higher CPU usage.</li>
+<li><strong>Low:</strong> Moderates interrupts lightly, suitable for
+environments requiring low latency while maintaining basic CPU
+safeguards.</li>
+<li><strong>Medium:</strong> A balanced profile providing standard
+network performance and modest CPU savings.</li>
+<li><strong>High:</strong> Heavily coalesces packets to minimize CPU
+utilization, ideal for high-throughput file transfers where latency is
+not a critical factor.</li>
+<li><strong>Adaptive (Dynamic):</strong> The default state for many
+modern controllers. The driver automatically adjusts the moderation rate
+based on current traffic volume and packet sizes.</li>
+</ul>
+<hr />
+<h3 id="configuring-via-device-manager">Configuring via Device
+Manager</h3>
+<p>The most accessible method to modify interrupt moderation rates in
+Windows 10 is through the graphical interface provided by Device
+Manager:</p>
+<ol type="1">
+<li>Press <code>Win + X</code> and select <strong>Device
+Manager</strong>.</li>
+<li>Expand the <strong>Network adapters</strong> section.</li>
+<li>Right-click the active physical network adapter and select
+<strong>Properties</strong>.</li>
+<li>Navigate to the <strong>Advanced</strong> tab.</li>
+<li>In the <strong>Property</strong> list, locate <strong>Interrupt
+Moderation</strong> and <strong>Interrupt Moderation Rate</strong>.</li>
+<li>Set <strong>Interrupt Moderation</strong> to
+<strong>Enabled</strong> or <strong>Disabled</strong>. If enabled,
+select <strong>Interrupt Moderation Rate</strong> and choose a value
+from the drop-down menu (<strong>Off</strong>, <strong>Low</strong>,
+<strong>Medium</strong>, <strong>High</strong>, or
+<strong>Adaptive</strong>).</li>
+<li>Click <strong>OK</strong> to apply the changes immediately. The
+network connection may momentarily drop and reconnect as the driver
+restarts.</li>
+</ol>
+<hr />
+<h3 id="configuring-via-windows-powershell">Configuring via Windows
+PowerShell</h3>
+<p>Advanced configurations and automated deployments can be handled
+directly through PowerShell using the <code>NetAdapter</code>
+module:</p>
+<ol type="1">
+<li><p>Open PowerShell with administrative privileges.</p></li>
+<li><p>View the current interrupt settings for an adapter:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Get-NetAdapterAdvancedProperty <span class="op">-</span>Name <span class="st">&quot;Ethernet&quot;</span> <span class="op">-</span>DisplayName <span class="st">&quot;Interrupt Moderation*&quot;</span></span></code></pre></div></li>
+<li><p>Enable or disable interrupt moderation:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Set-NetAdapterAdvancedProperty <span class="op">-</span>Name <span class="st">&quot;Ethernet&quot;</span> <span class="op">-</span>DisplayName <span class="st">&quot;Interrupt Moderation&quot;</span> <span class="op">-</span>DisplayValue <span class="st">&quot;Enabled&quot;</span></span></code></pre></div></li>
+<li><p>Set a specific rate (values must match driver-specific strings,
+such as <code>Adaptive</code>, <code>Low</code>, <code>Medium</code>, or
+<code>High</code>):</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Set-NetAdapterAdvancedProperty <span class="op">-</span>Name <span class="st">&quot;Ethernet&quot;</span> <span class="op">-</span>DisplayName <span class="st">&quot;Interrupt Moderation Rate&quot;</span> <span class="op">-</span>DisplayValue <span class="st">&quot;Adaptive&quot;</span></span></code></pre></div></li>
+</ol>
+<hr />
+<h3 id="configuring-via-the-windows-registry">Configuring via the
+Windows Registry</h3>
+<p>Windows 10 stores network driver parameters in the registry. Changes
+made here apply to the driver initialization level:</p>
+<ol type="1">
+<li>Locate the adapter driver instance key under:
+<code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}</code></li>
+<li>Identify the numeric subkey (e.g., <code>0001</code>,
+<code>0002</code>) corresponding to the specific physical adapter by
+checking the <code>DriverDesc</code> value.</li>
+<li>Modify the standardized driver keys:
+<ul>
+<li><code>*InterruptModeration</code>: Set to <code>1</code> (Enabled)
+or <code>0</code> (Disabled).</li>
+<li><code>ITR</code> or <code>*InterruptModerationRate</code>: Controls
+the specific interrupt rate limit, frequently represented as an integer
+threshold defining the maximum interrupts per second (values vary
+depending on hardware vendors such as Intel or Realtek).</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="performance-implications">Performance Implications</h3>
+<p>Lowering or disabling the moderation rate reduces packet processing
+delay, decreasing round-trip network latency. However, doing so
+increases the interrupt processing workload on system cores. For modern
+multi-core processors running gigabit or multi-gigabit workloads,
+keeping the setting on <strong>Adaptive</strong> or <strong>Low</strong>
+provides the best balance between responsiveness and system
+stability.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/configure-network-interrupt-moderation-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

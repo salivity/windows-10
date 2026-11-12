@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Custom Pagefile Size in Windows 10 - windows-10</title>
+    <meta name="description" content="Windows 10 manages virtual memory using a dedicated hidden file named pagefile.sys, which acts as an extension of physical RAM when system memory is depleted. By default, Windows dynamically manages the size of this file, but administrators can establish">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/configure-custom-pagefile-size-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure Custom Pagefile Size in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/configure-custom-pagefile-size-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 manages virtual memory using a dedicated hidden file named pagefile.sys, which acts as an extension of physical RAM when system memory is depleted. By default, Windows dynamically manages the size of this file, but administrators can establish" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-custom-pagefile-size-in-windows-10">Configure Custom
+Pagefile Size in Windows 10</h1>
+<p>Windows 10 manages virtual memory using a dedicated hidden file named
+<code>pagefile.sys</code>, which acts as an extension of physical RAM
+when system memory is depleted. By default, Windows dynamically manages
+the size of this file, but administrators can establish custom minimum
+(initial) and maximum size thresholds. This guide explains how the
+operating system utilizes these thresholds and details the exact steps
+required to configure them manually.</p>
+<h3 id="how-windows-10-uses-pagefile-thresholds">How Windows 10 Uses
+Pagefile Thresholds</h3>
+<p>When you configure a custom pagefile, Windows 10 enforces two
+distinct boundaries:</p>
+<ul>
+<li><strong>Initial Size (Minimum Threshold):</strong> This is the
+baseline amount of disk space Windows immediately allocates to
+<code>pagefile.sys</code> upon system boot. Setting an adequate initial
+size prevents the operating system from constantly expanding the file
+during standard workloads, reducing disk fragmentation.</li>
+<li><strong>Maximum Size (Maximum Threshold):</strong> This represents
+the hard upper limit to which the pagefile can dynamically expand under
+heavy memory pressure. If the combined capacity of physical RAM and this
+maximum limit is exhausted, Windows will generate out-of-memory errors
+and may terminate unstable applications.</li>
+</ul>
+<h3 id="steps-to-configure-custom-thresholds-in-windows-10">Steps to
+Configure Custom Thresholds in Windows 10</h3>
+<ol type="1">
+<li>Press <strong>Windows Key + R</strong> to open the Run dialog
+box.</li>
+<li>Type <code>sysdm.cpl</code> and press <strong>Enter</strong> to open
+<strong>System Properties</strong>.</li>
+<li>Navigate to the <strong>Advanced</strong> tab.</li>
+<li>Under the <strong>Performance</strong> section, click the
+<strong>Settings</strong> button.</li>
+<li>In the <strong>Performance Options</strong> window, switch to the
+<strong>Advanced</strong> tab.</li>
+<li>Under the <strong>Virtual memory</strong> section, click
+<strong>Change...</strong>.</li>
+<li>Uncheck the option labeled <strong>Automatically manage paging file
+size for all drives</strong>.</li>
+<li>Select the drive volume (typically <code>C:</code>) where you want
+the paging file to reside.</li>
+<li>Select the <strong>Custom size</strong> radio button.</li>
+<li>Enter your desired values in megabytes (MB):
+<ul>
+<li><strong>Initial size (MB):</strong> The minimum baseline
+capacity.</li>
+<li><strong>Maximum size (MB):</strong> The upper allocation limit.</li>
+</ul></li>
+<li>Click the <strong>Set</strong> button to register the changes.</li>
+<li>Click <strong>OK</strong> across all open dialog windows and restart
+your computer to apply the new memory configuration.</li>
+</ol>
+<h3 id="sizing-considerations">Sizing Considerations</h3>
+<p>A common practice for stability is to set the <strong>Initial
+size</strong> and <strong>Maximum size</strong> to the exact same value.
+This locks <code>pagefile.sys</code> to a static size on the drive,
+eliminating dynamic resizing operations and preventing file
+fragmentation on traditional hard drives. Standard guidelines recommend
+an initial size of 1.5 times your physical RAM and a maximum size of up
+to 3 times your physical RAM, though systems with large amounts of RAM
+(16 GB or higher) generally require significantly less.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/configure-custom-pagefile-size-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

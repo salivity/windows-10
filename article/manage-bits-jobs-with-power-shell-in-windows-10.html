@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage BITS Jobs with PowerShell in Windows 10 - windows-10</title>
+    <meta name="description" content="The Microsoft Windows 10 operating system manages asynchronous, prioritized file transfers using the Background Intelligent Transfer Service (BITS), which can be fully controlled through Windows PowerShell. By utilizing the built-in BitsTransfer module, a">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/manage-bits-jobs-with-power-shell-in-windows-10">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Manage BITS Jobs with PowerShell in Windows 10 - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/manage-bits-jobs-with-power-shell-in-windows-10" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Microsoft Windows 10 operating system manages asynchronous, prioritized file transfers using the Background Intelligent Transfer Service (BITS), which can be fully controlled through Windows PowerShell. By utilizing the built-in BitsTransfer module, a" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="manage-bits-jobs-with-powershell-in-windows-10">Manage BITS Jobs
+with PowerShell in Windows 10</h1>
+<p>The Microsoft Windows 10 operating system manages asynchronous,
+prioritized file transfers using the Background Intelligent Transfer
+Service (BITS), which can be fully controlled through Windows
+PowerShell. By utilizing the built-in <code>BitsTransfer</code> module,
+administrators and users can create, monitor, pause, resume, and
+finalize background file downloads and uploads. BITS optimizes network
+usage by leveraging idle bandwidth, ensuring that foreground
+applications are not impacted, and automatically recovers file transfers
+after network interruptions or system reboots.</p>
+<h3 id="the-bitstransfer-powershell-module">The BitsTransfer PowerShell
+Module</h3>
+<p>Windows 10 includes the <code>BitsTransfer</code> module by default.
+It provides a set of cmdlets designed to interact directly with the BITS
+Windows service, supporting file transfers over HTTP, HTTPS, and
+SMB.</p>
+<p>The primary cmdlets include:</p>
+<ul>
+<li><code>Start-BitsTransfer</code></li>
+<li><code>Get-BitsTransfer</code></li>
+<li><code>Suspend-BitsTransfer</code></li>
+<li><code>Resume-BitsTransfer</code></li>
+<li><code>Set-BitsTransfer</code></li>
+<li><code>Complete-BitsTransfer</code></li>
+<li><code>Remove-BitsTransfer</code></li>
+<li><code>Add-BitsFile</code></li>
+</ul>
+<h3 id="initiating-file-transfers">Initiating File Transfers</h3>
+<p>The simplest way to initiate a transfer is with
+<code>Start-BitsTransfer</code>. By default, this cmdlet runs
+synchronously, blocking the PowerShell console until the transfer is
+finished.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-BitsTransfer</span> <span class="op">-</span>Source <span class="st">&quot;https://example.com/file.iso&quot;</span> <span class="op">-</span>Destination <span class="st">&quot;C:\Downloads\file.iso&quot;</span></span></code></pre></div>
+<p>To run the job in the background, use the <code>-Asynchronous</code>
+parameter. This immediately returns control to the PowerShell session
+and outputs a BITS job object.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-BitsTransfer</span> <span class="op">-</span>Source <span class="st">&quot;https://example.com/file.iso&quot;</span> <span class="op">-</span>Destination <span class="st">&quot;C:\Downloads\file.iso&quot;</span> <span class="op">-</span>Asynchronous</span></code></pre></div>
+<h3 id="monitoring-active-jobs">Monitoring Active Jobs</h3>
+<p>Asynchronous transfers run as background jobs managed by the
+operating system. You can inspect the status, progress, and error states
+of all active jobs using <code>Get-BitsTransfer</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-BitsTransfer</span></span></code></pre></div>
+<p>To view detailed progress, including the bytes transferred and
+current transfer rate, pipeline the job into
+<code>Format-List</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-BitsTransfer</span> <span class="op">|</span> <span class="fu">Format-List</span> <span class="op">-</span>Property JobId<span class="op">,</span> DisplayName<span class="op">,</span> JobState<span class="op">,</span> BytesTotal<span class="op">,</span> BytesTransferred</span></code></pre></div>
+<p>Possible job states include <code>Connecting</code>,
+<code>Transferring</code>, <code>Transferred</code>,
+<code>Suspended</code>, and <code>Error</code>.</p>
+<h3 id="managing-job-states">Managing Job States</h3>
+<p>BITS allows dynamic job control to adapt to network availability or
+user needs:</p>
+<ul>
+<li><p><strong>Pausing a Job:</strong> Temporarily halt a transfer using
+<code>Suspend-BitsTransfer</code>.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-BitsTransfer</span> <span class="op">|</span> <span class="fu">Suspend-BitsTransfer</span></span></code></pre></div></li>
+<li><p><strong>Resuming a Job:</strong> Continue a suspended or
+interrupted transfer using <code>Resume-BitsTransfer</code>.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-BitsTransfer</span> <span class="op">|</span> <span class="fu">Resume-BitsTransfer</span></span></code></pre></div></li>
+<li><p><strong>Canceling a Job:</strong> Discard a transfer and remove
+temporary files with <code>Remove-BitsTransfer</code>.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-BitsTransfer</span> <span class="op">|</span> <span class="fu">Remove-BitsTransfer</span></span></code></pre></div></li>
+</ul>
+<h3 id="finalizing-transfers">Finalizing Transfers</h3>
+<p>When an asynchronous transfer finishes downloading, its state changes
+to <code>Transferred</code>, but the file is not yet accessible at the
+target path. BITS holds the file in a temporary state until it is
+explicitly finalized.</p>
+<p>To complete the process and make the file available in its target
+directory, execute <code>Complete-BitsTransfer</code>:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-BitsTransfer</span> <span class="op">-</span>JobState Transferred <span class="op">|</span> <span class="fu">Complete-BitsTransfer</span></span></code></pre></div>
+<p>If this command is not run, the file will remain hidden in a
+temporary cache and will eventually be purged if the job expires.</p>
+<h3 id="configuring-priority-and-bandwidth-usage">Configuring Priority
+and Bandwidth Usage</h3>
+<p>Windows 10 determines how aggressively BITS uses network bandwidth
+through priority levels: <code>Foreground</code>, <code>High</code>,
+<code>Normal</code>, and <code>Low</code>.</p>
+<ul>
+<li><strong>Foreground:</strong> Transfers run with highest priority and
+compete directly with other active network traffic.</li>
+<li><strong>Normal / Low:</strong> Transfers use only idle network
+bandwidth.</li>
+</ul>
+<p>Priority can be defined at creation or modified on an existing
+job:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set priority during creation</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-BitsTransfer</span> <span class="op">-</span>Source <span class="st">&quot;https://example.com/update.msu&quot;</span> <span class="op">-</span>Destination <span class="st">&quot;C:\Updates\update.msu&quot;</span> <span class="op">-</span>Priority High <span class="op">-</span>Asynchronous</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Modify an active job</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-BitsTransfer</span> <span class="op">|</span> <span class="fu">Set-BitsTransfer</span> <span class="op">-</span>Priority Low</span></code></pre></div>
+<p>Using these cmdlets, Windows 10 gives administrators programmatic,
+fine-grained control over network-resilient downloads and administrative
+payload deployments.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/manage-bits-jobs-with-power-shell-in-windows-10';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

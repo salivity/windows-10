@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Caps Background Process Resources - windows-10</title>
+    <meta name="description" content="Windows 10 maintains system responsiveness and energy efficiency by actively isolating background tasks and capping their execution resources. Through an integrated framework of kernel-level Job Objects, dynamic CPU power throttling, thread priority depri">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-caps-background-process-resources">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Caps Background Process Resources - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-caps-background-process-resources" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows 10 maintains system responsiveness and energy efficiency by actively isolating background tasks and capping their execution resources. Through an integrated framework of kernel-level Job Objects, dynamic CPU power throttling, thread priority depri" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-caps-background-process-resources">How Windows 10
+Caps Background Process Resources</h1>
+<p>Windows 10 maintains system responsiveness and energy efficiency by
+actively isolating background tasks and capping their execution
+resources. Through an integrated framework of kernel-level Job Objects,
+dynamic CPU power throttling, thread priority deprioritization, and
+memory working-set limits, the operating system prevents non-focused
+applications from monopolizing hardware. This article explains the
+technical mechanisms Windows 10 uses to enforce these execution caps on
+background processes.</p>
+<h3 id="job-objects-and-kernel-level-hard-caps">Job Objects and
+Kernel-Level Hard Caps</h3>
+<p>The primary architectural mechanism Windows 10 uses to isolate
+processes is the Job Object. A Job Object allows the operating system to
+treat a group of processes as a single unit and apply strict resource
+limits via the kernel.</p>
+<p>Using the <code>SetInformationJobObject</code> API with the
+<code>JobObjectCpuRateControlInformation</code> structure, the system or
+an administrator can configure explicit CPU caps:</p>
+<ul>
+<li><strong>Hard Caps:</strong> The system sets a hard percentage limit
+on CPU cycles. Once a process reaches this threshold, its execution is
+halted until the next scheduling cycle, ensuring it cannot exceed its
+quota regardless of available headroom.</li>
+<li><strong>Weight-Based Allocation:</strong> Instead of a fixed
+ceiling, processes can be assigned a relative weight. Background
+processes are assigned lower weights, meaning they only receive
+significant CPU time if higher-priority foreground tasks are idle.</li>
+<li><strong>Min/Max Working Set Limits:</strong> Job Objects also
+enforce physical memory boundaries. The operating system caps the
+maximum amount of RAM a process can hold in its working set, forcing the
+process to page data to disk if it attempts to exceed that
+threshold.</li>
+</ul>
+<h3 id="power-throttling-and-cpu-frequency-modulation">Power Throttling
+and CPU Frequency Modulation</h3>
+<p>Introduced in Windows 10 (version 1709), Power Throttling is an
+automated execution cap designed primarily for portable devices. When an
+application transitions to the background and ceases to interact with
+the user, the Windows Power Management subsystem actively targets its
+threads.</p>
+<ul>
+<li><strong>Instruction Throttling:</strong> Utilizing modern processor
+capabilities like Intel Speed Shift and AMD Collaborative Power and
+Performance Control (CPPC), the kernel instructs the CPU to run the
+threads of throttled processes at their most energy-efficient operating
+frequencies.</li>
+<li><strong>Core Scheduling:</strong> On heterogeneous systems (such as
+architectures with Performance and Efficiency cores), the Windows
+scheduler forcibly routes capped background tasks exclusively to
+energy-efficient cores, reserving high-throughput cores for the active
+foreground application.</li>
+</ul>
+<h3 id="dynamic-scheduling-and-priority-degradation">Dynamic Scheduling
+and Priority Degradation</h3>
+<p>Windows 10 uses dynamic priority-based scheduling to prevent
+background processes from consuming execution resources needed by the
+user. Every thread has a base priority ranging from 0 to 31.</p>
+<ul>
+<li><strong>CPU Priority Deprioritization:</strong> Background processes
+are automatically demoted to lower scheduling priority classes, such as
+<code>IDLE_PRIORITY_CLASS</code> or
+<code>BELOW_NORMAL_PRIORITY_CLASS</code>. Threads in these classes are
+preempted instantly whenever a normal or high-priority foreground thread
+demands execution.</li>
+<li><strong>Foreground Boosting:</strong> Windows dynamically increases
+the time slice (quantum) and priority level of the process currently
+owning the focused window, effectively capping the access background
+threads have to execution cycles.</li>
+</ul>
+<h3 id="io-and-memory-isolation">I/O and Memory Isolation</h3>
+<p>Execution caps extend beyond CPU cycles to system bus bandwidth, disk
+access, and memory allocation.</p>
+<ul>
+<li><strong>I/O Priority Throttling:</strong> Background processes are
+subjected to lowered I/O priorities (such as <code>Very Low</code> or
+<code>Low</code>). If a background process attempts disk-heavy
+operations, its read and write requests are queued behind foreground
+requests. This avoids storage saturation and preserves UI
+responsiveness.</li>
+<li><strong>Memory Trimming:</strong> Windows 10 continuously evaluates
+background memory utilization. When memory pressure arises, the Memory
+Manager aggressively trims the working sets of background tasks,
+evicting non-essential pages to make room for active applications.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-caps-background-process-resources';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

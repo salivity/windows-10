@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Storage Health and SMART Alerts Explained - windows-10</title>
+    <meta name="description" content="This article covers the purpose and core functionality of the Storage Health and SMART monitoring features integrated into the Microsoft Windows 10 operating system. It explains how Windows continuously evaluates the physical reliability of modern solid-s">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/windows-10-storage-health-and-smart-alerts-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows 10 Storage Health and SMART Alerts Explained - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/windows-10-storage-health-and-smart-alerts-explained" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article covers the purpose and core functionality of the Storage Health and SMART monitoring features integrated into the Microsoft Windows 10 operating system. It explains how Windows continuously evaluates the physical reliability of modern solid-s" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-10-storage-health-and-smart-alerts-explained">Windows 10
+Storage Health and SMART Alerts Explained</h1>
+<p>This article covers the purpose and core functionality of the Storage
+Health and SMART monitoring features integrated into the Microsoft
+Windows 10 operating system. It explains how Windows continuously
+evaluates the physical reliability of modern solid-state drives (SSDs),
+why these proactive alerts are critical for system stability and data
+protection, and the exact steps users must take when an alert warns of
+an impending drive failure.</p>
+<h3 id="the-purpose-of-storage-health-monitoring-in-windows-10">The
+Purpose of Storage Health Monitoring in Windows 10</h3>
+<p>The primary purpose of Windows 10 Storage Health monitoring is to
+protect users from sudden, catastrophic data loss caused by failing
+storage hardware. Historically, storage drives—particularly Non-Volatile
+Memory Express (NVMe) SSDs—could fail abruptly with little to no obvious
+physical warning signs.</p>
+<p>To address this, Windows 10 includes native support for SMART
+(Self-Monitoring, Analysis, and Reporting Technology) alerts. This
+system functions as an automated early warning system designed to detect
+hardware degradation before a drive becomes completely read-only or
+entirely unresponsive.</p>
+<h3 id="how-smart-monitoring-alerts-function">How SMART Monitoring
+Alerts Function</h3>
+<p>Modern storage drives feature built-in diagnostic sensors that track
+a variety of operational metrics, such as:</p>
+<ul>
+<li><strong>Available Spare Capacity:</strong> Measures the percentage
+of remaining reserve memory cells available to replace worn-out
+sectors.</li>
+<li><strong>Drive Temperature:</strong> Identifies ongoing thermal
+throttling or overheating that could permanently damage internal
+components.</li>
+<li><strong>Reliability and Error Rates:</strong> Tracks read/write
+errors, media anomalies, and memory degradation over time.</li>
+</ul>
+<p>Windows 10 actively communicates with the drive's firmware to read
+these SMART attributes. When a critical metric breaches a predefined
+manufacturer threshold—such as available spare blocks dropping too
+low—the operating system generates an urgent desktop notification to
+inform the user that the hardware requires immediate attention.</p>
+<h3 id="why-these-alerts-are-critical">Why These Alerts Are
+Critical</h3>
+<ol type="1">
+<li><strong>Preemptive Data Preservation:</strong> The chief benefit of
+the alert is providing a window of opportunity to back up irreplaceable
+files to external media or cloud storage before the drive fails
+permanently.</li>
+<li><strong>Preventing Sudden System Crashes:</strong> A dying operating
+system drive can cause blue screens (BSODs), file system corruption, and
+random freezes. Catching degradation early maintains system
+integrity.</li>
+<li><strong>Streamlined Troubleshooting:</strong> Instead of guessing
+whether system instability is caused by software bugs, malware, or
+driver issues, the direct alert clearly identifies the physical storage
+drive as the root cause.</li>
+</ol>
+<h3 id="recommended-actions-following-an-alert">Recommended Actions
+Following an Alert</h3>
+<p>When Windows 10 triggers a Storage Health alert, the storage drive is
+considered compromised. Users should immediately take the following
+actions:</p>
+<ul>
+<li><strong>Back Up Critical Data:</strong> Copy all essential files to
+a secure secondary location or perform a full disk image.</li>
+<li><strong>Check Drive Details in Settings:</strong> Navigate to
+<strong>Settings &gt; System &gt; Storage &gt; Manage Disks and
+Volumes</strong>, select the drive, and choose
+<strong>Properties</strong> to inspect the estimated remaining lifespan,
+temperature, and specific health warnings.</li>
+<li><strong>Replace the Drive:</strong> Because SMART warnings indicate
+irreversible physical wear or hardware failure, the affected drive
+should be replaced promptly.</li>
+</ul></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/windows-10-storage-health-and-smart-alerts-explained';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

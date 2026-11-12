@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Windows 10 Implements AppLocker Whitelisting - windows-10</title>
+    <meta name="description" content="Microsoft Windows 10 implements application whitelisting through AppLocker, a native security framework designed to restrict unauthorized software, scripts, and installers from executing. Available in Windows 10 Enterprise and Education editions, AppLocke">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/how-windows-10-implements-app-locker-whitelisting">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Windows 10 Implements AppLocker Whitelisting - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/how-windows-10-implements-app-locker-whitelisting" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Microsoft Windows 10 implements application whitelisting through AppLocker, a native security framework designed to restrict unauthorized software, scripts, and installers from executing. Available in Windows 10 Enterprise and Education editions, AppLocke" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-windows-10-implements-applocker-whitelisting">How Windows 10
+Implements AppLocker Whitelisting</h1>
+<p>Microsoft Windows 10 implements application whitelisting through
+AppLocker, a native security framework designed to restrict unauthorized
+software, scripts, and installers from executing. Available in Windows
+10 Enterprise and Education editions, AppLocker enforces administrative
+policies by intercepting execution requests at the kernel level,
+evaluating file properties against a predefined set of allow rules, and
+either permitting or denying process launch.</p>
+<h3 id="core-components-and-execution-mechanism">Core Components and
+Execution Mechanism</h3>
+<p>AppLocker relies on two fundamental operating system components to
+identify and evaluate binaries:</p>
+<ol type="1">
+<li><strong>Application Identity Service
+(<code>AppIDSvc</code>):</strong> This background service extracts
+metadata from target files—such as digital signatures, product names,
+versions, and file hashes—required to match files against configured
+policies. The service must be set to run automatically for AppLocker
+enforcement to function.</li>
+<li><strong>AppLocker Kernel Driver (<code>appid.sys</code>):</strong>
+Windows 10 intercepts process creation using kernel-level process
+creation callbacks (<code>PsSetCreateProcessNotifyRoutineEx</code>).
+When a user attempts to execute a file, <code>appid.sys</code>
+intercepts the call and queries the policy cache. If the binary matches
+an "Allow" rule, the process is allowed to spawn; if it matches a "Deny"
+rule or fails to match any allow rule, execution is blocked.</li>
+</ol>
+<h3 id="rule-collections">Rule Collections</h3>
+<p>AppLocker categorizes executables into distinct rule collections to
+manage different execution environments across the system:</p>
+<ul>
+<li><strong>Executable Rules:</strong> Controls standard binary
+execution, including <code>.exe</code> and <code>.com</code> files.</li>
+<li><strong>Windows Installer Rules:</strong> Regulates installation
+packages such as <code>.msi</code>, <code>.msp</code>, and
+<code>.mst</code> files.</li>
+<li><strong>Script Rules:</strong> Restricts script execution across
+interpreters, covering PowerShell (<code>.ps1</code>), batch files
+(<code>.bat</code>, <code>.cmd</code>), VBScript (<code>.vbs</code>),
+and JScript (<code>.js</code>).</li>
+<li><strong>Packaged App Rules:</strong> Governs Universal Windows
+Platform (UWP) apps and packaged store apps (<code>.appx</code>).</li>
+<li><strong>DLL Rules:</strong> Controls dynamic link libraries
+(<code>.dll</code> and <code>.ocx</code>). This collection is disabled
+by default due to high performance overhead, as every loaded module must
+be evaluated.</li>
+</ul>
+<h3 id="rule-condition-types">Rule Condition Types</h3>
+<p>Administrators configure AppLocker by specifying one of three primary
+condition types to determine whether an application is permitted:</p>
+<ul>
+<li><strong>Publisher Conditions:</strong> Leverages cryptographic
+digital signatures. Rules can permit all software signed by a specific
+vendor (e.g., Microsoft or a trusted internal certificate authority) or
+scope rules down to specific product names, file names, or minimum
+versions. This is the recommended condition because it survives software
+updates without administrative overhead.</li>
+<li><strong>Path Conditions:</strong> Evaluates the directory location
+of a file. While easy to implement, path rules require strict Access
+Control Lists (ACLs) to ensure non-administrative users cannot write to
+or modify files within approved directories.</li>
+<li><strong>File Hash Conditions:</strong> Generates an SHA-256
+authenticode hash of the binary. This method strictly ensures file
+integrity; however, hashes change with every software patch or update,
+requiring administrators to regenerate rules frequently.</li>
+</ul>
+<h3 id="enforcement-and-auditing">Enforcement and Auditing</h3>
+<p>AppLocker supports two operational modes:</p>
+<ul>
+<li><strong>Enforce Rules:</strong> All unapproved execution requests
+are blocked immediately, presenting the user with an access-denied error
+dialog.</li>
+<li><strong>Audit Only:</strong> Applications execute normally, but any
+execution that would have been blocked under an active policy is logged.
+All events are recorded in the Windows Event Viewer under
+<code>Applications and Services Logs &gt; Microsoft &gt; Windows &gt; AppLocker</code>.</li>
+</ul>
+<h3 id="management-and-deployment">Management and Deployment</h3>
+<p>AppLocker policies are centrally defined and distributed using Group
+Policy Objects (GPOs) through <code>secpol.msc</code> or Active
+Directory domain controllers. The policy structure is stored as an XML
+configuration under
+<code>Computer Configuration &gt; Windows Settings &gt; Security Settings &gt; Application Control Policies &gt; AppLocker</code>.
+Once updated, Windows 10 applies the policy locally via Group Policy
+client processing, directly updating the local registry under
+<code>HKLM\SOFTWARE\Policies\Microsoft\Windows\SrpV2</code> to feed the
+<code>appid.sys</code> kernel driver.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/how-windows-10-implements-app-locker-whitelisting';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

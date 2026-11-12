@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Dynamic Memory in Windows 10 Hyper-V - windows-10</title>
+    <meta name="description" content="Dynamic Memory in Windows 10 Client Hyper-V automatically balances memory distribution among running virtual machines and the host operating system. This article explains how Dynamic Memory works, details the key parameters governing its behavior, and pro">
+    <link rel="canonical" href="https://salivity.github.io/windows-10/article/configure-dynamic-memory-in-windows-10-hyper-v">
+    <link rel="search" type="application/opensearchdescription+xml" title="windows-10" href="/windows-10/opensearch.xml">
+    <link rel="icon" href="/windows-10/favicon.ico">
+    <link rel="stylesheet" href="/windows-10/css/style.css">
+    <link media="print" rel="stylesheet" href="/windows-10/css/print.css">
+    <script src="/windows-10/js/fuse.min.js"></script>
+    <script src="/windows-10/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure Dynamic Memory in Windows 10 Hyper-V - windows-10" />
+    <meta property="og:url" content="https://salivity.github.io/windows-10/article/configure-dynamic-memory-in-windows-10-hyper-v" />
+    <meta property="og:image" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/windows-10/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Dynamic Memory in Windows 10 Client Hyper-V automatically balances memory distribution among running virtual machines and the host operating system. This article explains how Dynamic Memory works, details the key parameters governing its behavior, and pro" />
+    <link rel="manifest" href="/windows-10/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/windows-10/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>windows-10</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/windows-10/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-dynamic-memory-in-windows-10-hyper-v">Configure
+Dynamic Memory in Windows 10 Hyper-V</h1>
+<p>Dynamic Memory in Windows 10 Client Hyper-V automatically balances
+memory distribution among running virtual machines and the host
+operating system. This article explains how Dynamic Memory works,
+details the key parameters governing its behavior, and provides
+step-by-step instructions for configuring it using both Hyper-V Manager
+and PowerShell.</p>
+<h3 id="understanding-dynamic-memory-parameters">Understanding Dynamic
+Memory Parameters</h3>
+<p>When Dynamic Memory is enabled, Hyper-V treats physical RAM as a
+shared pool, dynamically adding or removing memory from virtual machines
+based on real-time workload demands. The feature relies on five primary
+settings:</p>
+<ul>
+<li><strong>Startup RAM:</strong> The amount of memory allocated to the
+VM when it powers on. This value must be high enough to allow the guest
+operating system to complete its boot sequence.</li>
+<li><strong>Minimum RAM:</strong> The lowest amount of memory Hyper-V
+can reclaim from the VM after the operating system has finished booting.
+Hyper-V uses a synthetic balloon driver within the guest OS to reclaim
+unneeded memory down to this threshold.</li>
+<li><strong>Maximum RAM:</strong> The upper limit of memory that Hyper-V
+will allocate to the virtual machine, regardless of how much memory the
+guest requests.</li>
+<li><strong>Memory Buffer:</strong> A percentage value (default is 20%)
+that determines how much spare memory Hyper-V attempts to reserve inside
+the VM above its current demand. This ensures the VM can handle sudden
+spikes in activity without waiting for the host to assign additional
+physical RAM.</li>
+<li><strong>Memory Weight:</strong> A relative priority scale (from 1 to
+100) that determines which virtual machine receives available memory
+first when physical host resources are constrained.</li>
+</ul>
+<h3 id="how-to-configure-dynamic-memory-using-hyper-v-manager">How to
+Configure Dynamic Memory Using Hyper-V Manager</h3>
+<p>To configure Dynamic Memory through the graphical user interface:</p>
+<ol type="1">
+<li>Press <strong>Windows Key + S</strong>, type <strong>Hyper-V
+Manager</strong>, and open the application.</li>
+<li>Ensure the virtual machine is powered off if you need to adjust the
+Startup RAM. (Minimum, Maximum, Buffer, and Weight can often be adjusted
+while running on modern guest operating systems).</li>
+<li>In the Virtual Machines list, right-click the target VM and select
+<strong>Settings</strong>.</li>
+<li>In the left-hand navigation pane under the <strong>Hardware</strong>
+group, select <strong>Memory</strong>.</li>
+<li>Check the box labeled <strong>Enable Dynamic Memory</strong>.</li>
+<li>Set the <strong>RAM</strong> (Startup RAM), <strong>Minimum
+RAM</strong>, and <strong>Maximum RAM</strong> values according to your
+workload requirements.</li>
+<li>Adjust the <strong>Memory buffer</strong> percentage slider if your
+application demands rapid allocation.</li>
+<li>Adjust the <strong>Memory weight</strong> slider to assign resource
+priority relative to other virtual machines.</li>
+<li>Click <strong>Apply</strong>, then click <strong>OK</strong>.</li>
+</ol>
+<h3 id="how-to-configure-dynamic-memory-using-powershell">How to
+Configure Dynamic Memory Using PowerShell</h3>
+<p>Dynamic Memory settings can also be modified using administrative
+PowerShell commands via the <code>Set-VMMemory</code> cmdlet.</p>
+<ol type="1">
+<li>Right-click the <strong>Start</strong> button and select
+<strong>Windows PowerShell (Admin)</strong>.</li>
+<li>To enable and configure all Dynamic Memory parameters
+simultaneously, run the following command (replace <code>"VMName"</code>
+with your actual virtual machine name):</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Set-VMMemory <span class="op">-</span>VMName <span class="st">&quot;VMName&quot;</span> <span class="op">-</span>DynamicMemoryEnabled <span class="va">$true</span> <span class="op">-</span>StartupBytes 2GB <span class="op">-</span>MinimumBytes 1GB <span class="op">-</span>MaximumBytes 8GB <span class="op">-</span>Buffer <span class="dv">20</span> <span class="op">-</span>Priority <span class="dv">50</span></span></code></pre></div>
+<ol start="3" type="1">
+<li>To verify the new configuration, run:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Get-VMMemory <span class="op">-</span>VMName <span class="st">&quot;VMName&quot;</span></span></code></pre></div>
+<h3 id="how-windows-10-manages-allocation-at-runtime">How Windows 10
+Manages Allocation at Runtime</h3>
+<p>Once configured, the Windows 10 hypervisor communicates with the
+guest operating system via Hyper-V Integration Services. The guest
+reports its current commit charge, and Hyper-V uses this data alongside
+the configured Memory Buffer to calculate actual demand. If the guest
+requires more memory, Hyper-V dynamically maps additional memory pages
+from the host pool. When guest demand drops, the Hyper-V balloon driver
+expands inside the guest OS, locking memory pages and returning the
+underlying physical memory to the Windows 10 host.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/windows-10/article/configure-dynamic-memory-in-windows-10-hyper-v';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/windows-10/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/windows-10/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
